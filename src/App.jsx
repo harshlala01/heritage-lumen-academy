@@ -1,0 +1,85 @@
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import TopBar from './components/TopBar';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import SuccessModal from './components/SuccessModal';
+import BackToTop from './components/BackToTop';
+import AnnouncementBannerModal from './components/AnnouncementBannerModal';
+import AnnouncementTickerBar from './components/AnnouncementTickerBar';
+import ScrollToTop from './components/ScrollToTop';
+
+// Pages
+import HomePage from './pages/HomePage';
+import SchoolFoundation from './pages/about/SchoolFoundation';
+import Management from './pages/about/Management';
+import SecretaryDesk from './pages/about/SecretaryDesk';
+import PrincipalDesk from './pages/about/PrincipalDesk';
+import FacilitiesPage from './pages/FacilitiesPage';
+import AcademicsPage from './pages/AcademicsPage';
+import CurricularActivitiesPage from './pages/CurricularActivitiesPage';
+import GalleryPage from './pages/GalleryPage';
+import NoticePage from './pages/NoticePage';
+import ContactPage from './pages/ContactPage';
+
+export default function App() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [enquiryData, setEnquiryData] = useState(null);
+  const [isBannerOpen, setIsBannerOpen] = useState(false);
+
+  const handleEnquirySuccess = (data) => {
+    setEnquiryData(data);
+    setModalOpen(true);
+  };
+
+  return (
+    <Router>
+      <ScrollToTop />
+      <div className="heritage-app">
+        {/* Top utility contact strip */}
+        <TopBar onOpenBanner={() => setIsBannerOpen(true)} />
+
+        {/* Sticky navigation header with dropdown menu */}
+        <Navbar onOpenBanner={() => setIsBannerOpen(true)} />
+
+        {/* Header Announcement Bar with Ticker matching user screenshot */}
+        <AnnouncementTickerBar onOpenBanner={() => setIsBannerOpen(true)} />
+
+        {/* Page Routes */}
+        <Routes>
+          <Route path="/" element={<HomePage onEnquirySuccess={handleEnquirySuccess} />} />
+          <Route path="/about/foundation" element={<SchoolFoundation />} />
+          <Route path="/about/management" element={<Management />} />
+          <Route path="/about/secretary-desk" element={<SecretaryDesk />} />
+          <Route path="/about/principal-desk" element={<PrincipalDesk />} />
+          <Route path="/facilities" element={<FacilitiesPage />} />
+          <Route path="/academics" element={<AcademicsPage />} />
+          <Route path="/activities" element={<CurricularActivitiesPage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/notice" element={<NoticePage />} />
+          <Route path="/contact" element={<ContactPage onEnquirySuccess={handleEnquirySuccess} />} />
+          <Route path="*" element={<HomePage onEnquirySuccess={handleEnquirySuccess} />} />
+        </Routes>
+
+        {/* Global Footer */}
+        <Footer />
+
+        {/* Global Admission Success Celebration Modal */}
+        <SuccessModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          enquiryData={enquiryData}
+        />
+
+        {/* Promotional / Toppers Announcement Banner Popup Modal */}
+        <AnnouncementBannerModal
+          isOpen={isBannerOpen}
+          onClose={() => setIsBannerOpen(false)}
+        />
+
+        {/* Floating Back to Top Button */}
+        <BackToTop />
+      </div>
+    </Router>
+  );
+}
