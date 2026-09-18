@@ -1,38 +1,51 @@
 import React from 'react';
 
 export default function AnnouncementTickerBar({ onOpenBanner }) {
-  const tickerItems = [
-    'New Admission Open for the session 2025–2026. For more details please visit school office: Monday to Friday 10:30 am to 3:00 pm.',
-    'Congratulations Class X (ICSE) & Class XII (ISC) Scholars for 100% Board Results & All India Top Ranks!',
-    'Merit-Cum-Means Scholarship Aptitude Test registrations are now open for Grade IX and XI entry.',
-    'Heritage Lumen Robotics Contingent secures 1st Prize at National STEM Conclave.'
+  const announcements = [
+    'Admissions Open for Academic Year 2025–2026. Limited seats available for Nursery to Grade XI.',
+    'Heritage Lumen Scholars achieve 100% distinction across ICSE & ISC National Board Examinations.',
+    'Merit-cum-Means Scholarships: Applications now open for prospective scholars.',
+    'Annual Inter-School Laureate Conclave scheduled for November 15th.'
   ];
 
   return (
-    <div className="announcement-ticker-bar">
-      {/* Left Yellow Announcement Pill matching screenshot */}
-      <button
-        className="announcement-badge-pill"
-        onClick={onOpenBanner}
-        title="Click to view full announcement banner"
-      >
-        <i className="fa-solid fa-bullhorn"></i>
-        <span>Announcement</span>
-      </button>
-
-      {/* Marquee Ticker Track */}
-      <div className="announcement-marquee-track" onClick={onOpenBanner} title="Click to view details">
-        <div className="announcement-marquee-content">
-          {/* First loop */}
-          {tickerItems.map((text, idx) => (
-            <span key={`loop1-${idx}`}>{text}</span>
-          ))}
-          {/* Second duplicate loop for seamless continuous scrolling */}
-          {tickerItems.map((text, idx) => (
-            <span key={`loop2-${idx}`}>{text}</span>
-          ))}
+    <aside className="announcement-bar-slim" aria-label="Important Announcements">
+      <div className="announcement-marquee-wrapper">
+        <div className="announcement-marquee-track">
+          {/* Loop 1 */}
+          <div className="announcement-marquee-group">
+            {announcements.map((text, idx) => (
+              <span key={`a1-${idx}`} className="announcement-item">
+                <span className="announcement-bullet">✦</span>
+                <span className="announcement-text">{text}</span>
+                <button
+                  type="button"
+                  onClick={onOpenBanner}
+                  className="announcement-view-link"
+                >
+                  View Details →
+                </button>
+              </span>
+            ))}
+          </div>
+          {/* Loop 2 (Continuous marquee) */}
+          <div className="announcement-marquee-group" aria-hidden="true">
+            {announcements.map((text, idx) => (
+              <span key={`a2-${idx}`} className="announcement-item">
+                <span className="announcement-bullet">✦</span>
+                <span className="announcement-text">{text}</span>
+                <button
+                  type="button"
+                  onClick={onOpenBanner}
+                  className="announcement-view-link"
+                >
+                  View Details →
+                </button>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }

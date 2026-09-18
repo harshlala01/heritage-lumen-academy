@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Preloader from './components/Preloader';
+import SmoothScroll from './components/SmoothScroll';
+import ScrollProgress from './components/ScrollProgress';
 import TopBar from './components/TopBar';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -34,16 +37,24 @@ export default function App() {
 
   return (
     <Router>
+      {/* 1. Global Preloader Animation */}
+      <Preloader />
+
+      {/* 2. Global Smooth Scroll Engine (Lenis) */}
+      <SmoothScroll />
+
+      {/* 3. Scroll Progress Indicator Line (Top 3px Gold) */}
+      <ScrollProgress />
+
+      {/* Router Scroll to Top Helper */}
       <ScrollToTop />
+
       <div className="heritage-app">
-        {/* Top utility contact strip */}
-        <TopBar onOpenBanner={() => setIsBannerOpen(true)} />
-
-        {/* Sticky navigation header with dropdown menu */}
-        <Navbar onOpenBanner={() => setIsBannerOpen(true)} />
-
-        {/* Header Announcement Bar with Ticker matching user screenshot */}
+        {/* 1. Announcement Bar (Ultra-slim 30px Navy Strip with slow marquee & gold View Details link) */}
         <AnnouncementTickerBar onOpenBanner={() => setIsBannerOpen(true)} />
+
+        {/* 2. Sticky & Transparent-to-Cream Main Navbar Header */}
+        <Navbar onOpenBanner={() => setIsBannerOpen(true)} />
 
         {/* Page Routes */}
         <Routes>
