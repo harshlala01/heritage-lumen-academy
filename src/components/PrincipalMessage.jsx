@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { contentImage, useContent } from '../hooks/useContent';
 
 export default function PrincipalMessage() {
   const [signatureDrawn, setSignatureDrawn] = useState(false);
+  const faculty = useContent('faculty', [{
+    id: 1,
+    title: 'Dr. Eleanor Vance, Ph.D.',
+    subtitle: 'Head of Institution / Principal',
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop'
+  }]);
+  const principal = faculty[0];
 
   return (
     <section 
@@ -16,8 +24,8 @@ export default function PrincipalMessage() {
             <div className="principal-radial-glow"></div>
             <div className="principal-photo-frame">
               <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop"
-                alt="Dr. Eleanor Vance - Head of Institution"
+                src={contentImage(principal.image_path || principal.image)}
+                alt={principal.title}
                 className="principal-photo-img"
               />
               <div className="principal-seal-badge" title="Affiliated CISCE Leader">
@@ -25,8 +33,8 @@ export default function PrincipalMessage() {
               </div>
             </div>
             <div className="principal-caption-box">
-              <h4 className="principal-name">Dr. Eleanor Vance, Ph.D.</h4>
-              <p className="principal-role">Head of Institution / Principal</p>
+              <h4 className="principal-name">{principal.title}</h4>
+              <p className="principal-role">{principal.subtitle}</p>
               <span className="principal-creds">M.Ed. (Oxon), Ph.D. Educational Leadership</span>
             </div>
           </div>

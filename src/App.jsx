@@ -25,6 +25,11 @@ import GalleryPage from './pages/GalleryPage';
 import NoticePage from './pages/NoticePage';
 import ContactPage from './pages/ContactPage';
 
+// 🔽 NEW IMPORTS (Portal)
+import Login from './pages/Login';
+import AdminDashboard from './pages/AdminDashboard';
+import ContentManager from './pages/ContentManager';
+
 export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [enquiryData, setEnquiryData] = useState(null);
@@ -50,7 +55,7 @@ export default function App() {
       <ScrollToTop />
 
       <div className="heritage-app">
-        {/* 1. Announcement Bar (Ultra-slim 30px Navy Strip with slow marquee & gold View Details link) */}
+        {/* 1. Announcement Bar */}
         <AnnouncementTickerBar onOpenBanner={() => setIsBannerOpen(true)} />
 
         {/* 2. Sticky & Transparent-to-Cream Main Navbar Header */}
@@ -69,6 +74,12 @@ export default function App() {
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/notice" element={<NoticePage />} />
           <Route path="/contact" element={<ContactPage onEnquirySuccess={handleEnquirySuccess} />} />
+
+          {/* 🔽 NEW ROUTES (Portal) */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/content" element={<ContentManager />} />
+
           <Route path="*" element={<HomePage onEnquirySuccess={handleEnquirySuccess} />} />
         </Routes>
 

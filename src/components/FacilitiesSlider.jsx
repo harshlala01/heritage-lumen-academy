@@ -1,10 +1,11 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { contentImage, useContent } from '../hooks/useContent';
 
 export default function FacilitiesSlider() {
   const trackRef = useRef(null);
 
-  const facilities = [
+  const fallbackFacilities = [
     {
       id: 1,
       name: 'SPACIOUS CLASSROOMS',
@@ -48,6 +49,7 @@ export default function FacilitiesSlider() {
       link: '/facilities'
     }
   ];
+  const facilities = useContent('facilities', fallbackFacilities);
 
   const scroll = (direction) => {
     if (trackRef.current) {
@@ -76,10 +78,10 @@ export default function FacilitiesSlider() {
             {facilities.map((fac) => (
               <Link to={fac.link} className="facility-slide-card" key={fac.id}>
                 <div className="facility-card-image-box">
-                  <img src={fac.image} alt={fac.name} />
+                  <img src={contentImage(fac.image_path || fac.image)} alt={fac.title || fac.name} />
                 </div>
                 <div className="facility-card-bottom-bar">
-                  <span className="facility-card-label">{fac.name}</span>
+                  <span className="facility-card-label">{fac.title || fac.name}</span>
                   <div className="facility-card-circle-btn">
                     <i className="fa-solid fa-arrow-right"></i>
                   </div>

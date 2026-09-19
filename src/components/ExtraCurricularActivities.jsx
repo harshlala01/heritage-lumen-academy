@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { contentImage, useContent } from '../hooks/useContent';
 
 export default function ExtraCurricularActivities() {
-  const activities = [
+  const fallbackActivities = [
     {
       id: 1,
       title: 'COMMUNITY OUTREACH',
@@ -52,6 +53,7 @@ export default function ExtraCurricularActivities() {
       link: '/activities'
     }
   ];
+  const activities = useContent('activities', fallbackActivities);
 
   // Duplicate the array for a seamless infinite marquee
   const duplicatedActivities = [...activities, ...activities];
@@ -76,14 +78,14 @@ export default function ExtraCurricularActivities() {
           <div className="ec-side-marquee-track">
             {duplicatedActivities.map((item, idx) => (
               <Link
-                to={item.link}
+                to={item.link || '/activities'}
                 key={`${item.id}-${idx}`}
                 className="ec-side-card"
                 title={`Explore ${item.title}`}
               >
                 <div className="ec-side-card-inner">
                   <img
-                    src={item.image}
+                    src={contentImage(item.image_path || item.image)}
                     alt={item.title}
                     className="ec-side-img"
                     loading="lazy"

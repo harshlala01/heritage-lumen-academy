@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
+import { contentImage, useContent } from '../hooks/useContent';
 
 export default function Hero() {
   const canvasRef = useRef(null);
@@ -9,6 +10,13 @@ export default function Hero() {
   const hasAnimated = useRef(false);
 
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const banners = useContent('banners', [{
+    id: 1,
+    title: "Inspiring Intellect. Cultivating Character. Shaping Tomorrow's Leaders.",
+    subtitle: 'A distinguished tradition of intellectual rigor, bespoke mentorship, and moral integrity—nurturing extraordinary scholars for global impact since 2003.',
+    image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1920&auto=format&fit=crop'
+  }]);
+  const banner = banners[0];
 
   // Animated stat counters (0 to target)
   const [stats, setStats] = useState({
@@ -191,15 +199,10 @@ export default function Hero() {
     btn.style.transform = 'translate(0px, 0px)';
   };
 
-  const headingWords = [
-    { text: 'Inspiring', highlight: false },
-    { text: 'Intellect.', highlight: false },
-    { text: 'Cultivating', highlight: false },
-    { text: 'Character.', highlight: false },
-    { text: 'Shaping', highlight: false },
-    { text: "Tomorrow's", highlight: true },
-    { text: 'Leaders.', highlight: false },
-  ];
+  const headingWords = banner.title.split(' ').map((text, index, words) => ({
+    text,
+    highlight: index === words.length - 2
+  }));
 
   return (
     <section ref={heroRef} className="cinematic-hero-section">
@@ -211,7 +214,7 @@ export default function Hero() {
           loop
           muted
           playsInline
-          poster="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1920&auto=format&fit=crop"
+          poster={contentImage(banner.image_path || banner.image)}
         >
           <source
             src="https://assets.mixkit.co/videos/preview/mixkit-students-walking-in-a-university-hallway-4328-large.mp4"
@@ -273,7 +276,7 @@ export default function Hero() {
 
         {/* Subtext in light cream */}
         <p className="hero-light-subtext">
-          A distinguished tradition of intellectual rigor, bespoke mentorship, and moral integrity—nurturing extraordinary scholars for global impact since 2003.
+          {banner.subtitle}
         </p>
 
         {/* Two Action Buttons */}

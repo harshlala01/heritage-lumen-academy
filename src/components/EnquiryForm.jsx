@@ -21,29 +21,67 @@ export default function EnquiryForm({ onSubmitSuccess }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   setSubmitting(true);
+
+  //   // Simulate instant client-side validation & processing
+  //   setTimeout(() => {
+  //     setSubmitting(false);
+  //     if (onSubmitSuccess) {
+  //       onSubmitSuccess(formData);
+  //     }
+  //     // Reset form
+  //     setFormData({
+  //       parentName: '',
+  //       studentName: '',
+  //       parentEmail: '',
+  //       parentPhone: '',
+  //       gradeSelect: '',
+  //       academicYear: '2025-2026',
+  //       enquiryMessage: ''
+  //     });
+  //   }, 400);
+  // };
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
-    // Simulate instant client-side validation & processing
-    setTimeout(() => {
-      setSubmitting(false);
-      if (onSubmitSuccess) {
-        onSubmitSuccess(formData);
-      }
-      // Reset form
-      setFormData({
-        parentName: '',
-        studentName: '',
-        parentEmail: '',
-        parentPhone: '',
-        gradeSelect: '',
-        academicYear: '2025-2026',
-        enquiryMessage: ''
+    try {
+      const response = await fetch('http://localhost:5000/api/enquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       });
-    }, 400);
-  };
 
+      const result = await response.json();
+
+      if (response.ok) {
+        // Success
+        if (onSubmitSuccess) {
+          onSubmitSuccess(formData);
+        }
+        // Reset form
+        setFormData({
+          parentName: '',
+          studentName: '',
+          parentEmail: '',
+          parentPhone: '',
+          gradeSelect: '',
+          academicYear: '2025-2026',
+          enquiryMessage: ''
+        });
+      } else {
+        alert('Error: ' + (result.message || 'Something went wrong'));
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Server se connect nahi ho paya. Backend chalu hai?');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  
   return (
     <section className="enquiry-wrap" id="enquiry">
       <div className="container">

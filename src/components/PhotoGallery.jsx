@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { contentImage, useContent } from '../hooks/useContent';
 
 export default function PhotoGallery() {
   const [activePhoto, setActivePhoto] = useState(null);
 
-  const moments = [
+  const fallbackMoments = [
     {
       id: 1,
       category: 'TRADITIONS',
@@ -30,6 +31,7 @@ export default function PhotoGallery() {
       image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1200&auto=format&fit=crop'
     }
   ];
+  const moments = useContent('gallery', fallbackMoments);
 
   return (
     <section className="campus-moments-vibrancy-section">
@@ -56,7 +58,7 @@ export default function PhotoGallery() {
             >
               <div className="cm-vibrancy-card-inner">
                 <img 
-                  src={item.image} 
+                  src={contentImage(item.image_path || item.image)} 
                   alt={item.title} 
                   className="cm-vibrancy-img"
                   loading="lazy"

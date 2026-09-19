@@ -187,7 +187,7 @@ export default function Navbar({ onOpenBanner }) {
 
           {/* Right: "Portal Login" + "APPLY ONLINE" button (gold background, navy text, shine sweep) */}
           <div className="nav-actions-right">
-            <Link to="/contact" className="nav-portal-link">
+            <Link to="/login" className="nav-portal-link">
               <i className="fa-solid fa-user-lock"></i>
               <span>Portal Login</span>
             </Link>
