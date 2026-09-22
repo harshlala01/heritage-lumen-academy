@@ -76,13 +76,10 @@ export default function PrincipalMessage() {
               <div className="signature-title">Dr. Eleanor Vance — Head of Institution</div>
             </div>
 
-            {/* Buttons */}
+            {/* Button */}
             <div className="principal-actions-row">
               <Link to="/about/principal-desk" className="btn-principal-gold-outline">
                 Read Full Address <i className="fa-solid fa-arrow-right"></i>
-              </Link>
-              <Link to="/contact" className="btn-principal-navy-filled">
-                <i className="fa-solid fa-calendar-check"></i> Schedule an Interaction
               </Link>
             </div>
           </div>

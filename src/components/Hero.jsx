@@ -279,7 +279,7 @@ export default function Hero() {
           {banner.subtitle}
         </p>
 
-        {/* Two Action Buttons */}
+        {/* Action Button */}
         <div className="hero-action-buttons">
           <Link
             to="/contact"
@@ -289,14 +289,6 @@ export default function Hero() {
           >
             <span>Apply for Admission</span>
             <i className="fa-solid fa-arrow-right"></i>
-          </Link>
-
-          <Link
-            to="/facilities"
-            className="btn-hero-outline-sweep"
-          >
-            <span className="btn-sweep-bg"></span>
-            <span className="btn-sweep-text">Book Campus Visit</span>
           </Link>
         </div>
 

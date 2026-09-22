@@ -175,6 +175,16 @@ export default function Navbar({ onOpenBanner }) {
 
               <li className="nav-item">
                 <NavLink
+                  to="/notice"
+                  className={({ isActive }) => `nav-link-serif ${isActive ? 'active' : ''}`}
+                >
+                  <span>Notice</span>
+                  <span className="nav-gold-underline"></span>
+                </NavLink>
+              </li>
+
+              <li className="nav-item">
+                <NavLink
                   to="/contact"
                   className={({ isActive }) => `nav-link-serif ${isActive ? 'active' : ''}`}
                 >
@@ -185,16 +195,21 @@ export default function Navbar({ onOpenBanner }) {
             </ul>
           </nav>
 
-          {/* Right: "Portal Login" + "APPLY ONLINE" button (gold background, navy text, shine sweep) */}
+          {/* Right: Portal Login icon button + "APPLY ONLINE" button */}
           <div className="nav-actions-right">
-            <Link to="/login" className="nav-portal-link">
+            <Link
+              to="/login"
+              className="nav-portal-link"
+              title="Portal Login"
+              aria-label="Portal Login"
+            >
               <i className="fa-solid fa-user-lock"></i>
-              <span>Portal Login</span>
             </Link>
 
             <Link
               to="/contact"
               className="btn-apply-online-gold"
+              title="Apply for Admission"
             >
               <span className="btn-shine-sweep"></span>
               <span>APPLY ONLINE</span>
@@ -311,7 +326,14 @@ export default function Navbar({ onOpenBanner }) {
         </ul>
 
         <div className="mobile-drawer-footer">
-          <Link to="/contact" className="btn-apply-online-gold" onClick={closeMobile} style={{ width: '100%', justifyContent: 'center' }}>
+          <Link
+            to="/contact"
+            className="btn-apply-online-gold"
+            onClick={closeMobile}
+            style={{ width: '100%', justifyContent: 'center' }}
+            title="Apply for Admission"
+          >
+            <span className="btn-shine-sweep"></span>
             <span>APPLY ONLINE</span>
             <i className="fa-solid fa-arrow-right"></i>
           </Link>

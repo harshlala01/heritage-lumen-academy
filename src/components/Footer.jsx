@@ -1,19 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
-  const [newsEmail, setNewsEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleNewsletter = (e) => {
-    e.preventDefault();
-    if (newsEmail.trim()) {
-      setSubscribed(true);
-      setNewsEmail('');
-      setTimeout(() => setSubscribed(false), 5000);
-    }
-  };
-
   return (
     <footer className="footer-foundation-section">
       {/* Subtle Gold Line at Top */}
@@ -117,30 +105,32 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 4: Newsletter */}
+          {/* Col 4: Locate on Map */}
           <div className="footer-col">
-            <h5 className="footer-heading-gold">Campus Gazette</h5>
-            <p className="footer-desc-text" style={{ marginBottom: '14px' }}>
-              Subscribe for institutional updates, academic honors, and convocation notices.
+            <h5 className="footer-heading-gold">Locate on Map</h5>
+            <div className="footer-map-wrapper">
+              <a
+                href="https://maps.google.com/?q=Stratford+Day+School+Habra+West+Bengal"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-map-open-badge"
+                title="Open location in Google Maps"
+              >
+                <span>Open in Maps</span>
+                <i className="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+              <iframe
+                title="Academy Location on Map"
+                src="https://maps.google.com/maps?q=Stratford+Day+School+Habra+West+Bengal&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                className="footer-map-iframe"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
+            <p className="footer-map-address">
+              <i className="fa-solid fa-location-dot"></i>
+              <span>Kamarthuba, Habra, North 24 Parganas, West Bengal 743263</span>
             </p>
-            <form className="newsletter-cream-form" onSubmit={handleNewsletter}>
-              <input
-                type="email"
-                placeholder="Your email address"
-                value={newsEmail}
-                onChange={(e) => setNewsEmail(e.target.value)}
-                required
-                className="newsletter-cream-input"
-              />
-              <button type="submit" className="newsletter-gold-btn" aria-label="Subscribe">
-                <span className="newsletter-btn-arrow">→</span>
-              </button>
-            </form>
-            {subscribed && (
-              <div className="newsletter-success-toast">
-                <i className="fa-solid fa-circle-check"></i> Subscribed to the Heritage Lumen Gazette!
-              </div>
-            )}
           </div>
         </div>
 

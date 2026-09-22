@@ -10,6 +10,14 @@ import uuid
 import json
 from functools import wraps
 
+import sys
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 # ---------- APP SETUP ----------
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'heritage_super_secret_key_2026'
@@ -27,19 +35,66 @@ bcrypt = Bcrypt(app)
 
 # ---------- MYSQL CONFIG ----------
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '1234',              # XAMPP mein default empty hota hai
-    'database': 'heritage_db',
+    'host': os.environ.get('DB_HOST', 'localhost'),
+    'user': os.environ.get('DB_USER', 'root'),
+    'password': os.environ.get('DB_PASSWORD', ''),              # XAMPP mein default empty hota hai (password hoga to dal dena, nhi to chhod dena)
+    'database': os.environ.get('DB_NAME', 'heritage_db'),
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
 }
 
 def get_db():
-    return pymysql.connect(**DB_CONFIG)
+    try:
+        return pymysql.connect(**DB_CONFIG)
+    except pymysql.err.OperationalError as e:
+        # Agar password mismatch ho (1045 error), fallback try karein
+        if e.args[0] == 1045:
+            # Agar password set tha to empty try karo, agar empty tha to '1234' / 'root' try karo
+            test_passwords = [''] if DB_CONFIG['password'] else ['1234', 'root']
+            for pwd in test_passwords:
+                try:
+                    fallback_config = DB_CONFIG.copy()
+                    fallback_config['password'] = pwd
+                    conn = pymysql.connect(**fallback_config)
+                    DB_CONFIG['password'] = pwd
+                    return conn
+                except Exception:
+                    pass
+        raise e
 
 # ---------- DATABASE SETUP ----------
 def init_db():
+    # Database agar create nahi hua hai to pehle create karein
+    root_config = {
+        'host': DB_CONFIG['host'],
+        'user': DB_CONFIG['user'],
+        'password': DB_CONFIG['password'],
+        'charset': DB_CONFIG['charset']
+    }
+    try:
+        root_conn = pymysql.connect(**root_config)
+    except pymysql.err.OperationalError as e:
+        if e.args[0] == 1045:
+            test_passwords = [''] if root_config['password'] else ['1234', 'root']
+            root_conn = None
+            for pwd in test_passwords:
+                try:
+                    root_config['password'] = pwd
+                    root_conn = pymysql.connect(**root_config)
+                    DB_CONFIG['password'] = pwd
+                    break
+                except Exception:
+                    pass
+            if not root_conn:
+                raise e
+        else:
+            raise e
+
+    root_cursor = root_conn.cursor()
+    root_cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{DB_CONFIG['database']}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
+    root_cursor.close()
+    root_conn.close()
+
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute('''
@@ -90,7 +145,7 @@ def init_db():
             ('Super Admin', 'admin@heritage.com', hashed, 'admin')
         )
         conn.commit()
-        print("✅ Default Admin Created in MySQL: admin@heritage.com / admin123")
+        print("[OK] Default Admin Created in MySQL: admin@heritage.com / admin123")
 
     cursor.close()
     conn.close()
@@ -353,10 +408,10 @@ def delete_enquiry(current_user, enquiry_id):
 if __name__ == '__main__':
     try:
         init_db()
-        print("✅ MySQL Connected Successfully!")
+        print("[OK] MySQL Connected & Database Initialized Successfully!")
     except Exception as e:
-        print(f"❌ MySQL Connection Error: {e}")
-        print("👉 Check karo: XAMPP MySQL chalu hai? Database 'heritage_db' bana hai?")
+        print(f"[ERROR] MySQL Connection Error: {e}")
+        print("-> Check karo: XAMPP MySQL chalu hai? Port 3306?")
         exit(1)
 
     app.run(debug=True, port=5000)
