@@ -2,10 +2,10 @@ import React from 'react';
 
 export default function AnnouncementTickerBar({ onOpenBanner }) {
   const announcements = [
-    'Admissions Open for Academic Year 2025–2026. Limited seats available for Nursery to Grade XI.',
-    'The Rabindra Bharati Heritage Day School scholars achieve 100% distinction across CBSE National Board Examinations.',
-    'Merit-cum-Means Scholarships: Applications now open for prospective scholars.',
-    'Annual Inter-School Laureate Conclave scheduled for November 15th.'
+    'Admissions Open for Academic Session 2026–2027. Registration in progress for Nursery to Class X (CBSE).',
+    'The Rabindra Bharati Heritage Day School scholars achieve 100% distinction across CBSE Board Examinations.',
+    'Merit-cum-Means Scholarships: Applications open for prospective scholars.',
+    'Annual Inter-School Laureate Conclave scheduled for upcoming academic session.'
   ];
 
   return (

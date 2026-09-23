@@ -8,8 +8,18 @@ export default function NoticePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [liveNotices, setLiveNotices] = useState([]);
   const [admissionsNoticeText, setAdmissionsNoticeText] = useState(
-    'New Admissions will commence from 3rd October onwards. Monday to Friday. Time: 10:30 am to 3:00 pm. Visit school office for more details.'
+    'Admissions Open for Academic Session 2026–2027. Registration forms available Monday to Friday (10:30 AM to 3:00 PM). Visit school admissions desk for details.'
   );
+
+  const [categories, setCategories] = useState([
+    { id: 'all', label: 'All Notices' },
+    { id: 'admissions', label: 'Admissions' },
+    { id: 'recruitment', label: 'Recruitment' },
+    { id: 'academic', label: 'Academic' },
+    { id: 'examination', label: 'Examinations' },
+    { id: 'events', label: 'Events' },
+    { id: 'holidays', label: 'Holidays' }
+  ]);
 
   useEffect(() => {
     // 1. Fetch live notices
@@ -41,126 +51,17 @@ export default function NoticePage() {
         }
       })
       .catch(() => {});
+
+    // 3. Fetch dynamic notice categories from admin settings
+    fetch(`${API_BASE}/api/settings/notice_categories`)
+      .then((res) => res.json())
+      .then((cats) => {
+        if (Array.isArray(cats) && cats.length > 0) {
+          setCategories([{ id: 'all', label: 'All Notices' }, ...cats]);
+        }
+      })
+      .catch(() => {});
   }, []);
-
-  const officialNotices = [
-    {
-      id: 'n1',
-      date: '23/09/2023',
-      subject: 'Teacher recruitment',
-      hasDownload: true,
-      fileName: 'Teacher_Recruitment_Notice_2023.txt',
-      category: 'recruitment',
-      downloadContent: `=====================================================
-THE RABINDRA BHARATI HERITAGE DAY SCHOOL
-Affiliated to the CBSE, New Delhi
-OFFICIAL EMPLOYMENT CIRCULAR: TEACHER RECRUITMENT
-=====================================================
-
-Notice Date: 23/09/2023
-Ref No: RBHDS/ADMIN/REC/2023-09
-
-Applications are cordially invited from qualified, experienced, and dedicated teaching professionals for academic appointments across Primary, Middle, and Senior Secondary departments for the upcoming academic session.
-
-VACANCIES:
-1. PGT English & Literature (CBSE Senior Secondary Level)
-2. TGT Mathematics & Pure Physics
-3. TGT Computer Applications & STEM
-4. Primary & Montessori Trained Educators
-5. Physical Education & Athletics Coach
-
-ELIGIBILITY CRITERIA:
-- Postgraduate / Graduate in relevant discipline with recognized B.Ed.
-- Minimum 2–3 years teaching experience in a CBSE or recognized Board curriculum.
-- Excellent command over spoken and written English.
-- Proficiency with digital smart-board technology and blended learning methodology.
-
-APPLICATION PROCEDURE:
-Eligible candidates may submit their comprehensive CV along with passport-size photographs and attested copies of educational certificates directly to the Principal's Secretariat or via email to: therabindrabharatihds@gmail.com within 15 days of publication of this notice.
-
-By Order,
-Principal / Secretary
-The Rabindra Bharati Heritage Day School
-=====================================================`
-    },
-    {
-      id: 'n2',
-      date: '18/09/2023',
-      subject: 'New Admissions will commence from 3rd October 2023, onwards. Monday to Friday. Time: 11 am to 3pm. Visit school office for more details.',
-      hasDownload: false,
-      category: 'admissions'
-    },
-    {
-      id: 'n3',
-      date: '18/10/2025',
-      subject: 'Admissions Open for Academic Year 2025–2026: Information Brochure, Prospectus & Registration Guidelines for Pre-Primary to Grade XI.',
-      hasDownload: true,
-      fileName: 'Admissions_2025_2026_Guidelines.txt',
-      category: 'admissions',
-      downloadContent: `=====================================================
-THE RABINDRA BHARATI HERITAGE DAY SCHOOL
-ADMISSIONS ANNOUNCEMENT 2025–2026
-=====================================================
-Date: 18/10/2025
-
-Online registration and prospectus issuance for Academic Session 2025–2026 are currently in progress.
-
-Key Highlights:
-- Grades Open: Early Years (Kindergarten), Grades I through IX, and Grade XI (Science, Commerce, Humanities).
-- Desk Timings: Monday to Friday: 10:30 AM to 3:00 PM.
-- Online Form: Accessible under the "APPLY ONLINE" tab on our official website.
-
-Admissions Directorate
-The Rabindra Bharati Heritage Day School`
-    },
-    {
-      id: 'n4',
-      date: '05/11/2025',
-      subject: 'CBSE Board Examination Schedule 2025–26 Timetable & Practical Laboratory Guidelines.',
-      hasDownload: true,
-      fileName: 'PreBoard_Examination_Schedule_2025.txt',
-      category: 'exam',
-      downloadContent: `=====================================================
-THE RABINDRA BHARATI HERITAGE DAY SCHOOL
-EXAMINATION SECRETARIAT — BOARD NOTIFICATION
-=====================================================
-Date: 05/11/2025
-Grades: Class X & Class XII (CBSE)
-
-The CBSE Examination routine and laboratory practical schedules are formally released. Scholars are instructed to strictly observe reporting times and uniform protocols.`
-    },
-    {
-      id: 'n5',
-      date: '12/11/2025',
-      subject: 'Annual Science, STEM & Robotics Exhibition 2025: Participation Guidelines & Working Prototype Submission Dates.',
-      hasDownload: true,
-      fileName: 'STEM_Exhibition_2025_Guidelines.txt',
-      category: 'academic'
-    },
-    {
-      id: 'n6',
-      date: '20/11/2025',
-      subject: 'Winter Carnival & Annual Founders’ Day Celebrations Notice: Auditorium, The Rabindra Bharati Heritage Day School Campus.',
-      hasDownload: true,
-      fileName: 'Founders_Day_Gala_2025.txt',
-      category: 'events'
-    },
-    {
-      id: 'n7',
-      date: '01/12/2025',
-      subject: 'Notification of Winter Vacation Schedule & School Re-opening Dates (Dec 24, 2025 to Jan 02, 2026). Normal classes resume Jan 05, 2026.',
-      hasDownload: false,
-      category: 'holidays'
-    },
-    {
-      id: 'n8',
-      date: '10/12/2025',
-      subject: 'Merit-Cum-Means Scholarship Aptitude Test Date Announced for Grade IX and Grade XI Entrants.',
-      hasDownload: true,
-      fileName: 'Scholarship_Aptitude_Test_2026.txt',
-      category: 'admissions'
-    }
-  ];
 
   const handleDownload = (notice) => {
     if (notice.attachmentPath) {
@@ -191,10 +92,21 @@ For further inquiries, contact therabindrabharatihds@gmail.com or call +91 80012
     URL.revokeObjectURL(url);
   };
 
-  const allCombinedNotices = [...liveNotices, ...officialNotices];
+  // Strictly display live notices from backend
+  const displayedNotices = liveNotices;
 
-  const filteredNotices = allCombinedNotices.filter((notice) => {
-    const matchesCategory = filter === 'all' || notice.category === filter;
+  const filteredNotices = displayedNotices.filter((notice) => {
+    const noticeCat = (notice.category || '').toLowerCase().trim();
+    const activeFilter = filter.toLowerCase().trim();
+
+    const matchesCategory =
+      activeFilter === 'all' ||
+      noticeCat === activeFilter ||
+      (activeFilter === 'examination' && (noticeCat === 'exam' || noticeCat === 'examinations')) ||
+      (activeFilter === 'exam' && (noticeCat === 'examination' || noticeCat === 'examinations')) ||
+      (activeFilter === 'admissions' && noticeCat === 'admission') ||
+      (activeFilter === 'events' && noticeCat === 'event');
+
     const matchesSearch =
       notice.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
       notice.date.toLowerCase().includes(searchQuery.toLowerCase());
@@ -246,14 +158,7 @@ For further inquiries, contact therabindrabharatihds@gmail.com or call +91 80012
           >
             {/* Filter Tabs */}
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {[
-                { id: 'all', label: 'All Notices' },
-                { id: 'recruitment', label: 'Recruitment' },
-                { id: 'admissions', label: 'Admissions' },
-                { id: 'exam', label: 'Examinations' },
-                { id: 'events', label: 'Events' },
-                { id: 'holidays', label: 'Holidays' }
-              ].map((tab) => (
+              {categories.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setFilter(tab.id)}
@@ -340,8 +245,14 @@ For further inquiries, contact therabindrabharatihds@gmail.com or call +91 80012
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="3" style={{ textAlign: 'center', padding: '30px', color: '#64748B' }}>
-                        No notices found matching your criteria.
+                      <td colSpan="3" style={{ textAlign: 'center', padding: '48px 20px', color: '#64748B' }}>
+                        <i className="fa-solid fa-bullhorn" style={{ fontSize: '2rem', color: '#CBD5E1', marginBottom: '14px', display: 'block' }}></i>
+                        <strong style={{ fontSize: '1rem', color: '#0B1B3A', display: 'block' }}>
+                          No Notices Currently Published
+                        </strong>
+                        <span style={{ fontSize: '0.85rem', color: '#64748B', display: 'block', marginTop: '6px' }}>
+                          Official administrative circulars, schedules, and notifications will appear here once published from the Admin Portal.
+                        </span>
                       </td>
                     </tr>
                   )}

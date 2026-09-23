@@ -27,10 +27,10 @@ export default function AnnouncementBannerModal({ isOpen, onClose }) {
     // Banner 1: Board Results & Toppers (Matches user screenshot)
     {
       id: 1,
-      tag: 'CBSE RESULTS 2025–2026',
+      tag: 'CBSE RESULTS & EXCELLENCE',
       headline: 'THE RABINDRA BHARATI HERITAGE DAY SCHOOL',
       subline: 'AFFILIATED TO THE CBSE, NEW DELHI',
-      title: 'Congratulations Class X & Class XII CBSE Toppers!',
+      title: 'Congratulations Class X CBSE Achievers & Toppers!',
       passBadge: 'PASS PERCENTAGE 100%',
       toppers: [
         {
@@ -44,18 +44,18 @@ export default function AnnouncementBannerModal({ isOpen, onClose }) {
           rank: 'ALL INDIA RANK 5TH',
           name: 'Tamoghno Saha',
           score: '98.6%',
-          exam: 'Class XII (CBSE Science)',
+          exam: 'Class X (CBSE)',
           image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=300&auto=format&fit=crop'
         },
         {
           rank: 'ALL INDIA RANK 7TH',
           name: 'Shrestha Dey',
           score: '98.5%',
-          exam: 'Class XII (CBSE Commerce)',
+          exam: 'Class X (CBSE)',
           image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=300&auto=format&fit=crop'
         }
       ],
-      footerText: 'Admissions Open for Session 2025–2026. Limited seats across all divisions.',
+      footerText: 'Admissions Open for Session 2026–2027. Registration in progress Nursery to Class X.',
       ctaText: 'Apply for Admission',
       ctaLink: '/contact'
     },
@@ -63,16 +63,16 @@ export default function AnnouncementBannerModal({ isOpen, onClose }) {
     // Banner 2: Admissions Announcement
     {
       id: 2,
-      tag: 'ADMISSION ENQUIRY OPEN',
+      tag: 'ADMISSION ENQUIRY OPEN 2026–2027',
       headline: 'THE RABINDRA BHARATI HERITAGE DAY SCHOOL',
       subline: 'AFFILIATED TO THE CBSE, NEW DELHI',
-      title: 'Admissions Open for Academic Year 2025–2026',
+      title: 'Admissions Open for Academic Year 2026–2027',
       passBadge: 'MERIT SCHOLARSHIPS AVAILABLE',
       toppers: [
         {
           rank: 'PRE-PRIMARY & PRIMARY',
           name: 'Early Years (Ages 3-5)',
-          score: 'Grades I–V',
+          score: 'Nursery – Class V',
           exam: 'Play-way & Foundational Inquiry',
           image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=300&auto=format&fit=crop'
         },
@@ -84,10 +84,10 @@ export default function AnnouncementBannerModal({ isOpen, onClose }) {
           image: 'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=300&auto=format&fit=crop'
         },
         {
-          rank: 'SENIOR SECONDARY',
-          name: 'Grades XI & XII (CBSE)',
-          score: 'Science • Comm • Arts',
-          exam: 'Pre-University & Competitive Track',
+          rank: 'SECONDARY ACADEMY',
+          name: 'Grades IX & X (CBSE)',
+          score: 'CBSE Curriculum',
+          exam: 'Board Foundation & Skill Tracks',
           image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=300&auto=format&fit=crop'
         }
       ],

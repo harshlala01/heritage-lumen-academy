@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function StatutoryAuditTable() {
   const [selectedGrade, setSelectedGrade] = useState('all');
@@ -18,7 +18,7 @@ export default function StatutoryAuditTable() {
     { id: 'secondary', label: 'Class IX- Class X', stage: 'Secondary (CBSE)' }
   ];
 
-  const feeData = [
+  const initialFeeData = [
     {
       slNo: 1,
       particulars: 'Admission Fees',
@@ -44,6 +44,46 @@ export default function StatutoryAuditTable() {
       }
     }
   ];
+
+  const [feeData, setFeeData] = useState(initialFeeData);
+  const [sessionYear, setSessionYear] = useState('2026-2027');
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/settings/fee_structure')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((cfg) => {
+        if (cfg && cfg.admissionFees && cfg.monthlyFees) {
+          if (cfg.session) setSessionYear(cfg.session);
+          setFeeData([
+            {
+              slNo: 1,
+              particulars: 'Admission Fees',
+              refundable: cfg.refundable || 'Not Refundable',
+              tag: 'One-Time Payment',
+              amounts: {
+                nursery: cfg.admissionFees.nursery || '5,000',
+                primary: cfg.admissionFees.primary || '8,000',
+                middle: cfg.admissionFees.middle || '10,000',
+                secondary: cfg.admissionFees.secondary || '10,000'
+              }
+            },
+            {
+              slNo: 2,
+              particulars: 'Monthly Fees',
+              refundable: cfg.refundable || 'Not Refundable',
+              tag: 'Per Month Tuition',
+              amounts: {
+                nursery: cfg.monthlyFees.nursery || '1,500',
+                primary: cfg.monthlyFees.primary || '1,700',
+                middle: cfg.monthlyFees.middle || '1,900',
+                secondary: cfg.monthlyFees.secondary || '2,100'
+              }
+            }
+          ]);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="statutory-audit-section" id="fee-structure">
@@ -75,7 +115,7 @@ export default function StatutoryAuditTable() {
         <div className="audit-table-header-block">
           <div>
             <div className="audit-school-eyebrow">HERITAGE DAY SCHOOL</div>
-            <h2 className="audit-main-title">Fee structure for the session 2026-2027</h2>
+            <h2 className="audit-main-title">Fee structure for the session {sessionYear}</h2>
           </div>
           <span className="audit-subtext">
             All values denominated in Indian Rupees (INR) • Verified Institutional Schedule

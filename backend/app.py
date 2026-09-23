@@ -174,6 +174,156 @@ def init_db():
     ''')
     conn.commit()
 
+    # Seed Default Content: Banners
+    cursor.execute("SELECT COUNT(*) as cnt FROM content WHERE section='banners'")
+    if cursor.fetchone()['cnt'] == 0:
+        default_banners = [
+            ('banners', 'Nurturing Minds, Cultivating Character', 'Affiliated to CBSE, New Delhi • Established on Unwavering Academic Rigor & Ethical Foundation', 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1600&auto=format&fit=crop', 1),
+            ('banners', 'State-of-the-Art Scientific & STEM Laboratories', 'Inspiring young innovators through experiential robotics, physics, chemistry, and smart digital classrooms', 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1600&auto=format&fit=crop', 2),
+            ('banners', 'Admissions Open for Academic Session 2026–2027', 'Welcoming scholars from Pre-Primary (Nursery) through Secondary Grade X under CBSE Curriculum', 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1600&auto=format&fit=crop', 3)
+        ]
+        for sec, tit, sub, img, ordr in default_banners:
+            cursor.execute(
+                "INSERT INTO content (section, title, subtitle, image_path, display_order) VALUES (%s, %s, %s, %s, %s)",
+                (sec, tit, sub, img, ordr)
+            )
+
+    # Seed Default Content: Facilities
+    cursor.execute("SELECT COUNT(*) as cnt FROM content WHERE section='facilities'")
+    if cursor.fetchone()['cnt'] == 0:
+        default_facilities = [
+            ('facilities', 'Smart Interactive Classrooms', 'Airy, ergonomically furnished spaces equipped with interactive 4K interactive boards and acoustic tuning.', 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop', 1),
+            ('facilities', 'Composite Science & STEM Wing', 'NABL-compliant Physics, Chemistry, and Biology laboratories equipped with computerized sensor probes.', 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=800&auto=format&fit=crop', 2),
+            ('facilities', 'Central Resource Library', 'Curated collection of 15,000+ volumes, international educational journals, and quiet reading quadrangles.', 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop', 3),
+            ('facilities', 'Computing & Artificial Intelligence Lab', 'High-speed gigabit fiber connected workstations featuring Python, Robotics, and foundational coding platforms.', 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800&auto=format&fit=crop', 4),
+            ('facilities', 'Athletic Complex & Sports Arena', 'Full-size regulation basketball courts, cricket practice nets with automated bowling machines, and badminton courts.', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800&auto=format&fit=crop', 5),
+            ('facilities', 'Performing Arts & Auditorium', 'Acoustically engineered auditorium supporting theatrical productions, choir performances, and annual functions.', 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800&auto=format&fit=crop', 6)
+        ]
+        for sec, tit, sub, img, ordr in default_facilities:
+            cursor.execute(
+                "INSERT INTO content (section, title, subtitle, image_path, display_order) VALUES (%s, %s, %s, %s, %s)",
+                (sec, tit, sub, img, ordr)
+            )
+
+    # Seed Default Content: Faculty
+    cursor.execute("SELECT COUNT(*) as cnt FROM content WHERE section='faculty'")
+    if cursor.fetchone()['cnt'] == 0:
+        default_faculty = [
+            ('faculty', 'Mithu Sinha Bhattacharya', 'Principal & Academic Leader (M.Sc, B.Ed • 18+ Years Pedagogy)', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop', 1),
+            ('faculty', 'Dr. Subhash Chandra Ghosh', 'Dean of Academic Development & Senior Science Advisor (Ph.D Physics)', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop', 2),
+            ('faculty', 'Anamika Roy Chowdhury', 'Head of Mathematics & STEM Instruction (M.Sc Mathematics, B.Ed)', 'https://images.unsplash.com/photo-1580894732444-8ecded7900cd?q=80&w=600&auto=format&fit=crop', 3),
+            ('faculty', 'Debabrata Mukherjee', 'Head of Humanities & Social Sciences (M.A History, B.Ed)', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop', 4),
+            ('faculty', 'Sreemoyee Dutta', 'Senior Educator — English Literature & Language (M.A English, B.Ed)', 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=600&auto=format&fit=crop', 5),
+            ('faculty', 'Arindam Banerjee', 'Director of Physical Education & Athletics (M.P.Ed, NIS Certified)', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop', 6)
+        ]
+        for sec, tit, sub, img, ordr in default_faculty:
+            cursor.execute(
+                "INSERT INTO content (section, title, subtitle, image_path, display_order) VALUES (%s, %s, %s, %s, %s)",
+                (sec, tit, sub, img, ordr)
+            )
+
+    # Seed Default Content: Activities
+    cursor.execute("SELECT COUNT(*) as cnt FROM content WHERE section='activities'")
+    if cursor.fetchone()['cnt'] == 0:
+        default_activities = [
+            ('activities', 'Robotics & STEM Innovation Society', 'Hands-on micro-controller programming, sensor mechanics, and state robotics olympiads.', 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=600&auto=format&fit=crop', 1),
+            ('activities', 'Athletics, Football & Cricket Academy', 'Structured coaching under certified instructors fostering team sportsmanship and stamina.', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=600&auto=format&fit=crop', 2),
+            ('activities', 'Classical & Contemporary Performing Arts', 'Vocal Indian classical music, Rabindra Sangeet, and expressive theater workshops.', 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop', 3),
+            ('activities', 'Literary, Debating & Model UN Society', 'Bilingual rhetoric, competitive parliamentary debate leagues, and elocution forums.', 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?q=80&w=600&auto=format&fit=crop', 4),
+            ('activities', 'Visual Arts, Clay & Creative Craft', 'Watercolour painting, canvas sketching, sculpture, and thematic art exhibitions.', 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=600&auto=format&fit=crop', 5),
+            ('activities', 'Yoga, Karate & Physical Fitness Club', 'Discipline-based martial arts training, mindfulness meditation, and core physical agility.', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=600&auto=format&fit=crop', 6)
+        ]
+        for sec, tit, sub, img, ordr in default_activities:
+            cursor.execute(
+                "INSERT INTO content (section, title, subtitle, image_path, display_order) VALUES (%s, %s, %s, %s, %s)",
+                (sec, tit, sub, img, ordr)
+            )
+
+    # Default notices seeding removed as per admin preference (starts completely fresh)
+
+    # Seed Default Events if empty
+    cursor.execute("SELECT COUNT(*) as cnt FROM events")
+    if cursor.fetchone()['cnt'] == 0:
+        default_events = [
+            ('Annual Sports Meet & Inter-House Championship', '15/12/2026', '9:00 AM – 3:30 PM', 'Main Academy Sports Grounds', 'Track and field athletics, house drills, obstacle races, and awards ceremony.', False),
+            ('Rabindra Jayanti & Cultural Evening', '09/05/2026', '10:00 AM – 1:30 PM', 'School Main Auditorium', 'Tribute to Gurudev Rabindranath Tagore featuring student dance, poetry recitation, and choir.', False),
+            ('Annual Science, Technology & Innovation Exhibition', '28/11/2026', '10:30 AM – 4:00 PM', 'School Innovation Laboratories', 'Display of dynamic STEM prototypes, robotics demonstrations, and eco-green projects.', False),
+            ('Investiture Ceremony & Prefectorial Board Induction', '18/07/2026', '10:00 AM – 1:00 PM', 'Heritage Quadrangle', 'Solemn swearing-in ceremony of Head Boy, Head Girl, Sports Captains, and House Prefects.', False)
+        ]
+        for tit, dt, tm, ven, desc, arch in default_events:
+            cursor.execute(
+                "INSERT INTO events (title, event_date, event_time, venue, description, is_archived) VALUES (%s, %s, %s, %s, %s, %s)",
+                (tit, dt, tm, ven, desc, arch)
+            )
+
+    # Seed Default Gallery Items if empty
+    cursor.execute("SELECT COUNT(*) as cnt FROM gallery_items")
+    if cursor.fetchone()['cnt'] == 0:
+        default_gallery = [
+            ('annual-function', 'image', 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000&auto=format&fit=crop', 'Auditorium & Performing Arts Grand Finale', 1),
+            ('annual-function', 'image', 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1000&auto=format&fit=crop', 'Classical Dance & Vocal Harmony Ensemble', 2),
+            ('sports-day', 'image', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1000&auto=format&fit=crop', 'Inter-House Sprint & Relay Finals', 1),
+            ('sports-day', 'image', 'https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?q=80&w=1000&auto=format&fit=crop', 'Medal Felicitation by Principal', 2),
+            ('cultural-events', 'image', 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1000&auto=format&fit=crop', 'Rabindra Jayanti Heritage Celebrations', 1),
+            ('trips', 'image', 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1000&auto=format&fit=crop', 'Botanical Gardens Educational Excursion', 1),
+            ('celebrations', 'image', 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop', 'Kindergarten Festive Carnival', 1),
+            ('campus', 'image', 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1000&auto=format&fit=crop', 'Main Academic Building & Quadrangle', 1)
+        ]
+        for slug, itype, murl, tit, ordr in default_gallery:
+            cursor.execute(
+                "INSERT INTO gallery_items (album_slug, item_type, media_url, title, display_order) VALUES (%s, %s, %s, %s, %s)",
+                (slug, itype, murl, tit, ordr)
+            )
+
+    # Seed Default Site Settings
+    default_settings = [
+        ('admission_config', {
+            'status': 'Open for 2026–2027',
+            'startDate': '01/10/2025',
+            'lastDate': '31/03/2026',
+            'prospectusFee': '500',
+            'headline': 'Admissions Open for Session 2026–2027 (Nursery to Class X)',
+            'guidelines': 'Collect physical application packets from the Admissions Desk (Mon–Fri 10:30 AM to 3:00 PM). Complete verification and submit along with attested municipal birth certificate.',
+            'feeNotice': 'Admission and monthly tuition fees are non-refundable as established under institutional guidelines.',
+            'booklistUniformInfo': 'Uniform fabric and textbooks as per CBSE guidelines can be collected from the school store starting March 15th.'
+        }),
+        ('fee_structure', {
+            'session': '2026-2027',
+            'schoolName': 'HERITAGE DAY SCHOOL',
+            'admissionFees': {
+                'nursery': '5,000',
+                'primary': '8,000',
+                'middle': '10,000',
+                'secondary': '10,000'
+            },
+            'monthlyFees': {
+                'nursery': '1,500',
+                'primary': '1,700',
+                'middle': '1,900',
+                'secondary': '2,100'
+            },
+            'refundable': 'Not Refundable'
+        }),
+        ('notice_categories', [
+            {'id': 'admissions', 'label': 'Admissions'},
+            {'id': 'recruitment', 'label': 'Recruitment'},
+            {'id': 'academic', 'label': 'Academic'},
+            {'id': 'examination', 'label': 'Examinations'},
+            {'id': 'events', 'label': 'Events'},
+            {'id': 'holidays', 'label': 'Holidays'},
+            {'id': 'general', 'label': 'General'}
+        ])
+    ]
+    for skey, sval in default_settings:
+        cursor.execute("SELECT setting_key FROM site_settings WHERE setting_key=%s", (skey,))
+        if not cursor.fetchone():
+            cursor.execute(
+                "INSERT INTO site_settings (setting_key, setting_value) VALUES (%s, %s)",
+                (skey, json.dumps(sval))
+            )
+
+    conn.commit()
+
     # Default admin banao agar nahi hai
     cursor.execute("SELECT * FROM users WHERE role='admin'")
     if not cursor.fetchone():
@@ -335,16 +485,22 @@ def register():
 # 2. LOGIN
 @app.route('/api/auth/login', methods=['POST'])
 def login():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
+    email = data.get('email', '').strip().lower()
+    password = data.get('password', '').strip()
+
+    if not email or not password:
+        return jsonify({'message': 'Email and password are required'}), 400
+
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, name, email, password, role FROM users WHERE email=%s", (data['email'],))
+    cursor.execute("SELECT id, name, email, password, role FROM users WHERE LOWER(TRIM(email))=%s", (email,))
     user = cursor.fetchone()
     cursor.close()
     conn.close()
 
-    if not user or not bcrypt.check_password_hash(user['password'], data['password']):
-        return jsonify({'message': 'Invalid email or password'}), 401
+    if not user or not bcrypt.check_password_hash(user['password'], password):
+        return jsonify({'message': 'Invalid email or password. Please check your credentials.'}), 401
 
     user_data = {
         'id': user['id'],
@@ -801,7 +957,9 @@ def get_site_setting(key):
 def save_site_setting(current_user, key):
     if current_user['role'] != 'admin':
         return jsonify({'message': 'Admin access required'}), 403
-    data = request.get_json() or {}
+    data = request.get_json()
+    if data is None:
+        data = {}
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute('''

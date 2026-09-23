@@ -43,6 +43,22 @@ export default function AdminDashboard() {
   });
   const [noticeUploadLoading, setNoticeUploadLoading] = useState(false);
 
+  // Dynamic Notice Categories state
+  const [noticeCategories, setNoticeCategories] = useState([
+    { id: 'admissions', label: 'Admissions' },
+    { id: 'recruitment', label: 'Recruitment' },
+    { id: 'academic', label: 'Academic' },
+    { id: 'examination', label: 'Examinations' },
+    { id: 'events', label: 'Events' },
+    { id: 'holidays', label: 'Holidays' },
+    { id: 'general', label: 'General' }
+  ]);
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [newCatLabel, setNewCatLabel] = useState('');
+  const [categorySaving, setCategorySaving] = useState(false);
+  const [inlineNewCatOpen, setInlineNewCatOpen] = useState(false);
+  const [inlineCatName, setInlineCatName] = useState('');
+
   // Events state
   const [events, setEvents] = useState([]);
   const [eventsLoading, setEventsLoading] = useState(false);
@@ -129,6 +145,7 @@ export default function AdminDashboard() {
     if (!token) return;
     loadStats();
     loadNotices();
+    loadNoticeCategories();
     loadEvents();
     loadGalleryAlbums();
     loadAdmissionsSettings();
@@ -382,6 +399,79 @@ export default function AdminDashboard() {
       }
     } catch (err) {
       showToast('Failed to delete notice', 'error');
+    }
+  };
+
+  // ---------- NOTICE CATEGORIES ACTIONS ----------
+  const loadNoticeCategories = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/settings/notice_categories`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setNoticeCategories(data);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load categories', e);
+    }
+  };
+
+  const saveNoticeCategories = async (updatedList) => {
+    setCategorySaving(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/settings/notice_categories`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedList)
+      });
+      if (res.ok) {
+        setNoticeCategories(updatedList);
+        showToast('Notice categories updated successfully.');
+      } else {
+        throw new Error('Failed to save categories');
+      }
+    } catch (e) {
+      showToast(e.message || 'Error saving categories', 'error');
+    } finally {
+      setCategorySaving(false);
+    }
+  };
+
+  const handleAddCategory = async (e) => {
+    e?.preventDefault();
+    const trimmed = newCatLabel.trim();
+    if (!trimmed) {
+      showToast('Please enter a category name', 'error');
+      return;
+    }
+    const slug = trimmed
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    if (noticeCategories.some((c) => c.id === slug || c.label.toLowerCase() === trimmed.toLowerCase())) {
+      showToast('Category already exists', 'error');
+      return;
+    }
+    const updated = [...noticeCategories, { id: slug, label: trimmed }];
+    await saveNoticeCategories(updated);
+    setNewCatLabel('');
+  };
+
+  const handleDeleteCategory = async (catId) => {
+    if (noticeCategories.length <= 1) {
+      showToast('At least one category is required', 'error');
+      return;
+    }
+    const cat = noticeCategories.find((c) => c.id === catId);
+    if (!window.confirm(`Are you sure you want to remove category "${cat ? cat.label : catId}"?`)) return;
+    const updated = noticeCategories.filter((c) => c.id !== catId);
+    await saveNoticeCategories(updated);
+    if (noticeCategoryFilter === catId) {
+      setNoticeCategoryFilter('all');
     }
   };
 
@@ -664,8 +754,15 @@ export default function AdminDashboard() {
       noticeSearch === '' ||
       n.title?.toLowerCase().includes(noticeSearch.toLowerCase()) ||
       n.description?.toLowerCase().includes(noticeSearch.toLowerCase());
+    const nCat = (n.category || '').toLowerCase().trim();
+    const activeFilter = noticeCategoryFilter.toLowerCase().trim();
     const matchesCat =
-      noticeCategoryFilter === 'all' || n.category === noticeCategoryFilter;
+      activeFilter === 'all' ||
+      nCat === activeFilter ||
+      (activeFilter === 'examination' && (nCat === 'exam' || nCat === 'examinations')) ||
+      (activeFilter === 'exam' && (nCat === 'examination' || nCat === 'examinations')) ||
+      (activeFilter === 'admissions' && nCat === 'admission') ||
+      (activeFilter === 'events' && nCat === 'event');
     return matchesSearch && matchesCat;
   });
 
@@ -948,14 +1045,32 @@ export default function AdminDashboard() {
                   Create, edit, archive, and publish official school notices with PDF and image attachments.
                 </p>
               </div>
-              <button
-                type="button"
-                className="admin-action-btn primary"
-                onClick={() => handleOpenNoticeModal()}
-              >
-                <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
-                Add Notice
-              </button>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="admin-action-btn secondary"
+                  style={{
+                    background: '#F8FAFC',
+                    border: '1.5px solid #CBD5E1',
+                    color: '#0B1B3A',
+                    fontWeight: 600,
+                    display: 'inline-flex',
+                    alignItems: 'center'
+                  }}
+                  onClick={() => setCategoryModalOpen(true)}
+                >
+                  <i className="fa-solid fa-tags" style={{ marginRight: '6px', color: '#D4AF37' }}></i>
+                  Manage Categories
+                </button>
+                <button
+                  type="button"
+                  className="admin-action-btn primary"
+                  onClick={() => handleOpenNoticeModal()}
+                >
+                  <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                  Add Notice
+                </button>
+              </div>
             </div>
 
             {/* FILTERS & SEARCH */}
@@ -970,17 +1085,41 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              <div className="category-filter-pills">
-                {['all', 'admissions', 'recruitment', 'academic', 'general'].map((cat) => (
+              <div className="category-filter-pills" style={{ alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className={`cat-pill ${noticeCategoryFilter === 'all' ? 'active' : ''}`}
+                  onClick={() => setNoticeCategoryFilter('all')}
+                >
+                  ALL
+                </button>
+                {noticeCategories.map((cat) => (
                   <button
-                    key={cat}
+                    key={cat.id}
                     type="button"
-                    className={`cat-pill ${noticeCategoryFilter === cat ? 'active' : ''}`}
-                    onClick={() => setNoticeCategoryFilter(cat)}
+                    className={`cat-pill ${noticeCategoryFilter === cat.id ? 'active' : ''}`}
+                    onClick={() => setNoticeCategoryFilter(cat.id)}
                   >
-                    {cat.toUpperCase()}
+                    {cat.label.toUpperCase()}
                   </button>
                 ))}
+                <button
+                  type="button"
+                  className="cat-pill"
+                  style={{
+                    borderStyle: 'dashed',
+                    borderColor: '#D4AF37',
+                    color: '#B8860B',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                  title="Create new category filter pill"
+                  onClick={() => setCategoryModalOpen(true)}
+                >
+                  <i className="fa-solid fa-plus" style={{ fontSize: '0.7rem' }}></i>
+                  NEW CATEGORY
+                </button>
               </div>
             </div>
 
@@ -988,9 +1127,19 @@ export default function AdminDashboard() {
             {noticesLoading ? (
               <div className="loading-spinner">Loading notices...</div>
             ) : filteredNotices.length === 0 ? (
-              <div className="admin-empty-box">
-                <i className="fa-solid fa-bullhorn"></i>
-                <p>No notices found matching your criteria.</p>
+              <div className="admin-empty-box" style={{ padding: '40px 20px', textAlign: 'center' }}>
+                <i className="fa-solid fa-bullhorn" style={{ fontSize: '2.4rem', color: '#CBD5E1', marginBottom: '12px' }}></i>
+                <p style={{ fontWeight: 600, color: '#0B1B3A', margin: 0, fontSize: '1rem' }}>No notices currently published.</p>
+                <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '6px' }}>Click "Add Notice" to publish your first circular or announcement.</p>
+                <button
+                  type="button"
+                  className="admin-action-btn primary"
+                  style={{ marginTop: '16px' }}
+                  onClick={() => handleOpenNoticeModal()}
+                >
+                  <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                  Create First Notice
+                </button>
               </div>
             ) : (
               <div className="admin-table-scroll">
@@ -1607,19 +1756,76 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="form-group">
-                  <label>Category</label>
-                  <select
-                    value={noticeFormData.category}
-                    onChange={(e) =>
-                      setNoticeFormData({ ...noticeFormData, category: e.target.value })
-                    }
-                  >
-                    <option value="admissions">Admissions</option>
-                    <option value="recruitment">Recruitment / Careers</option>
-                    <option value="academic">Academic & Curriculum</option>
-                    <option value="examination">Examination & Results</option>
-                    <option value="general">General Circular</option>
-                  </select>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <label style={{ margin: 0 }}>Category</label>
+                    <button
+                      type="button"
+                      onClick={() => setInlineNewCatOpen(!inlineNewCatOpen)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#B8860B',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        padding: 0
+                      }}
+                    >
+                      {inlineNewCatOpen ? '← Choose Existing' : '+ Add New Category'}
+                    </button>
+                  </div>
+
+                  {inlineNewCatOpen ? (
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        type="text"
+                        placeholder="e.g. Sports, Cultural, Tender..."
+                        value={inlineCatName}
+                        onChange={(e) => setInlineCatName(e.target.value)}
+                        style={{ flex: 1, padding: '8px 10px', fontSize: '0.85rem' }}
+                      />
+                      <button
+                        type="button"
+                        className="admin-action-btn primary"
+                        style={{ padding: '6px 12px', fontSize: '0.78rem', whiteSpace: 'nowrap' }}
+                        onClick={async () => {
+                          const trimmed = inlineCatName.trim();
+                          if (!trimmed) return;
+                          const slug = trimmed
+                            .toLowerCase()
+                            .replace(/[^a-z0-9]+/g, '-')
+                            .replace(/(^-|-$)/g, '');
+                          if (!noticeCategories.some((c) => c.id === slug)) {
+                            const updated = [...noticeCategories, { id: slug, label: trimmed }];
+                            await saveNoticeCategories(updated);
+                          }
+                          setNoticeFormData({ ...noticeFormData, category: slug });
+                          setInlineCatName('');
+                          setInlineNewCatOpen(false);
+                        }}
+                      >
+                        Save & Select
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      value={noticeFormData.category}
+                      onChange={(e) => {
+                        if (e.target.value === '__add_new__') {
+                          setInlineNewCatOpen(true);
+                        } else {
+                          setNoticeFormData({ ...noticeFormData, category: e.target.value });
+                        }
+                      }}
+                    >
+                      {noticeCategories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.label}
+                        </option>
+                      ))}
+                      <option value="__add_new__">+ Create New Category...</option>
+                    </select>
+                  )}
                 </div>
               </div>
 
@@ -2007,6 +2213,235 @@ export default function AdminDashboard() {
                 }}
               >
                 Delete Enquiry
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* ============================================================== */}
+      {/* MODAL: MANAGE NOTICE CATEGORIES & FILTER PILLS */}
+      {/* ============================================================== */}
+      {categoryModalOpen && (
+        <div className="admin-modal-overlay" onClick={() => setCategoryModalOpen(false)}>
+          <div
+            className="admin-modal-card"
+            style={{ maxWidth: '580px', width: '92%' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    background: 'rgba(212, 175, 55, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#B8860B'
+                  }}
+                >
+                  <i className="fa-solid fa-tags"></i>
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem' }}>Notice Category Pills Manager</h3>
+                  <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748B' }}>
+                    Create, edit, and organize filter tabs shown on the website & admin dashboard
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setCategoryModalOpen(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <div style={{ padding: '20px' }}>
+              {/* Add New Category Pill Form */}
+              <form
+                onSubmit={handleAddCategory}
+                style={{
+                  background: '#F8FAFC',
+                  border: '1.5px solid #E2E8F0',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  marginBottom: '20px'
+                }}
+              >
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    color: '#0B1B3A',
+                    marginBottom: '8px'
+                  }}
+                >
+                  Create New Category Pill
+                </label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    placeholder="e.g. Sports, Cultural, Tender, Holidays, Events..."
+                    value={newCatLabel}
+                    onChange={(e) => setNewCatLabel(e.target.value)}
+                    style={{
+                      flex: 1,
+                      padding: '9px 12px',
+                      borderRadius: '6px',
+                      border: '1.5px solid #CBD5E1',
+                      fontSize: '0.88rem',
+                      outline: 'none',
+                      background: '#FFFFFF'
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    className="admin-action-btn primary"
+                    disabled={categorySaving}
+                    style={{ whiteSpace: 'nowrap', padding: '9px 16px' }}
+                  >
+                    <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                    {categorySaving ? 'Saving...' : 'Add Pill'}
+                  </button>
+                </div>
+                <small style={{ color: '#64748B', display: 'block', marginTop: '6px', fontSize: '0.76rem' }}>
+                  This pill will immediately appear on the Public Noticeboard and Admin Filter pills bar.
+                </small>
+              </form>
+
+              {/* Active Category Pills List */}
+              <div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0B1B3A' }}>
+                    Active Category Pills ({noticeCategories.length})
+                  </span>
+                  <span style={{ fontSize: '0.76rem', color: '#64748B' }}>
+                    Click trash icon to remove
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    maxHeight: '280px',
+                    overflowY: 'auto',
+                    paddingRight: '4px'
+                  }}
+                >
+                  {noticeCategories.map((cat) => {
+                    const noticeCount = notices.filter((n) => {
+                      const nc = (n.category || '').toLowerCase().trim();
+                      const cid = cat.id.toLowerCase().trim();
+                      return (
+                        nc === cid ||
+                        (cid === 'examination' && (nc === 'exam' || nc === 'examinations')) ||
+                        (cid === 'admissions' && nc === 'admission')
+                      );
+                    }).length;
+
+                    return (
+                      <div
+                        key={cat.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '10px 14px',
+                          background: '#FFFFFF',
+                          borderRadius: '8px',
+                          border: '1px solid #E2E8F0',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <span
+                            style={{
+                              background: '#0B1B3A',
+                              color: '#FFFFFF',
+                              padding: '5px 12px',
+                              borderRadius: '999px',
+                              fontSize: '0.74rem',
+                              fontWeight: 700,
+                              letterSpacing: '0.5px'
+                            }}
+                          >
+                            {cat.label.toUpperCase()}
+                          </span>
+                          <span style={{ fontSize: '0.8rem', color: '#64748B' }}>
+                            slug: <code style={{ color: '#0B1B3A', background: '#F1F5F9', padding: '1px 5px', borderRadius: '3px' }}>{cat.id}</code>
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <span
+                            style={{
+                              fontSize: '0.74rem',
+                              background: '#F1F5F9',
+                              color: '#475569',
+                              padding: '3px 8px',
+                              borderRadius: '4px',
+                              fontWeight: 600
+                            }}
+                          >
+                            {noticeCount} notice{noticeCount === 1 ? '' : 's'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteCategory(cat.id)}
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.1)',
+                              border: 'none',
+                              color: '#DC2626',
+                              cursor: 'pointer',
+                              padding: '6px 8px',
+                              borderRadius: '4px',
+                              fontSize: '0.82rem',
+                              transition: 'all 0.2s ease'
+                            }}
+                            title={`Remove category "${cat.label}"`}
+                          >
+                            <i className="fa-solid fa-trash-can"></i>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div
+              className="modal-footer-btns"
+              style={{
+                borderTop: '1px solid #E2E8F0',
+                padding: '14px 20px',
+                display: 'flex',
+                justifyContent: 'flex-end',
+                background: '#F8FAFC',
+                borderBottomLeftRadius: '12px',
+                borderBottomRightRadius: '12px'
+              }}
+            >
+              <button
+                type="button"
+                className="admin-action-btn secondary"
+                onClick={() => setCategoryModalOpen(false)}
+              >
+                Done
               </button>
             </div>
           </div>
