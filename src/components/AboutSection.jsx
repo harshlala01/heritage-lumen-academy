@@ -31,7 +31,7 @@ export default function AboutSection() {
 
     let startTime = null;
     const duration = 2000; // 2 seconds
-    const targetYear = 2018;
+    const targetYear = 2026;
 
     const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
