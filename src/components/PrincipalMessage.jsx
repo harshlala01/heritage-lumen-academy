@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { contentImage, useContent } from '../hooks/useContent';
+import principalImg from '../assets/principal.png';
 
 export default function PrincipalMessage() {
   const [signatureDrawn, setSignatureDrawn] = useState(false);
@@ -8,9 +9,12 @@ export default function PrincipalMessage() {
     id: 1,
     title: 'Dr. Eleanor Vance, Ph.D.',
     subtitle: 'Head of Institution / Principal',
-    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop'
+    image: principalImg
   }]);
   const principal = faculty[0];
+  const principalImageSrc = principal?.image_path
+    ? contentImage(principal.image_path)
+    : (principal?.image && !principal.image.includes('1573496359142') ? principal.image : principalImg);
 
   return (
     <section 
@@ -24,8 +28,8 @@ export default function PrincipalMessage() {
             <div className="principal-radial-glow"></div>
             <div className="principal-photo-frame">
               <img
-                src={contentImage(principal.image_path || principal.image)}
-                alt={principal.title}
+                src={principalImageSrc}
+                alt={principal?.title || "Principal"}
                 className="principal-photo-img"
               />
               <div className="principal-seal-badge" title="Affiliated CISCE Leader">

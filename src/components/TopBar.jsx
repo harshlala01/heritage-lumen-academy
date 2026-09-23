@@ -6,11 +6,11 @@ export default function TopBar({ onOpenBanner }) {
     <div className="top-bar">
       <div className="container top-bar-inner">
         <div className="top-left-info">
-          <a href="tel:+15552345678">
-            <i className="fa-solid fa-phone"></i> +1 (555) 234-5678
+          <a href="tel:+918001271960">
+            <i className="fa-solid fa-phone"></i> +91 8001271960
           </a>
-          <a href="mailto:admissions@heritagelumen.edu">
-            <i className="fa-solid fa-envelope"></i> admissions@heritagelumen.edu
+          <a href="mailto:therabindrabharatihds@gmail.com">
+            <i className="fa-solid fa-envelope"></i> therabindrabharatihds@gmail.com
           </a>
           <span>
             <i className="fa-solid fa-clock"></i> Office: Mon–Fri 10:30 am to 3:00 pm

@@ -38,7 +38,7 @@ ELIGIBILITY CRITERIA:
 - Proficiency with digital smart-board technology and blended learning methodology.
 
 APPLICATION PROCEDURE:
-Eligible candidates may submit their comprehensive CV along with passport-size photographs and attested copies of educational certificates directly to the Principal's Secretariat or via email to: careers@heritagelumen.edu / admin@heritagelumen.edu within 15 days of publication of this notice.
+Eligible candidates may submit their comprehensive CV along with passport-size photographs and attested copies of educational certificates directly to the Principal's Secretariat or via email to: therabindrabharatihds@gmail.com within 15 days of publication of this notice.
 
 By Order,
 Head of Institution / Secretary
@@ -134,7 +134,7 @@ Date: ${notice.date}
 Subject: ${notice.subject}
 
 This is an authentic digital notice published by the Administrative Office of Heritage Lumen Preparatory Academy.
-For further inquiries, contact admissions@heritagelumen.edu or call +1 (555) 234-5678.
+For further inquiries, contact therabindrabharatihds@gmail.com or call +91 8001271960.
 =====================================================`;
 
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });

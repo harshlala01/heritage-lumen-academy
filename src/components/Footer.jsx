@@ -131,6 +131,14 @@ export default function Footer() {
               <i className="fa-solid fa-location-dot"></i>
               <span>Kamarthuba, Habra, North 24 Parganas, West Bengal 743263</span>
             </p>
+            <p className="footer-map-address" style={{ marginTop: '8px' }}>
+              <i className="fa-solid fa-phone" style={{ color: 'var(--gold-primary)' }}></i>
+              <a href="tel:+918001271960" style={{ color: 'inherit', textDecoration: 'none' }}>+91 8001271960</a>
+            </p>
+            <p className="footer-map-address" style={{ marginTop: '8px' }}>
+              <i className="fa-solid fa-envelope" style={{ color: 'var(--gold-primary)' }}></i>
+              <a href="mailto:therabindrabharatihds@gmail.com" style={{ color: 'inherit', textDecoration: 'none', wordBreak: 'break-all' }}>therabindrabharatihds@gmail.com</a>
+            </p>
           </div>
         </div>
 

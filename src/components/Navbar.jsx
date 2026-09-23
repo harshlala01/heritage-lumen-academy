@@ -338,8 +338,8 @@ export default function Navbar({ onOpenBanner }) {
             <i className="fa-solid fa-arrow-right"></i>
           </Link>
           <div className="mobile-contact-pill">
-            <a href="tel:+15552345678"><i className="fa-solid fa-phone"></i> +1 (555) 234-5678</a>
-            <a href="mailto:admissions@heritagelumen.edu"><i className="fa-solid fa-envelope"></i> admissions@heritagelumen.edu</a>
+            <a href="tel:+918001271960"><i className="fa-solid fa-phone"></i> +91 8001271960</a>
+            <a href="mailto:therabindrabharatihds@gmail.com"><i className="fa-solid fa-envelope"></i> therabindrabharatihds@gmail.com</a>
           </div>
         </div>
       </div>

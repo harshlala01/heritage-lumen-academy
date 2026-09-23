@@ -29,10 +29,10 @@ export default function ContactPage({ onEnquirySuccess }) {
               }}
             >
               <div>
-                <h5 style={{ color: 'var(--navy-primary)', fontWeight: 700 }}>Admissions Directorate</h5>
+                <h5 style={{ color: 'var(--navy-primary)', fontWeight: 700 }}>Admissions & General Enquiries</h5>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                  <i className="fa-solid fa-phone" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> +1 (555) 234-5678<br />
-                  <i className="fa-solid fa-envelope" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> admissions@heritagelumen.edu<br />
+                  <i className="fa-solid fa-phone" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> <a href="tel:+918001271960" style={{ color: 'inherit', textDecoration: 'none' }}>+91 8001271960</a><br />
+                  <i className="fa-solid fa-envelope" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> <a href="mailto:therabindrabharatihds@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>therabindrabharatihds@gmail.com</a><br />
                   Hours: Mon–Fri 10:30 AM – 3:00 PM
                 </p>
               </div>
@@ -40,8 +40,8 @@ export default function ContactPage({ onEnquirySuccess }) {
               <div>
                 <h5 style={{ color: 'var(--navy-primary)', fontWeight: 700 }}>Principal’s Secretariat</h5>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                  <i className="fa-solid fa-phone" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> +1 (555) 234-5680<br />
-                  <i className="fa-solid fa-envelope" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> principal@heritagelumen.edu<br />
+                  <i className="fa-solid fa-phone" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> <a href="tel:+918001271960" style={{ color: 'inherit', textDecoration: 'none' }}>+91 8001271960</a><br />
+                  <i className="fa-solid fa-envelope" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> <a href="mailto:therabindrabharatihds@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>therabindrabharatihds@gmail.com</a><br />
                   By Prior Appointment Only
                 </p>
               </div>

@@ -22,5 +22,18 @@ export function useContent(section, fallback) {
 }
 
 export function contentImage(path) {
-  return path && path.startsWith('http') ? path : `${CONTENT_API_URL}${path || ''}`;
+  if (!path) return '';
+  if (
+    path.startsWith('http://') ||
+    path.startsWith('https://') ||
+    path.startsWith('data:') ||
+    path.startsWith('blob:') ||
+    path.startsWith('/@') ||
+    path.startsWith('/src/') ||
+    path.startsWith('/assets/') ||
+    path.startsWith('/principal.png')
+  ) {
+    return path;
+  }
+  return `${CONTENT_API_URL}${path}`;
 }

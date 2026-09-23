@@ -1,6 +1,7 @@
 import React from 'react';
 import PageBanner from '../../components/PageBanner';
 import { Link } from 'react-router-dom';
+import principalImg from '../../assets/principal.png';
 
 export default function PrincipalDesk() {
   return (
@@ -19,7 +20,7 @@ export default function PrincipalDesk() {
           <div className="principal-grid" style={{ marginBottom: '50px' }}>
             <div className="principal-portrait">
               <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop"
+                src={principalImg}
                 alt="Dr. Eleanor Vance"
               />
               <div className="principal-name-tag">

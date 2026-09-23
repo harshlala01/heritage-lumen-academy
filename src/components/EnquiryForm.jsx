@@ -111,8 +111,18 @@ export default function EnquiryForm({ onSubmitSuccess }) {
                   <i className="fa-solid fa-phone"></i>
                 </div>
                 <div className="contact-line-text">
-                  <h6>Admissions Desk Helpline</h6>
-                  <p>+1 (555) 234-5678 / +91 (0) 80 4920 1800</p>
+                  <h6>Admissions & Contact Helpline</h6>
+                  <p><a href="tel:+918001271960" style={{ color: 'inherit', textDecoration: 'none' }}>+91 8001271960</a></p>
+                </div>
+              </div>
+
+              <div className="contact-line">
+                <div className="contact-line-icon">
+                  <i className="fa-solid fa-envelope"></i>
+                </div>
+                <div className="contact-line-text">
+                  <h6>Email Address</h6>
+                  <p><a href="mailto:therabindrabharatihds@gmail.com" style={{ color: 'inherit', textDecoration: 'none', wordBreak: 'break-all' }}>therabindrabharatihds@gmail.com</a></p>
                 </div>
               </div>
 
