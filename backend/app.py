@@ -5,19 +5,25 @@ from werkzeug.utils import secure_filename
 import jwt
 import datetime
 import pymysql
+import sys
 import os
 import uuid
 import json
 from functools import wraps
 
+if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
+
 # ---------- APP SETUP ----------
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'heritage_super_secret_key_2026'
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-CONTENT_SECTIONS = {'banners', 'facilities', 'faculty', 'gallery', 'activities'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'pdf', 'doc', 'docx', 'txt'}
+CONTENT_SECTIONS = {'banners', 'facilities', 'faculty', 'gallery', 'activities', 'notices', 'documents'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -27,10 +33,10 @@ bcrypt = Bcrypt(app)
 
 # ---------- MYSQL CONFIG ----------
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '1234',              # XAMPP mein default empty hota hai
-    'database': 'heritage_db',
+    'host': os.environ.get('DB_HOST', 'localhost'),
+    'user': os.environ.get('DB_USER', 'root'),
+    'password': os.environ.get('DB_PASSWORD', ''),              # XAMPP default is empty ('')
+    'database': os.environ.get('DB_NAME', 'heritage_db'),
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
 }
@@ -81,6 +87,93 @@ def init_db():
         )
     ''')
     conn.commit()
+
+    # Notices table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS notices (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            notice_date VARCHAR(50) NOT NULL,
+            category VARCHAR(50) DEFAULT 'general',
+            description TEXT,
+            attachment_path VARCHAR(255),
+            attachment_name VARCHAR(255),
+            is_archived BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+
+    # Events table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS events (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            event_date VARCHAR(50) NOT NULL,
+            event_time VARCHAR(50),
+            venue VARCHAR(255),
+            description TEXT,
+            is_archived BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+
+    # Gallery Albums table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS gallery_albums (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            slug VARCHAR(100) UNIQUE NOT NULL,
+            title VARCHAR(150) NOT NULL,
+            description TEXT,
+            cover_image VARCHAR(500),
+            display_order INT DEFAULT 0
+        )
+    ''')
+    conn.commit()
+
+    # Gallery Items table (images & youtube video embeds)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS gallery_items (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            album_slug VARCHAR(100) NOT NULL,
+            item_type VARCHAR(20) DEFAULT 'image',
+            media_url TEXT NOT NULL,
+            title VARCHAR(255),
+            display_order INT DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+
+    # Seed Default Gallery Albums if empty
+    default_albums = [
+        ('annual-function', 'Annual Function', 'Grand celebrations, student theatrical performances, awards, and yearly fest.', 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000&auto=format&fit=crop', 1),
+        ('sports-day', 'Sports Day', 'Track and field athletics, house championships, drills, and medal ceremonies.', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1000&auto=format&fit=crop', 2),
+        ('cultural-events', 'Cultural Events', 'Music, traditional dance, Rabindra Jayanti, independence day, and art exhibitions.', 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1000&auto=format&fit=crop', 3),
+        ('trips', 'Trips & Excursions', 'Educational field excursions, science park explorations, nature camps, and heritage walks.', 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1000&auto=format&fit=crop', 4),
+        ('celebrations', 'Celebrations', 'Teachers Day, Childrens Day, Saraswati Puja, and festive occasions at campus.', 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1000&auto=format&fit=crop', 5),
+        ('campus', 'Campus & Infrastructure', 'Classrooms, high-tech science laboratories, smart halls, library, and sports arena.', 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1000&auto=format&fit=crop', 6)
+    ]
+    for slug, title, desc, cover, order in default_albums:
+        cursor.execute("SELECT id FROM gallery_albums WHERE slug=%s", (slug,))
+        if not cursor.fetchone():
+            cursor.execute(
+                "INSERT INTO gallery_albums (slug, title, description, cover_image, display_order) VALUES (%s, %s, %s, %s, %s)",
+                (slug, title, desc, cover, order)
+            )
+    conn.commit()
+
+    # Site Settings (for Admissions, fee/book/uniform circulars, announcements)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS site_settings (
+            setting_key VARCHAR(100) PRIMARY KEY,
+            setting_value JSON NOT NULL,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+
     # Default admin banao agar nahi hai
     cursor.execute("SELECT * FROM users WHERE role='admin'")
     if not cursor.fetchone():
@@ -349,6 +442,413 @@ def delete_enquiry(current_user, enquiry_id):
     cursor.close()
     conn.close()
     return jsonify({'message': 'Enquiry deleted'})
+
+# ---------- MULTI-FORMAT UPLOAD (PDF, DOCS, IMAGES) ----------
+@app.route('/api/admin/upload-file', methods=['POST'])
+@token_required
+def upload_file(current_user):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+
+    folder = request.form.get('folder', 'documents').strip().lower()
+    uploaded_file = request.files.get('file')
+    if not uploaded_file or not uploaded_file.filename:
+        return jsonify({'message': 'File is required'}), 400
+    if not allowed_file(uploaded_file.filename):
+        return jsonify({'message': 'File type not allowed (allowed: PDF, DOC, DOCX, TXT, PNG, JPG, WEBP)'}), 400
+
+    orig_name = secure_filename(uploaded_file.filename)
+    extension = orig_name.rsplit('.', 1)[1].lower() if '.' in orig_name else 'bin'
+    unique_name = f'{uuid.uuid4().hex}_{orig_name}'
+    folder_path = os.path.join(app.config['UPLOAD_FOLDER'], folder)
+    os.makedirs(folder_path, exist_ok=True)
+    file_path = os.path.join(folder_path, unique_name)
+    uploaded_file.save(file_path)
+
+    return jsonify({
+        'message': 'File uploaded successfully',
+        'path': f'/uploads/{folder}/{unique_name}',
+        'filename': orig_name,
+        'size': os.path.getsize(file_path)
+    }), 201
+
+# ---------- NOTICES MANAGEMENT ----------
+@app.route('/api/notices', methods=['GET'])
+def get_public_notices():
+    include_archived = request.args.get('include_archived', 'false').lower() == 'true'
+    conn = get_db()
+    cursor = conn.cursor()
+    if include_archived:
+        cursor.execute("SELECT * FROM notices ORDER BY id DESC")
+    else:
+        cursor.execute("SELECT * FROM notices WHERE is_archived = FALSE ORDER BY id DESC")
+    rows = cursor.fetchall()
+    for r in rows:
+        if r.get('created_at'):
+            r['created_at'] = str(r['created_at'])
+    cursor.close()
+    conn.close()
+    return jsonify(rows)
+
+@app.route('/api/admin/notices', methods=['POST'])
+@token_required
+def create_notice(current_user):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    data = request.get_json() or {}
+    title = data.get('title', '').strip()
+    if not title:
+        return jsonify({'message': 'Notice title is required'}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO notices (title, notice_date, category, description, attachment_path, attachment_name, is_archived)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    ''', (
+        title,
+        data.get('notice_date') or datetime.date.today().strftime('%d/%m/%Y'),
+        data.get('category', 'general'),
+        data.get('description', ''),
+        data.get('attachment_path'),
+        data.get('attachment_name'),
+        bool(data.get('is_archived', False))
+    ))
+    conn.commit()
+    nid = cursor.lastrowid
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Notice created successfully', 'id': nid}), 201
+
+@app.route('/api/admin/notices/<int:notice_id>', methods=['PUT'])
+@token_required
+def update_notice(current_user, notice_id):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    data = request.get_json() or {}
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE notices 
+        SET title = COALESCE(%s, title),
+            notice_date = COALESCE(%s, notice_date),
+            category = COALESCE(%s, category),
+            description = COALESCE(%s, description),
+            attachment_path = COALESCE(%s, attachment_path),
+            attachment_name = COALESCE(%s, attachment_name),
+            is_archived = COALESCE(%s, is_archived)
+        WHERE id = %s
+    ''', (
+        data.get('title'),
+        data.get('notice_date'),
+        data.get('category'),
+        data.get('description'),
+        data.get('attachment_path'),
+        data.get('attachment_name'),
+        data.get('is_archived'),
+        notice_id
+    ))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Notice updated successfully'})
+
+@app.route('/api/admin/notices/<int:notice_id>', methods=['DELETE'])
+@token_required
+def delete_notice(current_user, notice_id):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM notices WHERE id = %s", (notice_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Notice deleted successfully'})
+
+# ---------- EVENTS MANAGEMENT ----------
+@app.route('/api/events', methods=['GET'])
+def get_public_events():
+    include_archived = request.args.get('include_archived', 'false').lower() == 'true'
+    conn = get_db()
+    cursor = conn.cursor()
+    if include_archived:
+        cursor.execute("SELECT * FROM events ORDER BY id DESC")
+    else:
+        cursor.execute("SELECT * FROM events WHERE is_archived = FALSE ORDER BY id DESC")
+    rows = cursor.fetchall()
+    for r in rows:
+        if r.get('created_at'):
+            r['created_at'] = str(r['created_at'])
+    cursor.close()
+    conn.close()
+    return jsonify(rows)
+
+@app.route('/api/admin/events', methods=['POST'])
+@token_required
+def create_event(current_user):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    data = request.get_json() or {}
+    title = data.get('title', '').strip()
+    if not title:
+        return jsonify({'message': 'Event title is required'}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO events (title, event_date, event_time, venue, description, is_archived)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    ''', (
+        title,
+        data.get('event_date') or datetime.date.today().strftime('%d/%m/%Y'),
+        data.get('event_time', ''),
+        data.get('venue', 'School Campus'),
+        data.get('description', ''),
+        bool(data.get('is_archived', False))
+    ))
+    conn.commit()
+    eid = cursor.lastrowid
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Event created successfully', 'id': eid}), 201
+
+@app.route('/api/admin/events/<int:event_id>', methods=['PUT'])
+@token_required
+def update_event(current_user, event_id):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    data = request.get_json() or {}
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE events 
+        SET title = COALESCE(%s, title),
+            event_date = COALESCE(%s, event_date),
+            event_time = COALESCE(%s, event_time),
+            venue = COALESCE(%s, venue),
+            description = COALESCE(%s, description),
+            is_archived = COALESCE(%s, is_archived)
+        WHERE id = %s
+    ''', (
+        data.get('title'),
+        data.get('event_date'),
+        data.get('event_time'),
+        data.get('venue'),
+        data.get('description'),
+        data.get('is_archived'),
+        event_id
+    ))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Event updated successfully'})
+
+@app.route('/api/admin/events/<int:event_id>', methods=['DELETE'])
+@token_required
+def delete_event(current_user, event_id):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM events WHERE id = %s", (event_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Event deleted successfully'})
+
+# ---------- ALBUM-BASED GALLERY MANAGEMENT ----------
+@app.route('/api/gallery/albums', methods=['GET'])
+def get_gallery_albums():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM gallery_albums ORDER BY display_order ASC, id ASC")
+    albums = cursor.fetchall()
+    for alb in albums:
+        cursor.execute("SELECT COUNT(*) as total FROM gallery_items WHERE album_slug = %s", (alb['slug'],))
+        cnt = cursor.fetchone()
+        alb['item_count'] = cnt['total'] if cnt else 0
+    cursor.close()
+    conn.close()
+    return jsonify(albums)
+
+@app.route('/api/gallery/items/<album_slug>', methods=['GET'])
+def get_gallery_items(album_slug):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM gallery_items WHERE album_slug = %s ORDER BY display_order ASC, id ASC", (album_slug,))
+    items = cursor.fetchall()
+    for item in items:
+        if item.get('created_at'):
+            item['created_at'] = str(item['created_at'])
+    cursor.close()
+    conn.close()
+    return jsonify(items)
+
+@app.route('/api/admin/gallery/items', methods=['POST'])
+@token_required
+def create_gallery_item(current_user):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    data = request.get_json() or {}
+    album_slug = data.get('album_slug', '').strip()
+    media_url = data.get('media_url', '').strip()
+    item_type = data.get('item_type', 'image')
+
+    if not album_slug or not media_url:
+        return jsonify({'message': 'Album and media URL / file are required'}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT MAX(display_order) as max_ord FROM gallery_items WHERE album_slug = %s", (album_slug,))
+    res = cursor.fetchone()
+    next_order = (res['max_ord'] or 0) + 1 if res else 1
+
+    cursor.execute('''
+        INSERT INTO gallery_items (album_slug, item_type, media_url, title, display_order)
+        VALUES (%s, %s, %s, %s, %s)
+    ''', (
+        album_slug,
+        item_type,
+        media_url,
+        data.get('title', ''),
+        next_order
+    ))
+    conn.commit()
+    item_id = cursor.lastrowid
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Item added to gallery successfully', 'id': item_id}), 201
+
+@app.route('/api/admin/gallery/items/<int:item_id>/reorder', methods=['PUT'])
+@token_required
+def reorder_gallery_item(current_user, item_id):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    data = request.get_json() or {}
+    direction = data.get('direction', 'up')
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, album_slug, display_order FROM gallery_items WHERE id = %s", (item_id,))
+    item = cursor.fetchone()
+    if not item:
+        cursor.close()
+        conn.close()
+        return jsonify({'message': 'Item not found'}), 404
+
+    album_slug = item['album_slug']
+    curr_order = item['display_order']
+
+    if direction == 'up':
+        cursor.execute('''
+            SELECT id, display_order FROM gallery_items 
+            WHERE album_slug = %s AND display_order < %s 
+            ORDER BY display_order DESC LIMIT 1
+        ''', (album_slug, curr_order))
+        swap_item = cursor.fetchone()
+    else:
+        cursor.execute('''
+            SELECT id, display_order FROM gallery_items 
+            WHERE album_slug = %s AND display_order > %s 
+            ORDER BY display_order ASC LIMIT 1
+        ''', (album_slug, curr_order))
+        swap_item = cursor.fetchone()
+
+    if swap_item:
+        cursor.execute("UPDATE gallery_items SET display_order = %s WHERE id = %s", (swap_item['display_order'], item['id']))
+        cursor.execute("UPDATE gallery_items SET display_order = %s WHERE id = %s", (curr_order, swap_item['id']))
+        conn.commit()
+
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Order updated successfully'})
+
+@app.route('/api/admin/gallery/items/<int:item_id>', methods=['DELETE'])
+@token_required
+def delete_gallery_item(current_user, item_id):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM gallery_items WHERE id = %s", (item_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Gallery item removed successfully'})
+
+# ---------- SITE SETTINGS (ADMISSIONS, DATES, FEES, BOOKLIST, UNIFORM) ----------
+@app.route('/api/settings/<key>', methods=['GET'])
+def get_site_setting(key):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT setting_value FROM site_settings WHERE setting_key = %s", (key,))
+    row = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    if row and row.get('setting_value'):
+        val = row['setting_value']
+        if isinstance(val, str):
+            try:
+                val = json.loads(val)
+            except Exception:
+                pass
+        return jsonify(val)
+    return jsonify({})
+
+@app.route('/api/admin/settings/<key>', methods=['POST'])
+@token_required
+def save_site_setting(current_user, key):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    data = request.get_json() or {}
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO site_settings (setting_key, setting_value)
+        VALUES (%s, %s)
+        ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
+    ''', (key, json.dumps(data)))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Settings saved successfully', 'key': key})
+
+# ---------- OVERVIEW METRICS / STATS ----------
+@app.route('/api/admin/stats', methods=['GET'])
+@token_required
+def get_admin_stats(current_user):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) as cnt FROM enquiries")
+    enquiries_cnt = cursor.fetchone()['cnt']
+
+    cursor.execute("SELECT COUNT(*) as cnt FROM notices WHERE is_archived = FALSE")
+    notices_cnt = cursor.fetchone()['cnt']
+
+    cursor.execute("SELECT COUNT(*) as cnt FROM events WHERE is_archived = FALSE")
+    events_cnt = cursor.fetchone()['cnt']
+
+    cursor.execute("SELECT COUNT(*) as cnt FROM gallery_items")
+    gallery_cnt = cursor.fetchone()['cnt']
+
+    cursor.execute("SELECT * FROM enquiries ORDER BY created_at DESC LIMIT 5")
+    recent_enquiries = cursor.fetchall()
+    for e in recent_enquiries:
+        if e.get('created_at'):
+            e['created_at'] = str(e['created_at'])
+
+    cursor.close()
+    conn.close()
+    return jsonify({
+        'total_enquiries': enquiries_cnt,
+        'active_notices': notices_cnt,
+        'upcoming_events': events_cnt,
+        'gallery_items': gallery_cnt,
+        'recent_enquiries': recent_enquiries
+    })
 # ---------- RUN ----------
 if __name__ == '__main__':
     try:
