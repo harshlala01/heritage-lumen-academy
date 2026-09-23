@@ -76,7 +76,7 @@ export default function EnquiryForm({ onSubmitSuccess }) {
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Server se connect nahi ho paya. Backend chalu hai?');
+      alert('Connection to the backend failed. Is the server up and running?');
     } finally {
       setSubmitting(false);
     }

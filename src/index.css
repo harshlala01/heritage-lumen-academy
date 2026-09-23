@@ -7986,5 +7986,30 @@ img, video, canvas, svg {
   }
 }
 
+/* Auto Image Carousel for Facility Cards */
+.facility-card-image-box .auto-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
+.facility-card-image-box .auto-carousel-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease;
+}
 
+.facility-card-image-box .auto-carousel-img.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.facility-slide-card:hover .facility-card-image-box .auto-carousel-img {
+  transform: scale(1.08);
+}

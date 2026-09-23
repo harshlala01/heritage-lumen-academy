@@ -50,7 +50,7 @@ function Login() {
         navigate('/student/dashboard');
       }
     } catch (err) {
-      setError('Server se connect nahi ho paya. Backend port 5000 chalu hai?');
+      setError('Connection to the backend failed. Is the server up and running?');
       setLoading(false);
     }
   };
