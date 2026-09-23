@@ -21,7 +21,7 @@ export default function TopBar({ onOpenBanner }) {
             <i className="fa-solid fa-user-lock"></i> Portal Login
           </Link>
           <Link to="/notice">Noticeboard</Link>
-          <Link to="/about/foundation">CISCE (WB 339)</Link>
+          <Link to="/about/foundation">CBSE Affiliated</Link>
           <button
             onClick={onOpenBanner}
             className="badge-admissions-open"

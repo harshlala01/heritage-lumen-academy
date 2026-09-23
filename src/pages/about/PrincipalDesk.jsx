@@ -8,7 +8,7 @@ export default function PrincipalDesk() {
     <div>
       <PageBanner
         title="Principal's Desk"
-        subtitle="Words of inspiration and academic leadership from our Head of Institution, Dr. Eleanor Vance."
+        subtitle="Words of inspiration and academic leadership from our Head of Institution, Mithu Sinha Bhattacharya."
         breadcrumbs={[
           { label: 'About Us', path: '/about/foundation' },
           { label: "Principal's Desk" }
@@ -21,25 +21,25 @@ export default function PrincipalDesk() {
             <div className="principal-portrait">
               <img
                 src={principalImg}
-                alt="Dr. Eleanor Vance"
+                alt="Mithu Sinha Bhattacharya"
               />
               <div className="principal-name-tag">
-                <h4>Dr. Eleanor Vance, Ph.D.</h4>
-                <p>Head of Institution</p>
+                <h4>Mithu Sinha Bhattacharya</h4>
+                <p>Principal</p>
               </div>
             </div>
 
             <div>
               <span className="section-label">FROM THE PRINCIPAL'S DESK</span>
               <blockquote className="principal-quote-text">
-                "Education at Heritage Lumen is not simply the acquisition of facts, but the ignition
+                "Education at The Rabindra Bharati Heritage Day School is not simply the acquisition of facts, but the ignition
                 of intellect and ethical stewardship for an interconnected world."
               </blockquote>
               <p className="principal-body" style={{ marginBottom: '16px' }}>
                 Dear Scholars, Parents, and Visitors,
               </p>
               <p className="principal-body" style={{ marginBottom: '16px' }}>
-                When a young mind enters Heritage Lumen Preparatory Academy, they do not just join a school;
+                When a young mind enters The Rabindra Bharati Heritage Day School, they do not just join a school;
                 they enter an intellectual fellowship. We nurture our learners to cultivate independent
                 thinking, empirical skepticism, and profound empathy for others.
               </p>
@@ -51,7 +51,7 @@ export default function PrincipalDesk() {
               </p>
               <p className="principal-body" style={{ marginBottom: '24px' }}>
                 We invite you to walk through our gates, meet our impassioned faculty, and witness firsthand
-                the quiet confidence and scholarly joy that characterizes every Heritage Lumen scholar.
+                the quiet confidence and scholarly joy that characterizes every scholar at The Rabindra Bharati Heritage Day School.
               </p>
 
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>

@@ -1,189 +1,2017 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function AdminDashboard() {
-  const [user, setUser] = useState(null);
-  const [enquiries, setEnquiries] = useState([]);
-  const [loading, setLoading] = useState(true);
+const API_BASE = 'http://localhost:5000';
+
+export default function AdminDashboard() {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const galleryFileRef = useRef(null);
+  const circularFileRef = useRef(null);
 
+  // Authentication & User
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState('');
+
+  // Active Tab: 'overview' | 'notices' | 'events' | 'gallery' | 'admissions' | 'enquiries'
+  const [activeTab, setActiveTab] = useState('overview');
+
+  // Stats
+  const [stats, setStats] = useState({
+    total_enquiries: 0,
+    active_notices: 0,
+    upcoming_events: 0,
+    gallery_items: 0,
+    recent_enquiries: []
+  });
+
+  // Notices state
+  const [notices, setNotices] = useState([]);
+  const [noticesLoading, setNoticesLoading] = useState(false);
+  const [noticeSearch, setNoticeSearch] = useState('');
+  const [noticeCategoryFilter, setNoticeCategoryFilter] = useState('all');
+  const [noticeModalOpen, setNoticeModalOpen] = useState(false);
+  const [editingNotice, setEditingNotice] = useState(null);
+  const [noticeFormData, setNoticeFormData] = useState({
+    title: '',
+    notice_date: '',
+    category: 'admissions',
+    description: '',
+    attachment_path: '',
+    attachment_name: '',
+    is_archived: false
+  });
+  const [noticeUploadLoading, setNoticeUploadLoading] = useState(false);
+
+  // Events state
+  const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const [eventModalOpen, setEventModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [eventFormData, setEventFormData] = useState({
+    title: '',
+    event_date: '',
+    event_time: '',
+    venue: 'School Auditorium / Campus',
+    description: '',
+    is_archived: false
+  });
+
+  // Gallery state
+  const [galleryAlbums, setGalleryAlbums] = useState([]);
+  const [selectedAlbum, setSelectedAlbum] = useState('annual-function');
+  const [galleryItems, setGalleryItems] = useState([]);
+  const [galleryLoading, setGalleryLoading] = useState(false);
+  const [galleryModalOpen, setGalleryModalOpen] = useState(false);
+  const [galleryMediaType, setGalleryMediaType] = useState('image'); // 'image' | 'video'
+  const [galleryFormData, setGalleryFormData] = useState({
+    title: '',
+    media_url: '',
+    video_url: ''
+  });
+  const [galleryUploadLoading, setGalleryUploadLoading] = useState(false);
+
+  // Admissions & Settings state
+  const [admissionsData, setAdmissionsData] = useState({
+    status: 'Open for 2026–2027',
+    startDate: '01/10/2025',
+    lastDate: '31/03/2026',
+    prospectusFee: '500',
+    headline: 'Admissions Open for Session 2026–2027 (Nursery to Class X)',
+    guidelines: 'Collect physical application packets from the Admissions Desk (Mon–Fri 10:30 AM to 3:00 PM). Complete verification and submit along with attested municipal birth certificate.',
+    feeNotice: 'Admission and monthly tuition fees are non-refundable as established under institutional guidelines.',
+    booklistUniformInfo: 'Uniform fabric and textbooks as per CBSE guidelines can be collected from the school store starting March 15th.',
+    circularDocPath: '',
+    circularDocName: ''
+  });
+  const [settingsLoading, setSettingsLoading] = useState(false);
+  const [settingsSaveMsg, setSettingsSaveMsg] = useState('');
+
+  // Enquiries state
+  const [enquiries, setEnquiries] = useState([]);
+  const [enquiriesLoading, setEnquiriesLoading] = useState(false);
+  const [enquirySearch, setEnquirySearch] = useState('');
+  const [selectedEnquiry, setSelectedEnquiry] = useState(null);
+
+  // Toast
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
+
+  // Auth Guard
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
+    const savedToken = localStorage.getItem('token');
+    const savedUser = localStorage.getItem('user');
 
-    if (!token || !userData) {
+    if (!savedToken || !savedUser) {
       navigate('/login');
       return;
     }
 
-    const parsedUser = JSON.parse(userData);
-    setUser(parsedUser);
-
-    // Enquiries fetch karo
-    fetch('http://localhost:5000/api/admin/enquiries', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setEnquiries(data);
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error:', err);
-        setLoading(false);
-      });
+    try {
+      const parsed = JSON.parse(savedUser);
+      if (parsed.role !== 'admin') {
+        navigate('/login');
+        return;
+      }
+      setUser(parsed);
+      setToken(savedToken);
+    } catch {
+      navigate('/login');
+    }
   }, [navigate]);
+
+  // Initial Load once authenticated
+  useEffect(() => {
+    if (!token) return;
+    loadStats();
+    loadNotices();
+    loadEvents();
+    loadGalleryAlbums();
+    loadAdmissionsSettings();
+    loadEnquiries();
+  }, [token]);
+
+  // Load Album items when selectedAlbum changes
+  useEffect(() => {
+    if (selectedAlbum) {
+      loadGalleryItems(selectedAlbum);
+    }
+  }, [selectedAlbum]);
+
+  // ---------- FETCHERS ----------
+  const loadStats = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/stats`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data);
+      }
+    } catch (e) {
+      console.error('Failed to load stats', e);
+    }
+  };
+
+  const loadNotices = async () => {
+    setNoticesLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/notices?include_archived=true`);
+      if (res.ok) {
+        const data = await res.json();
+        setNotices(Array.isArray(data) ? data : []);
+      }
+    } catch (e) {
+      console.error('Failed to load notices', e);
+    } finally {
+      setNoticesLoading(false);
+    }
+  };
+
+  const loadEvents = async () => {
+    setEventsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/events?include_archived=true`);
+      if (res.ok) {
+        const data = await res.json();
+        setEvents(Array.isArray(data) ? data : []);
+      }
+    } catch (e) {
+      console.error('Failed to load events', e);
+    } finally {
+      setEventsLoading(false);
+    }
+  };
+
+  const loadGalleryAlbums = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/gallery/albums`);
+      if (res.ok) {
+        const data = await res.json();
+        setGalleryAlbums(Array.isArray(data) ? data : []);
+        if (data.length > 0 && !selectedAlbum) {
+          setSelectedAlbum(data[0].slug);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load gallery albums', e);
+    }
+  };
+
+  const loadGalleryItems = async (slug) => {
+    setGalleryLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/gallery/items/${slug}`);
+      if (res.ok) {
+        const data = await res.json();
+        setGalleryItems(Array.isArray(data) ? data : []);
+      }
+    } catch (e) {
+      console.error('Failed to load gallery items', e);
+    } finally {
+      setGalleryLoading(false);
+    }
+  };
+
+  const loadAdmissionsSettings = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/settings/admission_config`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Object.keys(data).length > 0) {
+          setAdmissionsData((prev) => ({ ...prev, ...data }));
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load settings', e);
+    }
+  };
+
+  const loadEnquiries = async () => {
+    setEnquiriesLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/enquiries`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setEnquiries(Array.isArray(data) ? data : []);
+      }
+    } catch (e) {
+      console.error('Failed to load enquiries', e);
+    } finally {
+      setEnquiriesLoading(false);
+    }
+  };
+
+  // ---------- FILE UPLOADER HELPER ----------
+  const handleGenericFileUpload = async (file, folder = 'documents') => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', folder);
+
+    const res = await fetch(`${API_BASE}/api/admin/upload-file`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'File upload failed');
+    return data;
+  };
+
+  // ---------- NOTICES ACTIONS ----------
+  const handleOpenNoticeModal = (notice = null) => {
+    if (notice) {
+      setEditingNotice(notice);
+      setNoticeFormData({
+        title: notice.title || '',
+        notice_date: notice.notice_date || '',
+        category: notice.category || 'admissions',
+        description: notice.description || '',
+        attachment_path: notice.attachment_path || '',
+        attachment_name: notice.attachment_name || '',
+        is_archived: Boolean(notice.is_archived)
+      });
+    } else {
+      setEditingNotice(null);
+      const today = new Date();
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const yyyy = today.getFullYear();
+      setNoticeFormData({
+        title: '',
+        notice_date: `${dd}/${mm}/${yyyy}`,
+        category: 'admissions',
+        description: '',
+        attachment_path: '',
+        attachment_name: '',
+        is_archived: false
+      });
+    }
+    setNoticeModalOpen(true);
+  };
+
+  const handleNoticeFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setNoticeUploadLoading(true);
+    try {
+      const res = await handleGenericFileUpload(file, 'notices');
+      setNoticeFormData((prev) => ({
+        ...prev,
+        attachment_path: res.path,
+        attachment_name: res.filename
+      }));
+      showToast('Attachment uploaded successfully.');
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setNoticeUploadLoading(false);
+    }
+  };
+
+  const handleSaveNotice = async (e) => {
+    e.preventDefault();
+    if (!noticeFormData.title.trim()) {
+      showToast('Please provide a notice title.', 'error');
+      return;
+    }
+
+    try {
+      const url = editingNotice
+        ? `${API_BASE}/api/admin/notices/${editingNotice.id}`
+        : `${API_BASE}/api/admin/notices`;
+      const method = editingNotice ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(noticeFormData)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Operation failed');
+
+      showToast(editingNotice ? 'Notice updated.' : 'Notice published.');
+      setNoticeModalOpen(false);
+      loadNotices();
+      loadStats();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  };
+
+  const handleToggleNoticeArchive = async (notice) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/notices/${notice.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ is_archived: !notice.is_archived })
+      });
+      if (res.ok) {
+        showToast(notice.is_archived ? 'Notice unarchived.' : 'Notice archived.');
+        loadNotices();
+        loadStats();
+      }
+    } catch (err) {
+      showToast('Failed to toggle archive', 'error');
+    }
+  };
+
+  const handleDeleteNotice = async (id) => {
+    if (!window.confirm('Are you sure you want to permanently delete this notice?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/notices/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        showToast('Notice deleted.');
+        setNotices(notices.filter((n) => n.id !== id));
+        loadStats();
+      }
+    } catch (err) {
+      showToast('Failed to delete notice', 'error');
+    }
+  };
+
+  // ---------- EVENTS ACTIONS ----------
+  const handleOpenEventModal = (event = null) => {
+    if (event) {
+      setEditingEvent(event);
+      setEventFormData({
+        title: event.title || '',
+        event_date: event.event_date || '',
+        event_time: event.event_time || '',
+        venue: event.venue || 'School Campus',
+        description: event.description || '',
+        is_archived: Boolean(event.is_archived)
+      });
+    } else {
+      setEditingEvent(null);
+      setEventFormData({
+        title: '',
+        event_date: '',
+        event_time: '10:00 AM – 1:00 PM',
+        venue: 'School Auditorium / Ground',
+        description: '',
+        is_archived: false
+      });
+    }
+    setEventModalOpen(true);
+  };
+
+  const handleSaveEvent = async (e) => {
+    e.preventDefault();
+    if (!eventFormData.title.trim()) {
+      showToast('Please provide an event title.', 'error');
+      return;
+    }
+
+    try {
+      const url = editingEvent
+        ? `${API_BASE}/api/admin/events/${editingEvent.id}`
+        : `${API_BASE}/api/admin/events`;
+      const method = editingEvent ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventFormData)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Operation failed');
+
+      showToast(editingEvent ? 'Event updated.' : 'Event scheduled.');
+      setEventModalOpen(false);
+      loadEvents();
+      loadStats();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  };
+
+  const handleToggleEventArchive = async (event) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/events/${event.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ is_archived: !event.is_archived })
+      });
+      if (res.ok) {
+        showToast(event.is_archived ? 'Event restored.' : 'Event archived.');
+        loadEvents();
+        loadStats();
+      }
+    } catch (err) {
+      showToast('Failed to toggle archive', 'error');
+    }
+  };
+
+  const handleDeleteEvent = async (id) => {
+    if (!window.confirm('Delete this event?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/events/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        showToast('Event removed.');
+        setEvents(events.filter((ev) => ev.id !== id));
+        loadStats();
+      }
+    } catch (err) {
+      showToast('Failed to delete event', 'error');
+    }
+  };
+
+  // ---------- GALLERY ACTIONS ----------
+  const handleGalleryImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setGalleryUploadLoading(true);
+    try {
+      const res = await handleGenericFileUpload(file, 'gallery');
+      setGalleryFormData((prev) => ({
+        ...prev,
+        media_url: res.path
+      }));
+      showToast('Photo uploaded.');
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setGalleryUploadLoading(false);
+    }
+  };
+
+  const handleSaveGalleryItem = async (e) => {
+    e.preventDefault();
+    const mediaUrl =
+      galleryMediaType === 'image'
+        ? galleryFormData.media_url
+        : galleryFormData.video_url;
+
+    if (!mediaUrl.trim()) {
+      showToast(
+        galleryMediaType === 'image'
+          ? 'Please upload an image file.'
+          : 'Please enter a valid YouTube video link.',
+        'error'
+      );
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/gallery/items`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          album_slug: selectedAlbum,
+          item_type: galleryMediaType,
+          media_url: mediaUrl,
+          title: galleryFormData.title || 'Heritage Day School'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to add item');
+
+      showToast('Item added to album.');
+      setGalleryModalOpen(false);
+      setGalleryFormData({ title: '', media_url: '', video_url: '' });
+      loadGalleryItems(selectedAlbum);
+      loadGalleryAlbums();
+      loadStats();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  };
+
+  const handleReorderGalleryItem = async (id, direction) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/gallery/items/${id}/reorder`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ direction })
+      });
+      if (res.ok) {
+        loadGalleryItems(selectedAlbum);
+      }
+    } catch (err) {
+      showToast('Failed to reorder', 'error');
+    }
+  };
+
+  const handleDeleteGalleryItem = async (id) => {
+    if (!window.confirm('Remove this photo/video from album?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/gallery/items/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        showToast('Item removed.');
+        setGalleryItems(galleryItems.filter((it) => it.id !== id));
+        loadGalleryAlbums();
+        loadStats();
+      }
+    } catch (err) {
+      showToast('Failed to delete item', 'error');
+    }
+  };
+
+  // ---------- ADMISSIONS & SETTINGS ACTIONS ----------
+  const handleCircularDocUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const res = await handleGenericFileUpload(file, 'documents');
+      setAdmissionsData((prev) => ({
+        ...prev,
+        circularDocPath: res.path,
+        circularDocName: res.filename
+      }));
+      showToast('Document uploaded successfully.');
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  };
+
+  const handleSaveAdmissions = async (e) => {
+    e.preventDefault();
+    setSettingsLoading(true);
+    setSettingsSaveMsg('');
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/settings/admission_config`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(admissionsData)
+      });
+      if (res.ok) {
+        showToast('Admission & institutional details updated successfully.');
+        setSettingsSaveMsg('Changes saved and published live.');
+      } else {
+        throw new Error('Save failed');
+      }
+    } catch (err) {
+      showToast('Failed to save settings', 'error');
+    } finally {
+      setSettingsLoading(false);
+    }
+  };
+
+  // ---------- ENQUIRY ACTIONS ----------
+  const handleDeleteEnquiry = async (id) => {
+    if (!window.confirm('Delete this parent enquiry?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/enquiries/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        showToast('Enquiry deleted.');
+        setEnquiries(enquiries.filter((enq) => enq.id !== id));
+        loadStats();
+      }
+    } catch (err) {
+      showToast('Failed to delete enquiry', 'error');
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    navigate('/');
+    navigate('/login');
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Yeh enquiry delete karni hai?')) return;
+  if (!user) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+        <p style={{ fontFamily: 'var(--font-sans)', color: '#0B1B3A', fontWeight: 600 }}>
+          Authenticating School Administrative Portal...
+        </p>
+      </div>
+    );
+  }
 
-    const token = localStorage.getItem('token');
-    try {
-      const res = await fetch(`http://localhost:5000/api/admin/enquiries/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        setEnquiries(enquiries.filter(e => e.id !== id));
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // Filtered lists
+  const filteredNotices = notices.filter((n) => {
+    const matchesSearch =
+      noticeSearch === '' ||
+      n.title?.toLowerCase().includes(noticeSearch.toLowerCase()) ||
+      n.description?.toLowerCase().includes(noticeSearch.toLowerCase());
+    const matchesCat =
+      noticeCategoryFilter === 'all' || n.category === noticeCategoryFilter;
+    return matchesSearch && matchesCat;
+  });
 
-  if (!user) return <div style={{ padding: 40 }}>Loading...</div>;
+  const filteredEnquiries = enquiries.filter((enq) => {
+    if (!enquirySearch) return true;
+    const q = enquirySearch.toLowerCase();
+    return (
+      enq.parent_name?.toLowerCase().includes(q) ||
+      enq.student_name?.toLowerCase().includes(q) ||
+      enq.parent_email?.toLowerCase().includes(q) ||
+      enq.parent_phone?.includes(q) ||
+      enq.grade?.toLowerCase().includes(q)
+    );
+  });
 
   return (
-    <div style={{ padding: 40, background: '#f5f5f5', minHeight: '100vh' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ color: '#0b1b3a' }}>Admin Dashboard</h1>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => navigate('/admin/content')} style={manageBtn}>Manage Content</button>
-            <button onClick={handleLogout} style={logoutBtn}>Logout</button>
+    <div className="admin-cms-wrapper">
+      {/* TOAST MESSAGE */}
+      {toast && (
+        <div className={`admin-toast-banner ${toast.type}`}>
+          <span>{toast.message}</span>
+          <button onClick={() => setToast(null)}>&times;</button>
+        </div>
+      )}
+
+      {/* TOP CMS HEADER */}
+      <header className="admin-header-bar">
+        <div className="admin-header-brand">
+          <div className="admin-brand-crest">
+            <i className="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <h1 className="admin-portal-title">THE RABINDRA BHARATI HERITAGE DAY SCHOOL</h1>
+            <p className="admin-portal-subtitle">Institutional CMS & Executive Administration Console</p>
           </div>
         </div>
 
-        <p style={{ fontSize: 16, marginTop: 10 }}>
-          Welcome, <b>{user.name}</b> ({user.email})
-        </p>
-
-        {/* Stats Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginTop: 30 }}>
-          <div style={card}>
-            <h3>Total Enquiries</h3>
-            <p style={num}>{enquiries.length}</p>
+        <div className="admin-header-actions">
+          <div className="admin-user-pill">
+            <span className="admin-user-dot"></span>
+            <span>{user.name} ({user.email})</span>
           </div>
-          
+          <button
+            type="button"
+            className="admin-action-btn secondary"
+            onClick={() => navigate('/')}
+            title="View Live Public Website"
+          >
+            <i className="fa-solid fa-globe" style={{ marginRight: '6px' }}></i>
+            Live Site
+          </button>
+          <button
+            type="button"
+            className="admin-action-btn danger"
+            onClick={handleLogout}
+          >
+            <i className="fa-solid fa-arrow-right-from-bracket" style={{ marginRight: '6px' }}></i>
+            Logout
+          </button>
         </div>
+      </header>
 
-        {/* Enquiries Table */}
-        <div style={{ marginTop: 30, background: 'white', padding: 20, borderRadius: 10 }}>
-          <h2 style={{ color: '#0b1b3a' }}>Admission Enquiries</h2>
+      {/* NAVIGATION TABS BAR */}
+      <nav className="admin-tabs-nav">
+        <button
+          className={`admin-tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          <i className="fa-solid fa-chart-pie"></i>
+          Overview
+        </button>
+        <button
+          className={`admin-tab-btn ${activeTab === 'notices' ? 'active' : ''}`}
+          onClick={() => setActiveTab('notices')}
+        >
+          <i className="fa-solid fa-bullhorn"></i>
+          Notices ({notices.filter((n) => !n.is_archived).length})
+        </button>
+        <button
+          className={`admin-tab-btn ${activeTab === 'events' ? 'active' : ''}`}
+          onClick={() => setActiveTab('events')}
+        >
+          <i className="fa-solid fa-calendar-days"></i>
+          Events ({events.filter((e) => !e.is_archived).length})
+        </button>
+        <button
+          className={`admin-tab-btn ${activeTab === 'gallery' ? 'active' : ''}`}
+          onClick={() => setActiveTab('gallery')}
+        >
+          <i className="fa-solid fa-images"></i>
+          Albums & Gallery
+        </button>
+        <button
+          className={`admin-tab-btn ${activeTab === 'admissions' ? 'active' : ''}`}
+          onClick={() => setActiveTab('admissions')}
+        >
+          <i className="fa-solid fa-file-pen"></i>
+          Admissions & Circulars
+        </button>
+        <button
+          className={`admin-tab-btn ${activeTab === 'enquiries' ? 'active' : ''}`}
+          onClick={() => setActiveTab('enquiries')}
+        >
+          <i className="fa-solid fa-envelope-open-text"></i>
+          Enquiries ({enquiries.length})
+        </button>
+      </nav>
 
-          {loading ? (
-            <p>Loading...</p>
-          ) : enquiries.length === 0 ? (
-            <p style={{ color: '#666' }}>Abhi tak koi enquiry nahi aayi.</p>
-          ) : (
-            <div style={{ overflowX: 'auto', marginTop: 15 }}>
-              <table style={tableStyle}>
-                <thead>
-                  <tr style={{ background: '#0b1b3a', color: 'white' }}>
-                    <th style={thStyle}>ID</th>
-                    <th style={thStyle}>Parent</th>
-                    <th style={thStyle}>Student</th>
-                    <th style={thStyle}>Email</th>
-                    <th style={thStyle}>Phone</th>
-                    <th style={thStyle}>Grade</th>
-                    <th style={thStyle}>Year</th>
-                    <th style={thStyle}>Message</th>
-                    <th style={thStyle}>Date</th>
-                    <th style={thStyle}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {enquiries.map((e) => (
-                    <tr key={e.id} style={{ borderBottom: '1px solid #eee' }}>
-                      <td style={tdStyle}>{e.id}</td>
-                      <td style={tdStyle}>{e.parent_name}</td>
-                      <td style={tdStyle}>{e.student_name}</td>
-                      <td style={tdStyle}>{e.parent_email}</td>
-                      <td style={tdStyle}>{e.parent_phone}</td>
-                      <td style={tdStyle}>{e.grade}</td>
-                      <td style={tdStyle}>{e.academic_year}</td>
-                      <td style={{ ...tdStyle, maxWidth: 150, fontSize: 12 }}>
-                        {e.message || '-'}
-                      </td>
-                      <td style={{ ...tdStyle, fontSize: 12 }}>
-                        {e.created_at ? e.created_at.slice(0, 10) : '-'}
-                      </td>
-                      <td style={tdStyle}>
-                        <button
-                          onClick={() => handleDelete(e.id)}
-                          style={deleteBtn}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      {/* MAIN CONTENT AREA */}
+      <main className="admin-main-container">
+        {/* ============================================================== */}
+        {/* 1. OVERVIEW TAB */}
+        {/* ============================================================== */}
+        {activeTab === 'overview' && (
+          <div className="admin-tab-content">
+            {/* KPI STAT CARDS */}
+            <div className="admin-kpi-grid">
+              <div className="admin-kpi-card" onClick={() => setActiveTab('enquiries')}>
+                <div className="kpi-icon-wrap blue">
+                  <i className="fa-solid fa-user-graduate"></i>
+                </div>
+                <div>
+                  <div className="kpi-value">{stats.total_enquiries}</div>
+                  <div className="kpi-label">Admissions Enquiries</div>
+                </div>
+              </div>
+
+              <div className="admin-kpi-card" onClick={() => setActiveTab('notices')}>
+                <div className="kpi-icon-wrap amber">
+                  <i className="fa-solid fa-bullhorn"></i>
+                </div>
+                <div>
+                  <div className="kpi-value">{stats.active_notices}</div>
+                  <div className="kpi-label">Active Notices Published</div>
+                </div>
+              </div>
+
+              <div className="admin-kpi-card" onClick={() => setActiveTab('events')}>
+                <div className="kpi-icon-wrap green">
+                  <i className="fa-solid fa-calendar-check"></i>
+                </div>
+                <div>
+                  <div className="kpi-value">{stats.upcoming_events}</div>
+                  <div className="kpi-label">Institutional Events</div>
+                </div>
+              </div>
+
+              <div className="admin-kpi-card" onClick={() => setActiveTab('gallery')}>
+                <div className="kpi-icon-wrap purple">
+                  <i className="fa-solid fa-photo-film"></i>
+                </div>
+                <div>
+                  <div className="kpi-value">{stats.gallery_items}</div>
+                  <div className="kpi-label">Gallery Media Items</div>
+                </div>
+              </div>
             </div>
-          )}
+
+            {/* QUICK ACTIONS BANNER */}
+            <div className="admin-quick-shortcuts-panel">
+              <h3 className="section-title">Administrative Shortcuts</h3>
+              <div className="shortcuts-row">
+                <button
+                  type="button"
+                  className="shortcut-chip"
+                  onClick={() => {
+                    setActiveTab('notices');
+                    handleOpenNoticeModal();
+                  }}
+                >
+                  <i className="fa-solid fa-circle-plus"></i>
+                  Publish New Notice
+                </button>
+                <button
+                  type="button"
+                  className="shortcut-chip"
+                  onClick={() => {
+                    setActiveTab('events');
+                    handleOpenEventModal();
+                  }}
+                >
+                  <i className="fa-solid fa-calendar-plus"></i>
+                  Schedule Event
+                </button>
+                <button
+                  type="button"
+                  className="shortcut-chip"
+                  onClick={() => {
+                    setActiveTab('gallery');
+                    setGalleryModalOpen(true);
+                  }}
+                >
+                  <i className="fa-solid fa-cloud-arrow-up"></i>
+                  Upload Photo / Video
+                </button>
+                <button
+                  type="button"
+                  className="shortcut-chip"
+                  onClick={() => setActiveTab('admissions')}
+                >
+                  <i className="fa-solid fa-sliders"></i>
+                  Update Admission Dates & Circulars
+                </button>
+              </div>
+            </div>
+
+            {/* RECENT ENQUIRIES PREVIEW */}
+            <div className="admin-card-section">
+              <div className="section-header-flex">
+                <h3 className="section-title">Recent Admissions Enquiries</h3>
+                <button
+                  type="button"
+                  className="admin-link-btn"
+                  onClick={() => setActiveTab('enquiries')}
+                >
+                  View All ({enquiries.length}) &rarr;
+                </button>
+              </div>
+
+              {stats.recent_enquiries && stats.recent_enquiries.length > 0 ? (
+                <div className="admin-table-scroll">
+                  <table className="admin-data-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Parent Name</th>
+                        <th>Student Name</th>
+                        <th>Grade</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th style={{ textAlign: 'center' }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stats.recent_enquiries.map((enq) => (
+                        <tr key={enq.id}>
+                          <td>{enq.created_at ? enq.created_at.split(' ')[0] : 'Today'}</td>
+                          <td style={{ fontWeight: 600 }}>{enq.parent_name}</td>
+                          <td>{enq.student_name}</td>
+                          <td>
+                            <span className="badge-grade">{enq.grade}</span>
+                          </td>
+                          <td>
+                            <a href={`tel:${enq.parent_phone}`} style={{ color: '#0B1B3A', fontWeight: 600 }}>
+                              {enq.parent_phone}
+                            </a>
+                          </td>
+                          <td>{enq.parent_email}</td>
+                          <td style={{ textAlign: 'center' }}>
+                            <button
+                              type="button"
+                              className="icon-action-btn"
+                              title="View Details"
+                              onClick={() => setSelectedEnquiry(enq)}
+                            >
+                              <i className="fa-solid fa-eye"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="empty-state-text">No recent enquiries received yet.</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* 2. NOTICES MANAGEMENT TAB */}
+        {/* ============================================================== */}
+        {activeTab === 'notices' && (
+          <div className="admin-tab-content">
+            <div className="section-header-flex">
+              <div>
+                <h2 className="tab-main-heading">Notices & Circulars Management</h2>
+                <p className="tab-sub-heading">
+                  Create, edit, archive, and publish official school notices with PDF and image attachments.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="admin-action-btn primary"
+                onClick={() => handleOpenNoticeModal()}
+              >
+                <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                Add Notice
+              </button>
+            </div>
+
+            {/* FILTERS & SEARCH */}
+            <div className="admin-filter-controls">
+              <div className="search-input-box">
+                <i className="fa-solid fa-magnifying-glass"></i>
+                <input
+                  type="text"
+                  placeholder="Search notices by title or content..."
+                  value={noticeSearch}
+                  onChange={(e) => setNoticeSearch(e.target.value)}
+                />
+              </div>
+
+              <div className="category-filter-pills">
+                {['all', 'admissions', 'recruitment', 'academic', 'general'].map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    className={`cat-pill ${noticeCategoryFilter === cat ? 'active' : ''}`}
+                    onClick={() => setNoticeCategoryFilter(cat)}
+                  >
+                    {cat.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* NOTICES LIST TABLE */}
+            {noticesLoading ? (
+              <div className="loading-spinner">Loading notices...</div>
+            ) : filteredNotices.length === 0 ? (
+              <div className="admin-empty-box">
+                <i className="fa-solid fa-bullhorn"></i>
+                <p>No notices found matching your criteria.</p>
+              </div>
+            ) : (
+              <div className="admin-table-scroll">
+                <table className="admin-data-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '120px' }}>Date</th>
+                      <th>Title & Subject</th>
+                      <th style={{ width: '130px' }}>Category</th>
+                      <th style={{ width: '140px' }}>Attachment</th>
+                      <th style={{ width: '100px', textAlign: 'center' }}>Status</th>
+                      <th style={{ width: '140px', textAlign: 'center' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredNotices.map((n) => (
+                      <tr key={n.id} style={{ opacity: n.is_archived ? 0.65 : 1 }}>
+                        <td style={{ fontWeight: 600 }}>{n.notice_date}</td>
+                        <td>
+                          <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '0.98rem' }}>
+                            {n.title}
+                          </div>
+                          {n.description && (
+                            <div className="truncate-text" style={{ fontSize: '0.82rem', color: '#64748B' }}>
+                              {n.description}
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <span className={`badge-cat ${n.category || 'general'}`}>
+                            {n.category || 'General'}
+                          </span>
+                        </td>
+                        <td>
+                          {n.attachment_path ? (
+                            <a
+                              href={`${API_BASE}${n.attachment_path}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="attachment-link-chip"
+                            >
+                              <i className="fa-solid fa-paperclip"></i>
+                              {n.attachment_name || 'View File'}
+                            </a>
+                          ) : (
+                            <span style={{ color: '#94A3B8', fontSize: '0.82rem' }}>None</span>
+                          )}
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <span className={`status-pill ${n.is_archived ? 'archived' : 'active'}`}>
+                            {n.is_archived ? 'Archived' : 'Active'}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <div style={{ display: 'inline-flex', gap: '6px' }}>
+                            <button
+                              type="button"
+                              className="icon-action-btn"
+                              title="Edit Notice"
+                              onClick={() => handleOpenNoticeModal(n)}
+                            >
+                              <i className="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button
+                              type="button"
+                              className="icon-action-btn"
+                              title={n.is_archived ? 'Unarchive' : 'Archive'}
+                              onClick={() => handleToggleNoticeArchive(n)}
+                            >
+                              <i className={`fa-solid ${n.is_archived ? 'fa-box-open' : 'fa-box-archive'}`}></i>
+                            </button>
+                            <button
+                              type="button"
+                              className="icon-action-btn delete"
+                              title="Delete Notice"
+                              onClick={() => handleDeleteNotice(n.id)}
+                            >
+                              <i className="fa-solid fa-trash-can"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* 3. EVENTS MANAGEMENT TAB */}
+        {/* ============================================================== */}
+        {activeTab === 'events' && (
+          <div className="admin-tab-content">
+            <div className="section-header-flex">
+              <div>
+                <h2 className="tab-main-heading">School Events & Calendar</h2>
+                <p className="tab-sub-heading">
+                  Manage sports meets, annual days, exhibitions, ceremonies, and examinations.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="admin-action-btn primary"
+                onClick={() => handleOpenEventModal()}
+              >
+                <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                Schedule Event
+              </button>
+            </div>
+
+            {eventsLoading ? (
+              <div className="loading-spinner">Loading events...</div>
+            ) : events.length === 0 ? (
+              <div className="admin-empty-box">
+                <i className="fa-solid fa-calendar-xmark"></i>
+                <p>No events scheduled. Click "Schedule Event" to add one.</p>
+              </div>
+            ) : (
+              <div className="admin-table-scroll">
+                <table className="admin-data-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '130px' }}>Date</th>
+                      <th style={{ width: '140px' }}>Time</th>
+                      <th>Event Title</th>
+                      <th>Venue</th>
+                      <th style={{ width: '100px', textAlign: 'center' }}>Status</th>
+                      <th style={{ width: '130px', textAlign: 'center' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {events.map((ev) => (
+                      <tr key={ev.id} style={{ opacity: ev.is_archived ? 0.6 : 1 }}>
+                        <td style={{ fontWeight: 600 }}>{ev.event_date}</td>
+                        <td style={{ color: '#475569', fontSize: '0.9rem' }}>{ev.event_time || 'All Day'}</td>
+                        <td>
+                          <div style={{ fontWeight: 600, color: '#0F172A' }}>{ev.title}</div>
+                          {ev.description && (
+                            <div className="truncate-text" style={{ fontSize: '0.82rem', color: '#64748B' }}>
+                              {ev.description}
+                            </div>
+                          )}
+                        </td>
+                        <td>{ev.venue || 'School Campus'}</td>
+                        <td style={{ textAlign: 'center' }}>
+                          <span className={`status-pill ${ev.is_archived ? 'archived' : 'active'}`}>
+                            {ev.is_archived ? 'Concluded' : 'Upcoming'}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <div style={{ display: 'inline-flex', gap: '6px' }}>
+                            <button
+                              type="button"
+                              className="icon-action-btn"
+                              title="Edit Event"
+                              onClick={() => handleOpenEventModal(ev)}
+                            >
+                              <i className="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button
+                              type="button"
+                              className="icon-action-btn"
+                              title={ev.is_archived ? 'Restore Event' : 'Archive Event'}
+                              onClick={() => handleToggleEventArchive(ev)}
+                            >
+                              <i className={`fa-solid ${ev.is_archived ? 'fa-arrow-rotate-left' : 'fa-box-archive'}`}></i>
+                            </button>
+                            <button
+                              type="button"
+                              className="icon-action-btn delete"
+                              title="Delete Event"
+                              onClick={() => handleDeleteEvent(ev.id)}
+                            >
+                              <i className="fa-solid fa-trash-can"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* 4. GALLERY MANAGEMENT TAB */}
+        {/* ============================================================== */}
+        {activeTab === 'gallery' && (
+          <div className="admin-tab-content">
+            <div className="section-header-flex">
+              <div>
+                <h2 className="tab-main-heading">Photo & Video Gallery CMS</h2>
+                <p className="tab-sub-heading">
+                  Manage album-based photos, YouTube videos, and arrange display order.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="admin-action-btn primary"
+                onClick={() => {
+                  setGalleryFormData({ title: '', media_url: '', video_url: '' });
+                  setGalleryModalOpen(true);
+                }}
+              >
+                <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                Add Media to Album
+              </button>
+            </div>
+
+            {/* ALBUM SELECTOR TABS */}
+            <div className="admin-album-tabs-bar">
+              {galleryAlbums.map((alb) => (
+                <button
+                  key={alb.slug}
+                  type="button"
+                  className={`album-tab-chip ${selectedAlbum === alb.slug ? 'active' : ''}`}
+                  onClick={() => setSelectedAlbum(alb.slug)}
+                >
+                  <span className="album-title">{alb.title}</span>
+                  <span className="album-count">{alb.item_count || 0}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* ACTIVE ALBUM DESCRIPTION */}
+            {galleryAlbums.find((a) => a.slug === selectedAlbum) && (
+              <div className="album-info-bar">
+                <i className="fa-solid fa-circle-info" style={{ color: '#D4AF37', marginRight: '8px' }}></i>
+                <span>{galleryAlbums.find((a) => a.slug === selectedAlbum).description}</span>
+              </div>
+            )}
+
+            {/* GALLERY ITEMS GRID */}
+            {galleryLoading ? (
+              <div className="loading-spinner">Loading gallery media...</div>
+            ) : galleryItems.length === 0 ? (
+              <div className="admin-empty-box">
+                <i className="fa-solid fa-images"></i>
+                <p>No photos or videos in this album yet.</p>
+                <button
+                  type="button"
+                  className="admin-action-btn primary"
+                  style={{ marginTop: '12px' }}
+                  onClick={() => setGalleryModalOpen(true)}
+                >
+                  Upload First Image / Add Video
+                </button>
+              </div>
+            ) : (
+              <div className="gallery-admin-grid">
+                {galleryItems.map((item, idx) => (
+                  <div key={item.id} className="gallery-admin-card">
+                    <div className="card-media-wrap">
+                      {item.item_type === 'video' ? (
+                        <div className="video-thumb-placeholder">
+                          <i className="fa-brands fa-youtube video-play-icon"></i>
+                          <span className="video-badge">VIDEO LINK</span>
+                        </div>
+                      ) : (
+                        <img
+                          src={
+                            item.media_url.startsWith('http')
+                              ? item.media_url
+                              : `${API_BASE}${item.media_url}`
+                          }
+                          alt={item.title || 'Heritage Media'}
+                          className="gallery-admin-img"
+                        />
+                      )}
+                      <span className="order-badge">#{idx + 1}</span>
+                    </div>
+
+                    <div className="card-body">
+                      <div className="card-title truncate-text">{item.title || 'Untitled'}</div>
+                      <div className="card-actions-row">
+                        <div className="reorder-btns">
+                          <button
+                            type="button"
+                            className="reorder-btn"
+                            disabled={idx === 0}
+                            title="Move Left / Earlier"
+                            onClick={() => handleReorderGalleryItem(item.id, 'up')}
+                          >
+                            <i className="fa-solid fa-arrow-left"></i>
+                          </button>
+                          <button
+                            type="button"
+                            className="reorder-btn"
+                            disabled={idx === galleryItems.length - 1}
+                            title="Move Right / Later"
+                            onClick={() => handleReorderGalleryItem(item.id, 'down')}
+                          >
+                            <i className="fa-solid fa-arrow-right"></i>
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          className="icon-action-btn delete"
+                          title="Delete from album"
+                          onClick={() => handleDeleteGalleryItem(item.id)}
+                        >
+                          <i className="fa-solid fa-trash-can"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* 5. ADMISSIONS, FEE, BOOK & UNIFORM TAB */}
+        {/* ============================================================== */}
+        {activeTab === 'admissions' && (
+          <div className="admin-tab-content">
+            <div className="section-header-flex">
+              <div>
+                <h2 className="tab-main-heading">Admissions, Fees, Booklist & Uniforms</h2>
+                <p className="tab-sub-heading">
+                  Update live admission cycle dates, prospectus fees, circular notices, and downloadable guidelines.
+                </p>
+              </div>
+              {settingsSaveMsg && (
+                <span style={{ color: '#059669', fontWeight: 600 }}>
+                  <i className="fa-solid fa-circle-check" style={{ marginRight: '6px' }}></i>
+                  {settingsSaveMsg}
+                </span>
+              )}
+            </div>
+
+            <form onSubmit={handleSaveAdmissions} className="admin-form-panel">
+              <div className="form-grid-2">
+                <div className="form-group">
+                  <label>Admission Status Headline *</label>
+                  <input
+                    type="text"
+                    value={admissionsData.status}
+                    onChange={(e) =>
+                      setAdmissionsData({ ...admissionsData, status: e.target.value })
+                    }
+                    placeholder="e.g. Open for 2026–2027"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Prospectus / Form Processing Fee (INR)</label>
+                  <input
+                    type="text"
+                    value={admissionsData.prospectusFee}
+                    onChange={(e) =>
+                      setAdmissionsData({ ...admissionsData, prospectusFee: e.target.value })
+                    }
+                    placeholder="e.g. 500"
+                  />
+                </div>
+              </div>
+
+              <div className="form-grid-2">
+                <div className="form-group">
+                  <label>Session Start Date</label>
+                  <input
+                    type="text"
+                    value={admissionsData.startDate}
+                    onChange={(e) =>
+                      setAdmissionsData({ ...admissionsData, startDate: e.target.value })
+                    }
+                    placeholder="DD/MM/YYYY"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Application Closing Date</label>
+                  <input
+                    type="text"
+                    value={admissionsData.lastDate}
+                    onChange={(e) =>
+                      setAdmissionsData({ ...admissionsData, lastDate: e.target.value })
+                    }
+                    placeholder="DD/MM/YYYY"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Main Admissions Banner Text</label>
+                <input
+                  type="text"
+                  value={admissionsData.headline}
+                  onChange={(e) =>
+                    setAdmissionsData({ ...admissionsData, headline: e.target.value })
+                  }
+                  placeholder="Official headline displayed across website"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Admission Guidelines & Submission Instructions</label>
+                <textarea
+                  rows="3"
+                  value={admissionsData.guidelines}
+                  onChange={(e) =>
+                    setAdmissionsData({ ...admissionsData, guidelines: e.target.value })
+                  }
+                  placeholder="Instructions for prospective parents..."
+                ></textarea>
+              </div>
+
+              <div className="form-group">
+                <label>Fee Schedule & Non-Refundable Policy Notes</label>
+                <textarea
+                  rows="3"
+                  value={admissionsData.feeNotice}
+                  onChange={(e) =>
+                    setAdmissionsData({ ...admissionsData, feeNotice: e.target.value })
+                  }
+                  placeholder="Rules regarding admission and monthly tuition fees..."
+                ></textarea>
+              </div>
+
+              <div className="form-group">
+                <label>Booklist & School Uniform Guidelines</label>
+                <textarea
+                  rows="3"
+                  value={admissionsData.booklistUniformInfo}
+                  onChange={(e) =>
+                    setAdmissionsData({ ...admissionsData, booklistUniformInfo: e.target.value })
+                  }
+                  placeholder="Information regarding uniforms, house colours, and book distributions..."
+                ></textarea>
+              </div>
+
+              {/* PDF ATTACHMENT */}
+              <div className="form-group">
+                <label>Attach Official Circular / Prospectus PDF Document</label>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '6px' }}>
+                  <input
+                    type="file"
+                    ref={circularFileRef}
+                    style={{ display: 'none' }}
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleCircularDocUpload}
+                  />
+                  <button
+                    type="button"
+                    className="admin-action-btn secondary"
+                    onClick={() => circularFileRef.current?.click()}
+                  >
+                    <i className="fa-solid fa-file-pdf" style={{ marginRight: '6px' }}></i>
+                    {admissionsData.circularDocPath ? 'Change PDF File' : 'Upload PDF Document'}
+                  </button>
+                  {admissionsData.circularDocPath && (
+                    <span style={{ fontSize: '0.88rem', color: '#0F172A', fontWeight: 600 }}>
+                      <i className="fa-solid fa-check" style={{ color: '#059669', marginRight: '6px' }}></i>
+                      {admissionsData.circularDocName || 'prospectus_guidelines.pdf'}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ marginTop: '24px' }}>
+                <button
+                  type="submit"
+                  className="admin-action-btn primary"
+                  disabled={settingsLoading}
+                  style={{ minWidth: '180px' }}
+                >
+                  <i className="fa-solid fa-floppy-disk" style={{ marginRight: '6px' }}></i>
+                  {settingsLoading ? 'Saving...' : 'Save & Publish Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* 6. ENQUIRIES TAB */}
+        {/* ============================================================== */}
+        {activeTab === 'enquiries' && (
+          <div className="admin-tab-content">
+            <div className="section-header-flex">
+              <div>
+                <h2 className="tab-main-heading">Parent Admissions Enquiries</h2>
+                <p className="tab-sub-heading">
+                  All admissions submissions from the online website enquiry form.
+                </p>
+              </div>
+              <div className="search-input-box">
+                <i className="fa-solid fa-magnifying-glass"></i>
+                <input
+                  type="text"
+                  placeholder="Filter by parent, phone, student, or grade..."
+                  value={enquirySearch}
+                  onChange={(e) => setEnquirySearch(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {enquiriesLoading ? (
+              <div className="loading-spinner">Loading enquiries...</div>
+            ) : filteredEnquiries.length === 0 ? (
+              <div className="admin-empty-box">
+                <i className="fa-solid fa-inbox"></i>
+                <p>No enquiries found matching your query.</p>
+              </div>
+            ) : (
+              <div className="admin-table-scroll">
+                <table className="admin-data-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '120px' }}>Date</th>
+                      <th>Parent Name</th>
+                      <th>Student Name</th>
+                      <th>Grade Applying</th>
+                      <th>Phone</th>
+                      <th>Email</th>
+                      <th>Academic Year</th>
+                      <th style={{ width: '100px', textAlign: 'center' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredEnquiries.map((enq) => (
+                      <tr key={enq.id}>
+                        <td>{enq.created_at ? enq.created_at.split(' ')[0] : 'Today'}</td>
+                        <td style={{ fontWeight: 600 }}>{enq.parent_name}</td>
+                        <td>{enq.student_name}</td>
+                        <td>
+                          <span className="badge-grade">{enq.grade}</span>
+                        </td>
+                        <td>
+                          <a href={`tel:${enq.parent_phone}`} style={{ color: '#0B1B3A', fontWeight: 600 }}>
+                            {enq.parent_phone}
+                          </a>
+                        </td>
+                        <td>{enq.parent_email}</td>
+                        <td>{enq.academic_year || '2026-2027'}</td>
+                        <td style={{ textAlign: 'center' }}>
+                          <div style={{ display: 'inline-flex', gap: '6px' }}>
+                            <button
+                              type="button"
+                              className="icon-action-btn"
+                              title="View Details"
+                              onClick={() => setSelectedEnquiry(enq)}
+                            >
+                              <i className="fa-solid fa-eye"></i>
+                            </button>
+                            <button
+                              type="button"
+                              className="icon-action-btn delete"
+                              title="Delete Enquiry"
+                              onClick={() => handleDeleteEnquiry(enq.id)}
+                            >
+                              <i className="fa-solid fa-trash-can"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+
+      {/* ============================================================== */}
+      {/* MODAL: ADD / EDIT NOTICE */}
+      {/* ============================================================== */}
+      {noticeModalOpen && (
+        <div className="admin-modal-overlay" onClick={() => setNoticeModalOpen(false)}>
+          <div className="admin-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{editingNotice ? 'Edit Notice' : 'Publish New Notice'}</h3>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setNoticeModalOpen(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveNotice} className="modal-form">
+              <div className="form-group">
+                <label>Notice Subject / Title *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Admissions Open for Session 2026–2027"
+                  value={noticeFormData.title}
+                  onChange={(e) =>
+                    setNoticeFormData({ ...noticeFormData, title: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div className="form-grid-2">
+                <div className="form-group">
+                  <label>Notice Date (DD/MM/YYYY)</label>
+                  <input
+                    type="text"
+                    value={noticeFormData.notice_date}
+                    onChange={(e) =>
+                      setNoticeFormData({ ...noticeFormData, notice_date: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Category</label>
+                  <select
+                    value={noticeFormData.category}
+                    onChange={(e) =>
+                      setNoticeFormData({ ...noticeFormData, category: e.target.value })
+                    }
+                  >
+                    <option value="admissions">Admissions</option>
+                    <option value="recruitment">Recruitment / Careers</option>
+                    <option value="academic">Academic & Curriculum</option>
+                    <option value="examination">Examination & Results</option>
+                    <option value="general">General Circular</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Notice Description / Details</label>
+                <textarea
+                  rows="4"
+                  placeholder="Enter full notice content, schedule, or instructions..."
+                  value={noticeFormData.description}
+                  onChange={(e) =>
+                    setNoticeFormData({ ...noticeFormData, description: e.target.value })
+                  }
+                ></textarea>
+              </div>
+
+              {/* ATTACHMENT */}
+              <div className="form-group">
+                <label>Upload PDF / Image Attachment</label>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '6px' }}>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                    onChange={handleNoticeFileUpload}
+                  />
+                  <button
+                    type="button"
+                    className="admin-action-btn secondary"
+                    disabled={noticeUploadLoading}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <i className="fa-solid fa-cloud-arrow-up" style={{ marginRight: '6px' }}></i>
+                    {noticeUploadLoading ? 'Uploading...' : 'Choose File (PDF/Image)'}
+                  </button>
+                  {noticeFormData.attachment_name && (
+                    <span style={{ fontSize: '0.85rem', color: '#0F172A', fontWeight: 600 }}>
+                      <i className="fa-solid fa-file-circle-check" style={{ color: '#059669', marginRight: '4px' }}></i>
+                      {noticeFormData.attachment_name}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <input
+                  type="checkbox"
+                  id="noticeArchiveCheck"
+                  checked={noticeFormData.is_archived}
+                  onChange={(e) =>
+                    setNoticeFormData({ ...noticeFormData, is_archived: e.target.checked })
+                  }
+                />
+                <label htmlFor="noticeArchiveCheck" style={{ margin: 0, cursor: 'pointer' }}>
+                  Archive this notice (hide from primary active feed)
+                </label>
+              </div>
+
+              <div className="modal-footer-btns">
+                <button
+                  type="button"
+                  className="admin-action-btn secondary"
+                  onClick={() => setNoticeModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="admin-action-btn primary">
+                  {editingNotice ? 'Update Notice' : 'Publish Notice'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: ADD / EDIT EVENT */}
+      {/* ============================================================== */}
+      {eventModalOpen && (
+        <div className="admin-modal-overlay" onClick={() => setEventModalOpen(false)}>
+          <div className="admin-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{editingEvent ? 'Edit Event' : 'Schedule New Event'}</h3>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setEventModalOpen(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEvent} className="modal-form">
+              <div className="form-group">
+                <label>Event Title *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Annual Sports Meet 2026"
+                  value={eventFormData.title}
+                  onChange={(e) =>
+                    setEventFormData({ ...eventFormData, title: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div className="form-grid-2">
+                <div className="form-group">
+                  <label>Event Date (e.g. 15/12/2026)</label>
+                  <input
+                    type="text"
+                    value={eventFormData.event_date}
+                    onChange={(e) =>
+                      setEventFormData({ ...eventFormData, event_date: e.target.value })
+                    }
+                    placeholder="DD/MM/YYYY"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Event Timing</label>
+                  <input
+                    type="text"
+                    value={eventFormData.event_time}
+                    onChange={(e) =>
+                      setEventFormData({ ...eventFormData, event_time: e.target.value })
+                    }
+                    placeholder="e.g. 9:30 AM – 2:00 PM"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Venue / Location</label>
+                <input
+                  type="text"
+                  value={eventFormData.venue}
+                  onChange={(e) =>
+                    setEventFormData({ ...eventFormData, venue: e.target.value })
+                  }
+                  placeholder="e.g. Academy Main Grounds"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Event Description & Highlights</label>
+                <textarea
+                  rows="3"
+                  value={eventFormData.description}
+                  onChange={(e) =>
+                    setEventFormData({ ...eventFormData, description: e.target.value })
+                  }
+                  placeholder="Details for students, parents, and guests..."
+                ></textarea>
+              </div>
+
+              <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <input
+                  type="checkbox"
+                  id="eventArchiveCheck"
+                  checked={eventFormData.is_archived}
+                  onChange={(e) =>
+                    setEventFormData({ ...eventFormData, is_archived: e.target.checked })
+                  }
+                />
+                <label htmlFor="eventArchiveCheck" style={{ margin: 0, cursor: 'pointer' }}>
+                  Mark event as concluded / archive
+                </label>
+              </div>
+
+              <div className="modal-footer-btns">
+                <button
+                  type="button"
+                  className="admin-action-btn secondary"
+                  onClick={() => setEventModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="admin-action-btn primary">
+                  {editingEvent ? 'Save Changes' : 'Schedule Event'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: ADD GALLERY ITEM */}
+      {/* ============================================================== */}
+      {galleryModalOpen && (
+        <div className="admin-modal-overlay" onClick={() => setGalleryModalOpen(false)}>
+          <div className="admin-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>
+                Add to Album:{' '}
+                <span style={{ color: '#D4AF37' }}>
+                  {galleryAlbums.find((a) => a.slug === selectedAlbum)?.title || selectedAlbum}
+                </span>
+              </h3>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setGalleryModalOpen(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveGalleryItem} className="modal-form">
+              {/* MEDIA TYPE SWITCH */}
+              <div className="media-type-selector">
+                <button
+                  type="button"
+                  className={`type-btn ${galleryMediaType === 'image' ? 'active' : ''}`}
+                  onClick={() => setGalleryMediaType('image')}
+                >
+                  <i className="fa-solid fa-image"></i> Photo Upload
+                </button>
+                <button
+                  type="button"
+                  className={`type-btn ${galleryMediaType === 'video' ? 'active' : ''}`}
+                  onClick={() => setGalleryMediaType('video')}
+                >
+                  <i className="fa-brands fa-youtube"></i> YouTube Video Link
+                </button>
+              </div>
+
+              <div className="form-group">
+                <label>Caption / Title</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Prize Distribution Ceremony or Folk Dance Performance"
+                  value={galleryFormData.title}
+                  onChange={(e) =>
+                    setGalleryFormData({ ...galleryFormData, title: e.target.value })
+                  }
+                />
+              </div>
+
+              {galleryMediaType === 'image' ? (
+                <div className="form-group">
+                  <label>Select Photo (JPG, PNG, WEBP)</label>
+                  <input
+                    type="file"
+                    ref={galleryFileRef}
+                    style={{ display: 'none' }}
+                    accept="image/*"
+                    onChange={handleGalleryImageUpload}
+                  />
+                  <div style={{ marginTop: '6px' }}>
+                    <button
+                      type="button"
+                      className="admin-action-btn secondary"
+                      disabled={galleryUploadLoading}
+                      onClick={() => galleryFileRef.current?.click()}
+                    >
+                      <i className="fa-solid fa-upload" style={{ marginRight: '6px' }}></i>
+                      {galleryUploadLoading ? 'Uploading image...' : 'Choose Image File'}
+                    </button>
+                  </div>
+                  {galleryFormData.media_url && (
+                    <div style={{ marginTop: '10px' }}>
+                      <img
+                        src={
+                          galleryFormData.media_url.startsWith('http')
+                            ? galleryFormData.media_url
+                            : `${API_BASE}${galleryFormData.media_url}`
+                        }
+                        alt="Preview"
+                        style={{ height: '90px', borderRadius: '6px', objectFit: 'cover' }}
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="form-group">
+                  <label>YouTube Video Link</label>
+                  <input
+                    type="url"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    value={galleryFormData.video_url}
+                    onChange={(e) =>
+                      setGalleryFormData({ ...galleryFormData, video_url: e.target.value })
+                    }
+                  />
+                  <small style={{ color: '#64748B', display: 'block', marginTop: '4px' }}>
+                    Paste standard or share link from YouTube.
+                  </small>
+                </div>
+              )}
+
+              <div className="modal-footer-btns">
+                <button
+                  type="button"
+                  className="admin-action-btn secondary"
+                  onClick={() => setGalleryModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="admin-action-btn primary">
+                  Save to Album
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: VIEW ENQUIRY DETAILS */}
+      {/* ============================================================== */}
+      {selectedEnquiry && (
+        <div className="admin-modal-overlay" onClick={() => setSelectedEnquiry(null)}>
+          <div className="admin-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Admissions Enquiry Details</h3>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setSelectedEnquiry(null)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="enquiry-detail-body">
+              <div className="detail-row">
+                <span className="detail-label">Parent / Guardian Name:</span>
+                <span className="detail-val">{selectedEnquiry.parent_name}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Student Name:</span>
+                <span className="detail-val">{selectedEnquiry.student_name}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Grade Applying For:</span>
+                <span className="detail-val">
+                  <span className="badge-grade">{selectedEnquiry.grade}</span>
+                </span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Academic Session:</span>
+                <span className="detail-val">{selectedEnquiry.academic_year || '2026-2027'}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Contact Phone:</span>
+                <span className="detail-val">
+                  <a href={`tel:${selectedEnquiry.parent_phone}`}>{selectedEnquiry.parent_phone}</a>
+                </span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Email Address:</span>
+                <span className="detail-val">
+                  <a href={`mailto:${selectedEnquiry.parent_email}`}>{selectedEnquiry.parent_email}</a>
+                </span>
+              </div>
+              <div className="detail-row" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                <span className="detail-label" style={{ marginBottom: '6px' }}>Message / Queries:</span>
+                <div className="detail-message-box">
+                  {selectedEnquiry.message || 'No additional message provided.'}
+                </div>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Submission Timestamp:</span>
+                <span className="detail-val">{selectedEnquiry.created_at || 'Just now'}</span>
+              </div>
+            </div>
+
+            <div className="modal-footer-btns">
+              <button
+                type="button"
+                className="admin-action-btn secondary"
+                onClick={() => setSelectedEnquiry(null)}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="admin-action-btn danger"
+                onClick={() => {
+                  handleDeleteEnquiry(selectedEnquiry.id);
+                  setSelectedEnquiry(null);
+                }}
+              >
+                Delete Enquiry
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-const card = {
-  background: 'white',
-  padding: 20,
-  borderRadius: 10,
-  boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-};
-const num = { fontSize: 32, fontWeight: 'bold', color: '#0b1b3a', marginTop: 10 };
-const logoutBtn = {
-  padding: '10px 20px',
-  background: '#c00',
-  color: 'white',
-  border: 'none',
-  borderRadius: 6,
-  cursor: 'pointer',
-  fontSize: 14
-};
-const manageBtn = {
-  padding: '10px 20px',
-  background: '#0b1b3a',
-  color: 'white',
-  border: 'none',
-  borderRadius: 6,
-  cursor: 'pointer',
-  fontSize: 14
-};
-const tableStyle = { width: '100%', borderCollapse: 'collapse' };
-const thStyle = { padding: '12px 8px', textAlign: 'left', fontSize: 13 };
-const tdStyle = { padding: '10px 8px', fontSize: 13 };
-const deleteBtn = {
-  padding: '6px 12px',
-  background: '#c00',
-  color: 'white',
-  border: 'none',
-  borderRadius: 4,
-  cursor: 'pointer',
-  fontSize: 12
-};
-
-export default AdminDashboard;

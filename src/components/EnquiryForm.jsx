@@ -92,7 +92,7 @@ export default function EnquiryForm({ onSubmitSuccess }) {
             <h2 className="main-heading">Schedule Your Campus Visit</h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: '1.7' }}>
               We welcome prospective scholars and their families to experience the vibrant
-              atmosphere of Heritage Lumen firsthand.
+              atmosphere of The Rabindra Bharati Heritage Day School firsthand.
             </p>
 
             <div className="contact-card-box">
@@ -102,7 +102,7 @@ export default function EnquiryForm({ onSubmitSuccess }) {
                 </div>
                 <div className="contact-line-text">
                   <h6>Academy Address</h6>
-                  <p>Heritage Lumen Preparatory Academy, St. Jude's Hill, Academy Boulevard</p>
+                  <p>607/E, Nagarukhra - Jagulia Rd, West, Barasat, Nagarukhra, West Bengal 741257</p>
                 </div>
               </div>
 
@@ -249,14 +249,8 @@ export default function EnquiryForm({ onSubmitSuccess }) {
                     <option value="Middle School (Grades VI-VIII)">
                       Middle School (Grades VI-VIII)
                     </option>
-                    <option value="Senior School (Grades IX-X / ICSE)">
-                      Senior School (Grades IX-X / ICSE)
-                    </option>
-                    <option value="Senior Secondary (Grades XI-XII / ISC)">
-                      Senior Secondary (Grades XI-XII / ISC)
-                    </option>
-                    <option value="International Baccalaureate (IB DP)">
-                      International Baccalaureate (IB DP)
+                    <option value="Secondary School (Grades IX-X / CBSE)">
+                      Secondary School (Grades IX-X / CBSE)
                     </option>
                   </select>
                 </div>

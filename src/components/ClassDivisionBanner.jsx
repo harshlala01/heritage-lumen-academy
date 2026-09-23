@@ -49,7 +49,7 @@ export default function ClassDivisionBanner() {
       num: '04',
       className: 'Secondary',
       grades: '(Class IX & X)',
-      tag: { text: 'ICSE', type: 'icse' },
+      tag: { text: 'CBSE', type: 'icse' },
       subBadge: 'Board Examination',
       age: 'Ages 14–16',
       desc: 'Standardized Precision & Board Candidacy • Applied Sciences',
@@ -62,7 +62,7 @@ export default function ClassDivisionBanner() {
       num: '05',
       className: 'Senior Secondary',
       grades: '(Class XI & XII)',
-      tag: { text: 'ISC', type: 'isc' },
+      tag: { text: 'CBSE', type: 'icse' },
       subBadge: 'Pre-University',
       age: 'Ages 16–18',
       desc: 'Pure Science • Commerce & Economics • Humanities & Fine Arts',
@@ -88,7 +88,7 @@ export default function ClassDivisionBanner() {
 
           <div className="cdm-header-right">
             <div className="cdm-eyebrow">PEDAGOGICAL FRAMEWORK</div>
-            <div className="cdm-meta-stream">ICSE &amp; ISC Stream • Est. 1912</div>
+            <div className="cdm-meta-stream">CBSE Stream</div>
             <div className="cdm-meta-cycle">Institutional Cycle 2025-2026</div>
           </div>
         </div>

@@ -27,31 +27,31 @@ export default function AnnouncementBannerModal({ isOpen, onClose }) {
     // Banner 1: Board Results & Toppers (Matches user screenshot)
     {
       id: 1,
-      tag: 'CISCE RESULTS 2025–2026',
-      headline: 'HERITAGE LUMEN PREPARATORY ACADEMY',
-      subline: 'AFFILIATED TO THE CISCE, NEW DELHI (WB 339)',
-      title: 'Congratulations Class X (ICSE) & Class XII (ISC) Toppers!',
+      tag: 'CBSE RESULTS 2025–2026',
+      headline: 'THE RABINDRA BHARATI HERITAGE DAY SCHOOL',
+      subline: 'AFFILIATED TO THE CBSE, NEW DELHI',
+      title: 'Congratulations Class X & Class XII CBSE Toppers!',
       passBadge: 'PASS PERCENTAGE 100%',
       toppers: [
         {
           rank: 'ALL INDIA RANK 3RD',
           name: 'Alankrita Dutta',
           score: '99.4%',
-          exam: 'Class X (ICSE)',
+          exam: 'Class X (CBSE)',
           image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop'
         },
         {
           rank: 'ALL INDIA RANK 5TH',
           name: 'Tamoghno Saha',
           score: '98.6%',
-          exam: 'Class XII (ISC Science)',
+          exam: 'Class XII (CBSE Science)',
           image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=300&auto=format&fit=crop'
         },
         {
           rank: 'ALL INDIA RANK 7TH',
           name: 'Shrestha Dey',
           score: '98.5%',
-          exam: 'Class XII (ISC Commerce)',
+          exam: 'Class XII (CBSE Commerce)',
           image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=300&auto=format&fit=crop'
         }
       ],
@@ -64,8 +64,8 @@ export default function AnnouncementBannerModal({ isOpen, onClose }) {
     {
       id: 2,
       tag: 'ADMISSION ENQUIRY OPEN',
-      headline: 'HERITAGE LUMEN PREPARATORY ACADEMY',
-      subline: 'AFFILIATED TO THE CISCE, NEW DELHI (WB 339)',
+      headline: 'THE RABINDRA BHARATI HERITAGE DAY SCHOOL',
+      subline: 'AFFILIATED TO THE CBSE, NEW DELHI',
       title: 'Admissions Open for Academic Year 2025–2026',
       passBadge: 'MERIT SCHOLARSHIPS AVAILABLE',
       toppers: [
@@ -80,14 +80,14 @@ export default function AnnouncementBannerModal({ isOpen, onClose }) {
           rank: 'MIDDLE SCHOOL',
           name: 'Junior Academy',
           score: 'Grades VI–VIII',
-          exam: 'STEM Labs & Foreign Languages',
+          exam: 'STEM Labs & Practical Sciences',
           image: 'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=300&auto=format&fit=crop'
         },
         {
           rank: 'SENIOR SECONDARY',
-          name: 'Grades XI & XII (ISC)',
+          name: 'Grades XI & XII (CBSE)',
           score: 'Science • Comm • Arts',
-          exam: 'Pre-University & Olympiads Track',
+          exam: 'Pre-University & Competitive Track',
           image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=300&auto=format&fit=crop'
         }
       ],
@@ -100,8 +100,8 @@ export default function AnnouncementBannerModal({ isOpen, onClose }) {
     {
       id: 3,
       tag: 'NATIONAL HONORS 2025',
-      headline: 'HERITAGE LUMEN PREPARATORY ACADEMY',
-      subline: 'AFFILIATED TO THE CISCE, NEW DELHI (WB 339)',
+      headline: 'THE RABINDRA BHARATI HERITAGE DAY SCHOOL',
+      subline: 'AFFILIATED TO THE CBSE, NEW DELHI',
       title: '1st Prize at National STEM & Robotics Conclave',
       passBadge: 'NATIONAL GOLD MEDAL',
       toppers: [

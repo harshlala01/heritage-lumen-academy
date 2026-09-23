@@ -38,7 +38,7 @@ export default function SecretaryDesk() {
                 Dear Parents, Guardians, and Esteemed Well-Wishers,
               </p>
               <p className="principal-body" style={{ marginBottom: '16px' }}>
-                At Heritage Lumen Preparatory Academy, we perceive educational administration not as mere
+                At The Rabindra Bharati Heritage Day School, we perceive educational administration not as mere
                 logistics, but as the deliberate crafting of an inspiring habitat. Over the past two decades,
                 we have consistently invested in modern pedagogical infrastructure: from digital interactive
                 classrooms and robotics laboratories to pristine sports arenas and expansive libraries.

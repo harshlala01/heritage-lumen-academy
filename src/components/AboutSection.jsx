@@ -86,7 +86,7 @@ export default function AboutSection() {
               <p className="about-paragraph para-1">
                 With the advancement of human civilization, education has evolved into an indispensable
                 foundation that enriches life with intellectual depth, moral integrity, and purposeful discovery.
-                At Heritage Lumen Preparatory Academy, learning is celebrated not as mere instructional routine,
+                At The Rabindra Bharati Heritage Day School, learning is celebrated not as mere instructional routine,
                 but as the holistic awakening of young minds towards thoughtful global leadership.
               </p>
 
@@ -141,7 +141,7 @@ export default function AboutSection() {
               <div className="about-circle-frame frame-main">
                 <img
                   src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=900&auto=format&fit=crop"
-                  alt="Heritage Lumen Academy Classical Campus Facade"
+                  alt="The Rabindra Bharati Heritage Day School Classical Campus Facade"
                   className="about-circle-img"
                 />
                 <div className="circle-glass-glare"></div>

@@ -33,7 +33,7 @@ export default function Management() {
     <div>
       <PageBanner
         title="Management & Governance"
-        subtitle="Distinguished leaders and educationists stewarding Heritage Lumen with integrity, stewardship, and foresight."
+        subtitle="Distinguished leaders and educationists stewarding The Rabindra Bharati Heritage Day School with integrity, stewardship, and foresight."
         breadcrumbs={[
           { label: 'About Us', path: '/about/foundation' },
           { label: 'Management' }

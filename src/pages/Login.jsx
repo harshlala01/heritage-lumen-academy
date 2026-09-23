@@ -49,7 +49,7 @@ function Login() {
     <div className="login-page">
       <div className="login-box">
         <h1>Portal Login</h1>
-        <p className="subtitle">Heritage Lumen Academy</p>
+        <p className="subtitle">The Rabindra Bharati Heritage Day School</p>
 
         {error && <div className="error">{error}</div>}
 

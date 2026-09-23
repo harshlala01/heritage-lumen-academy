@@ -9,7 +9,7 @@ export default function QuickLinks() {
       <div className="container">
         <div className="ribbon-header">
           <span className="section-label">DIRECT CONNECTIONS</span>
-          <h3>Explore Heritage Lumen</h3>
+          <h3>Explore The Rabindra Bharati Heritage Day School</h3>
           <p>Self-service resources for candidates, families & faculty.</p>
         </div>
         <div className="quick-icons-row">

@@ -19,7 +19,7 @@ export default function CtaBanner() {
           <span className="cta-eyebrow-gold">THE INVITATION • ADMISSIONS 2025–2026</span>
           
           <h2 className="cta-huge-heading">
-            Your Journey of Discovery Begins at <span className="cta-gold-highlight">Heritage Lumen</span>
+            Your Journey of Discovery Begins at <span className="cta-gold-highlight">The Rabindra Bharati Heritage Day School</span>
           </h2>
 
           <p className="cta-cream-subtext">

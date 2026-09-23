@@ -3,7 +3,7 @@ import Hero from '../components/Hero';
 import AboutSection from '../components/AboutSection';
 import FacilitiesSlider from '../components/FacilitiesSlider';
 import PrincipalMessage from '../components/PrincipalMessage';
-import ClassDivisionBanner from '../components/ClassDivisionBanner';
+import StatutoryAuditTable from '../components/StatutoryAuditTable';
 import PhotoGallery from '../components/PhotoGallery';
 import ExtraCurricularActivities from '../components/ExtraCurricularActivities';
 import CtaBanner from '../components/CtaBanner';
@@ -21,8 +21,8 @@ export default function HomePage({ onEnquirySuccess }) {
       {/* 3. Principal's Message with Image & Address */}
       <PrincipalMessage />
 
-      {/* 4. Panoramic Class Division Banner */}
-      <ClassDivisionBanner />
+      {/* 4. Filter Division & Class-Wise Statutory Audit Table */}
+      <StatutoryAuditTable />
 
       {/* 5. Campus Moments & Traditions Gallery */}
       <PhotoGallery />

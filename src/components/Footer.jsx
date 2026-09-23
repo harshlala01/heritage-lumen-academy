@@ -16,27 +16,21 @@ export default function Footer() {
                 <i className="fa-solid fa-graduation-cap"></i>
               </div>
               <div className="brand-text-cream">
-                <h2>HERITAGE LUMEN</h2>
-                <p>Preparatory Academy • Est. 1912</p>
+                <h2>THE RABINDRA BHARATI</h2>
+                <p>Heritage Day School • CBSE Affiliated</p>
               </div>
             </Link>
             <p className="footer-desc-text">
-              Inspiring Intellect. Cultivating Character. Nurturing scholars, artists, scientists, and ethical leaders under CISCE affiliation (WB 339).
+              Inspiring Intellect. Cultivating Character. Nurturing scholars, artists, scientists, and ethical leaders under CBSE affiliation.
             </p>
             
-            {/* Social icons: Gold circles with navy icons. On hover rotate 360 */}
+            {/* Social icons: Gold circles with navy icons */}
             <div className="social-row-gold">
               <a href="#" className="social-gold-circle" aria-label="Facebook">
                 <i className="fa-brands fa-facebook-f"></i>
               </a>
               <a href="#" className="social-gold-circle" aria-label="Instagram">
                 <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" className="social-gold-circle" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-              <a href="#" className="social-gold-circle" aria-label="YouTube">
-                <i className="fa-brands fa-youtube"></i>
               </a>
             </div>
           </div>
@@ -110,7 +104,7 @@ export default function Footer() {
             <h5 className="footer-heading-gold">Locate on Map</h5>
             <div className="footer-map-wrapper">
               <a
-                href="https://maps.google.com/?q=Stratford+Day+School+Habra+West+Bengal"
+                href="https://maps.google.com/?q=Heritage+Day+School+-+Nagarukhra%2C+607%2FE%2C+Nagarukhra+-+Jagulia+Rd%2C+West%2C+Barasat%2C+Nagarukhra%2C+West+Bengal+741257"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-map-open-badge"
@@ -121,7 +115,7 @@ export default function Footer() {
               </a>
               <iframe
                 title="Academy Location on Map"
-                src="https://maps.google.com/maps?q=Stratford+Day+School+Habra+West+Bengal&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                src="https://maps.google.com/maps?q=Heritage+Day+School+-+Nagarukhra%2C+607%2FE%2C+Nagarukhra+-+Jagulia+Rd%2C+West%2C+Barasat%2C+Nagarukhra%2C+West+Bengal+741257&t=&z=14&ie=UTF8&iwloc=&output=embed"
                 className="footer-map-iframe"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -129,7 +123,7 @@ export default function Footer() {
             </div>
             <p className="footer-map-address">
               <i className="fa-solid fa-location-dot"></i>
-              <span>Kamarthuba, Habra, North 24 Parganas, West Bengal 743263</span>
+              <span>Heritage Day School - Nagarukhra, 607/E, Nagarukhra - Jagulia Rd, West, Barasat, Nagarukhra, West Bengal 741257</span>
             </p>
             <p className="footer-map-address" style={{ marginTop: '8px' }}>
               <i className="fa-solid fa-phone" style={{ color: 'var(--gold-primary)' }}></i>
@@ -144,7 +138,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="footer-bottom-foundation">
-          <p>&copy; {new Date().getFullYear()} Heritage Lumen Preparatory Academy. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} The Rabindra Bharati Heritage Day School. All Rights Reserved.</p>
           <div className="footer-bottom-legal-links">
             <Link to="/about/foundation" className="footer-legal-link">
               Privacy Policy

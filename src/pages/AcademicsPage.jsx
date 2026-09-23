@@ -25,19 +25,19 @@ export default function AcademicsPage() {
       subjects: ['Physics, Chemistry, Biology', 'Advanced Mathematics', 'History & Civics', 'Geography', 'Third Language (Sanskrit / French)', 'Computer Applications']
     },
     {
-      title: 'Senior School (Grades IX–X) - ICSE Board',
+      title: 'Secondary School (Grades IX–X) - CBSE Board',
       badge: 'Secondary Stage',
-      desc: 'Rigorous preparation for CISCE ICSE Board Examinations. Emphasis on deep conceptual clarity, Olympiads, and analytical problem-solving.',
-      subjects: ['English (Compulsory)', 'Second Language', 'History, Civics & Geography', 'Science (Physics, Chem, Bio) OR Commercial Studies', 'Mathematics', 'Computer Applications / Art / PE']
+      desc: 'Rigorous preparation for CBSE All-India Secondary School Examinations (AISSE). Emphasis on deep conceptual clarity, Olympiads, and analytical problem-solving.',
+      subjects: ['English (Compulsory)', 'Second Language (Hindi / Bengali)', 'Mathematics', 'Science (Physics, Chem, Bio)', 'Social Science (History, Civics, Geography, Economics)', 'Information Technology / AI']
     },
     {
-      title: 'Senior Secondary (Grades XI–XII) - ISC Board',
+      title: 'Senior Secondary (Grades XI–XII) - CBSE Board',
       badge: 'Junior College',
-      desc: 'Specialized pre-university academic pathways with dedicated faculty mentoring for JEE, NEET, CLAT, CUET, and foreign university admissions.',
+      desc: 'Specialized pre-university academic pathways under CBSE curriculum with dedicated faculty mentoring for JEE, NEET, CLAT, CUET, and premier university admissions.',
       subjects: [
         'Science Stream: Physics, Chemistry, Mathematics, Biology / Computer Science',
-        'Commerce Stream: Accounts, Economics, Commerce, Business Studies / Maths',
-        'Humanities Stream: Psychology, Political Science, History, Sociology / English Elective'
+        'Commerce Stream: Accountancy, Business Studies, Economics, Mathematics / Applied Maths',
+        'Humanities Stream: Political Science, History, Psychology, Sociology / Economics'
       ]
     }
   ];
@@ -175,7 +175,7 @@ export default function AcademicsPage() {
               <div className="stats-kpi-grid" style={{ marginBottom: '30px' }}>
                 <div className="kpi-item">
                   <h4>100%</h4>
-                  <p>ICSE & ISC Pass Rate</p>
+                  <p>CBSE Board Pass Rate</p>
                 </div>
                 <div className="kpi-item">
                   <h4>98.4%</h4>

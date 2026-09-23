@@ -7,8 +7,8 @@ export default function PrincipalMessage() {
   const [signatureDrawn, setSignatureDrawn] = useState(false);
   const faculty = useContent('faculty', [{
     id: 1,
-    title: 'Dr. Eleanor Vance, Ph.D.',
-    subtitle: 'Head of Institution / Principal',
+    title: 'Mithu Sinha Bhattacharya',
+    subtitle: 'Principal',
     image: principalImg
   }]);
   const principal = faculty[0];
@@ -32,18 +32,17 @@ export default function PrincipalMessage() {
                 alt={principal?.title || "Principal"}
                 className="principal-photo-img"
               />
-              <div className="principal-seal-badge" title="Affiliated CISCE Leader">
+              <div className="principal-seal-badge" title="Affiliated CBSE Leader">
                 <i className="fa-solid fa-award"></i>
               </div>
             </div>
             <div className="principal-caption-box">
               <h4 className="principal-name">{principal.title}</h4>
-              <p className="principal-role">{principal.subtitle}</p>
-              <span className="principal-creds">M.Ed. (Oxon), Ph.D. Educational Leadership</span>
+              <p className="principal-role">Principal</p>
             </div>
           </div>
 
-          {/* Right: Gold Quote, Revealing Text, Animated Signature, Action Buttons */}
+          {/* Right: Gold Quote, Revealing Text, Action Buttons */}
           <div className="principal-content-wrapper">
             <div className="principal-eyebrow">
               <span className="principal-eyebrow-line"></span>
@@ -53,7 +52,7 @@ export default function PrincipalMessage() {
             <div className="principal-quote-container">
               <div className="principal-giant-quote">“</div>
               <blockquote className="principal-manifesto-text">
-                Education at Heritage Lumen is not simply the acquisition of facts, but the ignition of intellect, curiosity, and ethical stewardship for an interconnected world.
+                Education at The Rabindra Bharati Heritage Day School is not simply the acquisition of facts, but the ignition of intellect, curiosity, and ethical stewardship for an interconnected world.
               </blockquote>
             </div>
 
@@ -61,23 +60,10 @@ export default function PrincipalMessage() {
               When a young scholar steps through our gates, they enter an intellectual covenant. We do not simply teach; we mentor. Our faculty is committed to cultivating critical inquiry, scientific rigor, moral compass, and fearless creativity within a collegiate setting that honors both tradition and modern discovery.
             </p>
 
-            {/* Handwritten Signature that draws itself with SVG */}
-            <div className="principal-signature-area">
-              <svg 
-                className={`principal-svg-signature ${signatureDrawn ? 'drawn' : ''}`}
-                viewBox="0 0 280 70" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path 
-                  d="M10 45 C30 15, 45 10, 60 30 C75 50, 85 20, 100 25 C115 30, 120 40, 140 20 C155 5, 170 35, 185 25 C200 15, 215 30, 235 22 C255 14, 265 28, 275 35 M45 42 Q90 55 170 48 T270 42" 
-                  stroke="#D4AF37" 
-                  strokeWidth="2.5" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <div className="signature-title">Dr. Eleanor Vance — Head of Institution</div>
+            <div className="principal-signature-area" style={{ marginTop: '16px', marginBottom: '8px' }}>
+              <div className="signature-title" style={{ fontSize: '1.05rem', color: '#D4AF37', fontWeight: 600 }}>
+                Mithu Sinha Bhattacharya — Principal
+              </div>
             </div>
 
             {/* Button */}

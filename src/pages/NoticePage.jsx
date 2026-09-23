@@ -1,9 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PageBanner from '../components/PageBanner';
+
+const API_BASE = 'http://localhost:5000';
 
 export default function NoticePage() {
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [liveNotices, setLiveNotices] = useState([]);
+  const [admissionsNoticeText, setAdmissionsNoticeText] = useState(
+    'New Admissions will commence from 3rd October onwards. Monday to Friday. Time: 10:30 am to 3:00 pm. Visit school office for more details.'
+  );
+
+  useEffect(() => {
+    // 1. Fetch live notices
+    fetch(`${API_BASE}/api/notices`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const formatted = data.map((n) => ({
+            id: `live_${n.id}`,
+            date: n.notice_date,
+            subject: n.title,
+            description: n.description,
+            hasDownload: Boolean(n.attachment_path),
+            attachmentPath: n.attachment_path,
+            fileName: n.attachment_name || `${n.title}.pdf`,
+            category: n.category || 'admissions'
+          }));
+          setLiveNotices(formatted);
+        }
+      })
+      .catch(() => {});
+
+    // 2. Fetch live admission setting banner
+    fetch(`${API_BASE}/api/settings/admission_config`)
+      .then((res) => res.json())
+      .then((cfg) => {
+        if (cfg && cfg.headline) {
+          setAdmissionsNoticeText(cfg.headline);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const officialNotices = [
     {
@@ -14,18 +52,18 @@ export default function NoticePage() {
       fileName: 'Teacher_Recruitment_Notice_2023.txt',
       category: 'recruitment',
       downloadContent: `=====================================================
-HERITAGE LUMEN PREPARATORY ACADEMY
-Affiliated to the CISCE, New Delhi (School Code: WB 339)
+THE RABINDRA BHARATI HERITAGE DAY SCHOOL
+Affiliated to the CBSE, New Delhi
 OFFICIAL EMPLOYMENT CIRCULAR: TEACHER RECRUITMENT
 =====================================================
 
 Notice Date: 23/09/2023
-Ref No: HLPA/ADMIN/REC/2023-09
+Ref No: RBHDS/ADMIN/REC/2023-09
 
 Applications are cordially invited from qualified, experienced, and dedicated teaching professionals for academic appointments across Primary, Middle, and Senior Secondary departments for the upcoming academic session.
 
 VACANCIES:
-1. PGT English & Literature (ISC Level)
+1. PGT English & Literature (CBSE Senior Secondary Level)
 2. TGT Mathematics & Pure Physics
 3. TGT Computer Applications & STEM
 4. Primary & Montessori Trained Educators
@@ -33,7 +71,7 @@ VACANCIES:
 
 ELIGIBILITY CRITERIA:
 - Postgraduate / Graduate in relevant discipline with recognized B.Ed.
-- Minimum 2–3 years teaching experience in an ICSE / ISC or recognized Board curriculum.
+- Minimum 2–3 years teaching experience in a CBSE or recognized Board curriculum.
 - Excellent command over spoken and written English.
 - Proficiency with digital smart-board technology and blended learning methodology.
 
@@ -41,8 +79,8 @@ APPLICATION PROCEDURE:
 Eligible candidates may submit their comprehensive CV along with passport-size photographs and attested copies of educational certificates directly to the Principal's Secretariat or via email to: therabindrabharatihds@gmail.com within 15 days of publication of this notice.
 
 By Order,
-Head of Institution / Secretary
-Heritage Lumen Preparatory Academy
+Principal / Secretary
+The Rabindra Bharati Heritage Day School
 =====================================================`
     },
     {
@@ -60,7 +98,7 @@ Heritage Lumen Preparatory Academy
       fileName: 'Admissions_2025_2026_Guidelines.txt',
       category: 'admissions',
       downloadContent: `=====================================================
-HERITAGE LUMEN PREPARATORY ACADEMY
+THE RABINDRA BHARATI HERITAGE DAY SCHOOL
 ADMISSIONS ANNOUNCEMENT 2025–2026
 =====================================================
 Date: 18/10/2025
@@ -73,23 +111,23 @@ Key Highlights:
 - Online Form: Accessible under the "APPLY ONLINE" tab on our official website.
 
 Admissions Directorate
-Heritage Lumen Preparatory Academy`
+The Rabindra Bharati Heritage Day School`
     },
     {
       id: 'n4',
       date: '05/11/2025',
-      subject: 'ICSE & ISC Board Pre-Board Examination Schedule 2025–26 Timetable & Practical Laboratory Guidelines.',
+      subject: 'CBSE Board Examination Schedule 2025–26 Timetable & Practical Laboratory Guidelines.',
       hasDownload: true,
       fileName: 'PreBoard_Examination_Schedule_2025.txt',
       category: 'exam',
       downloadContent: `=====================================================
-HERITAGE LUMEN PREPARATORY ACADEMY
-EXAMINATION SECRETARIAT — PRE-BOARD NOTIFICATION
+THE RABINDRA BHARATI HERITAGE DAY SCHOOL
+EXAMINATION SECRETARIAT — BOARD NOTIFICATION
 =====================================================
 Date: 05/11/2025
-Grades: Class X (ICSE) & Class XII (ISC)
+Grades: Class X & Class XII (CBSE)
 
-The Pre-Board Examination routine and laboratory practical schedules are formally released. Scholars are instructed to strictly observe reporting times and uniform protocols.`
+The CBSE Examination routine and laboratory practical schedules are formally released. Scholars are instructed to strictly observe reporting times and uniform protocols.`
     },
     {
       id: 'n5',
@@ -102,7 +140,7 @@ The Pre-Board Examination routine and laboratory practical schedules are formall
     {
       id: 'n6',
       date: '20/11/2025',
-      subject: 'Winter Carnival & Annual Founders’ Day Celebrations Notice: McAllister Auditorium, Heritage Lumen Campus.',
+      subject: 'Winter Carnival & Annual Founders’ Day Celebrations Notice: Auditorium, The Rabindra Bharati Heritage Day School Campus.',
       hasDownload: true,
       fileName: 'Founders_Day_Gala_2025.txt',
       category: 'events'
@@ -125,15 +163,20 @@ The Pre-Board Examination routine and laboratory practical schedules are formall
   ];
 
   const handleDownload = (notice) => {
+    if (notice.attachmentPath) {
+      window.open(`${API_BASE}${notice.attachmentPath}`, '_blank');
+      return;
+    }
+
     const content = notice.downloadContent || `=====================================================
-HERITAGE LUMEN PREPARATORY ACADEMY
-CISCE AFFILIATED (WB 339)
+THE RABINDRA BHARATI HERITAGE DAY SCHOOL
+CBSE AFFILIATED
 OFFICIAL CIRCULAR / NOTICE
 =====================================================
 Date: ${notice.date}
 Subject: ${notice.subject}
 
-This is an authentic digital notice published by the Administrative Office of Heritage Lumen Preparatory Academy.
+This is an authentic digital notice published by the Administrative Office of The Rabindra Bharati Heritage Day School.
 For further inquiries, contact therabindrabharatihds@gmail.com or call +91 8001271960.
 =====================================================`;
 
@@ -148,7 +191,9 @@ For further inquiries, contact therabindrabharatihds@gmail.com or call +91 80012
     URL.revokeObjectURL(url);
   };
 
-  const filteredNotices = officialNotices.filter((notice) => {
+  const allCombinedNotices = [...liveNotices, ...officialNotices];
+
+  const filteredNotices = allCombinedNotices.filter((notice) => {
     const matchesCategory = filter === 'all' || notice.category === filter;
     const matchesSearch =
       notice.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -183,7 +228,7 @@ For further inquiries, contact therabindrabharatihds@gmail.com or call +91 80012
             <div style={{ flexGrow: 1 }}>
               <strong style={{ color: 'var(--navy-primary)' }}>IMPORTANT NOTICE:</strong>{' '}
               <span style={{ color: 'var(--text-dark)' }}>
-                New Admissions will commence from 3rd October 2023, onwards. Monday to Friday. Time: 11 am to 3pm. Visit school office for more details.
+                {admissionsNoticeText}
               </span>
             </div>
           </div>
@@ -307,7 +352,7 @@ For further inquiries, contact therabindrabharatihds@gmail.com or call +91 80012
 
           <div style={{ textAlign: 'right', fontSize: '0.82rem', color: '#64748B' }}>
             <i className="fa-solid fa-shield-halved" style={{ marginRight: '6px', color: '#D4AF37' }}></i>
-            Official digital publications certified by CISCE Affiliated School Code WB 339
+            Official digital publications certified by CBSE Affiliated School
           </div>
         </div>
       </section>

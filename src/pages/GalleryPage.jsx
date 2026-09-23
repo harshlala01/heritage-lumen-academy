@@ -103,7 +103,7 @@ export default function GalleryPage() {
       photos: [
         {
           id: 1,
-          title: 'CISCE Class X & XII All-India Rankers Felicitation',
+          title: 'CBSE Class X & XII All-India Rankers Felicitation',
           image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1000&auto=format&fit=crop'
         },
         {
@@ -251,6 +251,34 @@ export default function GalleryPage() {
 
   const currentAlbum = albums.find((a) => a.id === selectedAlbumId);
 
+  const [liveAlbumItems, setLiveAlbumItems] = useState([]);
+
+  useEffect(() => {
+    if (!selectedAlbumId) {
+      setLiveAlbumItems([]);
+      return;
+    }
+    fetch(`http://localhost:5000/api/gallery/items/${selectedAlbumId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const formatted = data.map((item) => ({
+            id: `live_${item.id}`,
+            title: item.title || 'Heritage Day School',
+            image: item.media_url.startsWith('http')
+              ? item.media_url
+              : `http://localhost:5000${item.media_url}`,
+            itemType: item.item_type,
+            mediaUrl: item.media_url
+          }));
+          setLiveAlbumItems(formatted);
+        } else {
+          setLiveAlbumItems([]);
+        }
+      })
+      .catch(() => setLiveAlbumItems([]));
+  }, [selectedAlbumId]);
+
   const openAlbum = (albumId) => {
     setSelectedAlbumId(albumId);
     setSearchParams({ album: albumId });
@@ -264,7 +292,10 @@ export default function GalleryPage() {
   };
 
   // Lightbox handlers for current album
-  const currentPhotos = currentAlbum ? currentAlbum.photos : [];
+  const currentPhotos = [
+    ...liveAlbumItems,
+    ...(currentAlbum ? currentAlbum.photos : [])
+  ];
   const activeLightboxPhoto = lightboxIndex !== null ? currentPhotos[lightboxIndex] : null;
 
   const handlePrevPhoto = (e) => {

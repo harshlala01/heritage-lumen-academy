@@ -7,7 +7,7 @@ export default function SchoolFoundation() {
     <div>
       <PageBanner
         title="School Foundation"
-        subtitle="The enduring vision, historic heritage, and guiding philosophy that shapes every scholar at Heritage Lumen."
+        subtitle="The enduring vision, historic heritage, and guiding philosophy that shapes every scholar at The Rabindra Bharati Heritage Day School."
         breadcrumbs={[
           { label: 'About Us', path: '/about/foundation' },
           { label: 'School Foundation' }
@@ -19,17 +19,17 @@ export default function SchoolFoundation() {
           <div className="about-split-grid" style={{ marginBottom: '50px' }}>
             <div>
               <span className="section-label">OUR GENESIS & HERITAGE</span>
-              <h2 className="main-heading">Founding Principles of Heritage Lumen</h2>
+              <h2 className="main-heading">Founding Principles of The Rabindra Bharati Heritage Day School</h2>
               <div className="about-body">
                 <p>
-                  Established in 2003, Heritage Lumen Preparatory Academy was established with the
+                  Established in 2003, The Rabindra Bharati Heritage Day School was established with the
                   singular aspiration to pioneer a learning sanctuary where classical humanist values
                   harmoniously converge with cutting-edge 21st-century inquiry.
                 </p>
                 <p>
-                  Under the stewardship of visionary educationists and philanthropists, the Academy
-                  expanded from its initial historic collegiate quadrangle to become one of the premier
-                  CISCE (ICSE & ISC) co-educational day institutions in the region.
+                  Under the stewardship of visionary educationists and philanthropists, the institution
+                  expanded from its initial historic campus to become one of the premier
+                  CBSE co-educational day institutions in the region.
                 </p>
               </div>
             </div>
@@ -84,8 +84,8 @@ export default function SchoolFoundation() {
               </div>
               <h3>Board Affiliation</h3>
               <p>
-                Permanently affiliated to the Council for the Indian School Certificate Examinations
-                (CISCE), New Delhi (WB 339) for ICSE (X) and ISC (XII).
+                Affiliated to the Central Board of Secondary Education (CBSE), New Delhi,
+                delivering standardized academic rigor from Pre-Primary through Senior Secondary.
               </p>
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function SchoolFoundation() {
               <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
                 <div className="notice-date-badge">2003</div>
                 <div>
-                  <h5 style={{ color: 'var(--navy-primary)', fontWeight: 700 }}>Inception of Heritage Lumen</h5>
+                  <h5 style={{ color: 'var(--navy-primary)', fontWeight: 700 }}>Inception of The Rabindra Bharati Heritage Day School</h5>
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
                     Foundation stone laid with 120 students, 14 faculty members, and a commitment to moral rigor.
                   </p>

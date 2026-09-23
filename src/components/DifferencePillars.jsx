@@ -9,7 +9,7 @@ export default function DifferencePillars() {
       <div className="container">
         <div style={{ textAlign: 'center' }}>
           <span className="section-label">OUR CARDINAL TRAITS</span>
-          <h2 className="main-heading">The Heritage Lumen Difference</h2>
+          <h2 className="main-heading">The Rabindra Bharati Heritage Difference</h2>
           <p style={{ color: 'var(--text-muted)', maxWidth: '650px', margin: '0 auto' }}>
             Four pedagogical foundations that transform education into transformation and
             university readiness.

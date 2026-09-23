@@ -52,7 +52,7 @@ export default function Navbar({ onOpenBanner }) {
     <>
       <header className={`main-nav-header ${isScrolled ? 'nav-scrolled' : 'nav-transparent'}`}>
         <div className="container nav-inner-container">
-          {/* Left: Logo + "Heritage Lumen" in serif */}
+          {/* Left: Logo + "The Rabindra Bharati Heritage Day School" in serif */}
           <Link
             to="/"
             className="brand-logo-link"
@@ -62,8 +62,8 @@ export default function Navbar({ onOpenBanner }) {
               <i className="fa-solid fa-graduation-cap"></i>
             </div>
             <div className="brand-title-wrap">
-              <span className="brand-main-title">HERITAGE LUMEN</span>
-              <span className="brand-sub-title">PREPARATORY ACADEMY</span>
+              <span className="brand-main-title">THE RABINDRA BHARATI</span>
+              <span className="brand-sub-title">HERITAGE DAY SCHOOL</span>
             </div>
           </Link>
 
@@ -242,8 +242,8 @@ export default function Navbar({ onOpenBanner }) {
               <i className="fa-solid fa-graduation-cap"></i>
             </div>
             <div className="brand-title-wrap">
-              <span className="brand-main-title" style={{ fontSize: '1.05rem' }}>HERITAGE LUMEN</span>
-              <span className="brand-sub-title" style={{ fontSize: '0.62rem' }}>PREPARATORY ACADEMY</span>
+              <span className="brand-main-title" style={{ fontSize: '0.95rem' }}>THE RABINDRA BHARATI</span>
+              <span className="brand-sub-title" style={{ fontSize: '0.62rem' }}>HERITAGE DAY SCHOOL</span>
             </div>
           </div>
           <button

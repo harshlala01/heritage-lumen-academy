@@ -50,7 +50,7 @@ export default function ContactPage({ onEnquirySuccess }) {
                 <h5 style={{ color: 'var(--navy-primary)', fontWeight: 700 }}>Accounts & Fee Desk</h5>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                   <i className="fa-solid fa-phone" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> +1 (555) 234-5682<br />
-                  <i className="fa-solid fa-envelope" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> accounts@heritagelumen.edu<br />
+                  <i className="fa-solid fa-envelope" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> <a href="mailto:therabindrabharatihds@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>therabindrabharatihds@gmail.com</a><br />
                   Hours: Mon–Sat 9:00 AM – 2:00 PM
                 </p>
               </div>
@@ -59,7 +59,7 @@ export default function ContactPage({ onEnquirySuccess }) {
                 <h5 style={{ color: 'var(--navy-primary)', fontWeight: 700 }}>Transport & Fleet Office</h5>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                   <i className="fa-solid fa-phone" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> +1 (555) 234-5690<br />
-                  <i className="fa-solid fa-envelope" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> transport@heritagelumen.edu<br />
+                  <i className="fa-solid fa-envelope" style={{ color: 'var(--gold-primary)', marginRight: '6px' }}></i> <a href="mailto:therabindrabharatihds@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>therabindrabharatihds@gmail.com</a><br />
                   Emergency Route Helpline Active
                 </p>
               </div>

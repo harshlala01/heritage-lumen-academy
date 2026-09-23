@@ -11,7 +11,7 @@ export const academyData = {
       id: 1,
       icon: "fa-book-open",
       title: "Academic Excellence",
-      desc: "Rigorous ICSE & ISC curriculum preparing students for global universities.",
+      desc: "Rigorous CBSE curriculum preparing students for premier university admissions.",
       tag: "98.4% PLACEMENT",
       link: "#divisions"
     },
@@ -141,7 +141,7 @@ export const academyData = {
       icon: "fa-scroll",
       iconColor: "c4",
       age: "Grades IX–X",
-      title: "Senior School (ICSE Board)",
+      title: "Secondary School (CBSE Board)",
       desc: "Comprehensive board preparation, laboratory mastery, and Olympiad mentoring."
     },
     {
@@ -149,23 +149,15 @@ export const academyData = {
       icon: "fa-graduation-cap",
       iconColor: "c5",
       age: "Grades XI–XII",
-      title: "Senior Secondary (ISC Board)",
+      title: "Senior Secondary (CBSE Board)",
       desc: "Specialized Science, Commerce & Humanities streams with pre-university prep."
-    },
-    {
-      id: 6,
-      icon: "fa-globe",
-      iconColor: "c6",
-      age: "Grades XI–XII",
-      title: "International Baccalaureate (IB)",
-      desc: "Global IB Diploma Programme with Theory of Knowledge and extended research essays."
     }
   ],
   news: [
     {
       id: 1,
       date: "OCTOBER 14, 2025",
-      title: "Heritage Lumen Wins 1st at National STEM Robotics Conclave",
+      title: "The Rabindra Bharati Heritage Day School Wins 1st at National STEM Robotics Conclave",
       desc: "Contingent secured top honors for autonomous relief robotic prototype.",
       image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=600&auto=format&fit=crop"
     },
@@ -248,7 +240,7 @@ export const academyData = {
   testimonials: [
     {
       id: 1,
-      quote: "Heritage Lumen gave me the intellectual courage to challenge assumptions. The mentorship I received prepared me for reading Computer Science at Oxford.",
+      quote: "The Rabindra Bharati Heritage Day School gave me the intellectual courage to challenge assumptions. The mentorship I received prepared me for reading Computer Science at Oxford.",
       author: "Aarav Sen",
       role: "Valedictorian '23 • Oxford Scholar",
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
@@ -262,7 +254,7 @@ export const academyData = {
     },
     {
       id: 3,
-      quote: "The collegiate ethos and robotics labs at Heritage Lumen shaped my trajectory as a tech founder. It taught me that wisdom is creating real impact.",
+      quote: "The collegiate ethos and robotics labs at The Rabindra Bharati Heritage Day School shaped my trajectory as a tech founder. It taught me that wisdom is creating real impact.",
       author: "Ananya Deshmukh",
       role: "CEO, Novas Bio • Alumni '14",
       avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200&auto=format&fit=crop"
