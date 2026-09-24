@@ -9,6 +9,7 @@ import sys
 import os
 import uuid
 import json
+import re
 from functools import wraps
 
 if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
@@ -35,7 +36,7 @@ bcrypt = Bcrypt(app)
 DB_CONFIG = {
     'host': os.environ.get('DB_HOST', 'localhost'),
     'user': os.environ.get('DB_USER', 'root'),
-    'password': os.environ.get('DB_PASSWORD', '1234'),              # XAMPP default is empty ('')
+    'password': os.environ.get('DB_PASSWORD', ''),              # XAMPP default is empty ('')
     'database': os.environ.get('DB_NAME', 'school'),
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
@@ -209,7 +210,7 @@ def init_db():
     cursor.execute("SELECT COUNT(*) as cnt FROM content WHERE section='faculty'")
     if cursor.fetchone()['cnt'] == 0:
         default_faculty = [
-            ('faculty', 'Mithu Sinha Bhattacharya', 'Principal & Academic Leader (M.Sc, B.Ed • 18+ Years Pedagogy)', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop', 1),
+            ('faculty', 'Mithu Sinha Bhattacharya', 'Principal & Academic Leader (M.Sc, B.Ed • 18+ Years Pedagogy)', '/principal.png', 1),
             ('faculty', 'Dr. Subhash Chandra Ghosh', 'Dean of Academic Development & Senior Science Advisor (Ph.D Physics)', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop', 2),
             ('faculty', 'Anamika Roy Chowdhury', 'Head of Mathematics & STEM Instruction (M.Sc Mathematics, B.Ed)', 'https://images.unsplash.com/photo-1580894732444-8ecded7900cd?q=80&w=600&auto=format&fit=crop', 3),
             ('faculty', 'Debabrata Mukherjee', 'Head of Humanities & Social Sciences (M.A History, B.Ed)', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop', 4),
@@ -239,41 +240,7 @@ def init_db():
                 (sec, tit, sub, img, ordr)
             )
 
-    # Default notices seeding removed as per admin preference (starts completely fresh)
-
-    # Seed Default Events if empty
-    cursor.execute("SELECT COUNT(*) as cnt FROM events")
-    if cursor.fetchone()['cnt'] == 0:
-        default_events = [
-            ('Annual Sports Meet & Inter-House Championship', '15/12/2026', '9:00 AM – 3:30 PM', 'Main Academy Sports Grounds', 'Track and field athletics, house drills, obstacle races, and awards ceremony.', False),
-            ('Rabindra Jayanti & Cultural Evening', '09/05/2026', '10:00 AM – 1:30 PM', 'School Main Auditorium', 'Tribute to Gurudev Rabindranath Tagore featuring student dance, poetry recitation, and choir.', False),
-            ('Annual Science, Technology & Innovation Exhibition', '28/11/2026', '10:30 AM – 4:00 PM', 'School Innovation Laboratories', 'Display of dynamic STEM prototypes, robotics demonstrations, and eco-green projects.', False),
-            ('Investiture Ceremony & Prefectorial Board Induction', '18/07/2026', '10:00 AM – 1:00 PM', 'Heritage Quadrangle', 'Solemn swearing-in ceremony of Head Boy, Head Girl, Sports Captains, and House Prefects.', False)
-        ]
-        for tit, dt, tm, ven, desc, arch in default_events:
-            cursor.execute(
-                "INSERT INTO events (title, event_date, event_time, venue, description, is_archived) VALUES (%s, %s, %s, %s, %s, %s)",
-                (tit, dt, tm, ven, desc, arch)
-            )
-
-    # Seed Default Gallery Items if empty
-    cursor.execute("SELECT COUNT(*) as cnt FROM gallery_items")
-    if cursor.fetchone()['cnt'] == 0:
-        default_gallery = [
-            ('annual-function', 'image', 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000&auto=format&fit=crop', 'Auditorium & Performing Arts Grand Finale', 1),
-            ('annual-function', 'image', 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1000&auto=format&fit=crop', 'Classical Dance & Vocal Harmony Ensemble', 2),
-            ('sports-day', 'image', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1000&auto=format&fit=crop', 'Inter-House Sprint & Relay Finals', 1),
-            ('sports-day', 'image', 'https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?q=80&w=1000&auto=format&fit=crop', 'Medal Felicitation by Principal', 2),
-            ('cultural-events', 'image', 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1000&auto=format&fit=crop', 'Rabindra Jayanti Heritage Celebrations', 1),
-            ('trips', 'image', 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1000&auto=format&fit=crop', 'Botanical Gardens Educational Excursion', 1),
-            ('celebrations', 'image', 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop', 'Kindergarten Festive Carnival', 1),
-            ('campus', 'image', 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1000&auto=format&fit=crop', 'Main Academic Building & Quadrangle', 1)
-        ]
-        for slug, itype, murl, tit, ordr in default_gallery:
-            cursor.execute(
-                "INSERT INTO gallery_items (album_slug, item_type, media_url, title, display_order) VALUES (%s, %s, %s, %s, %s)",
-                (slug, itype, murl, tit, ordr)
-            )
+    # Default notices, events, and gallery seeding disabled to respect admin deletions
 
     # Seed Default Site Settings
     default_settings = [
@@ -824,9 +791,90 @@ def get_gallery_albums():
         cursor.execute("SELECT COUNT(*) as total FROM gallery_items WHERE album_slug = %s", (alb['slug'],))
         cnt = cursor.fetchone()
         alb['item_count'] = cnt['total'] if cnt else 0
+        cursor.execute("SELECT media_url FROM gallery_items WHERE album_slug = %s AND item_type = 'image' ORDER BY display_order ASC, id DESC LIMIT 1", (alb['slug'],))
+        first_img = cursor.fetchone()
+        alb['cover_image'] = first_img['media_url'] if first_img else None
     cursor.close()
     conn.close()
     return jsonify(albums)
+
+@app.route('/api/admin/gallery/albums', methods=['POST'])
+@token_required
+def create_gallery_album(current_user):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    data = request.get_json() or {}
+    title = data.get('title', '').strip()
+    description = data.get('description', '').strip()
+
+    if not title:
+        return jsonify({'message': 'Album category title is required'}), 400
+
+    slug = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')
+    if not slug:
+        slug = f'album-{uuid.uuid4().hex[:6]}'
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM gallery_albums WHERE slug = %s", (slug,))
+    if cursor.fetchone():
+        slug = f"{slug}-{uuid.uuid4().hex[:4]}"
+
+    cursor.execute("SELECT COALESCE(MAX(display_order), 0) + 1 AS next_order FROM gallery_albums")
+    next_order = cursor.fetchone()['next_order']
+
+    cursor.execute(
+        "INSERT INTO gallery_albums (slug, title, description, display_order) VALUES (%s, %s, %s, %s)",
+        (slug, title, description, next_order)
+    )
+    conn.commit()
+    album_id = cursor.lastrowid
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Category album created successfully', 'id': album_id, 'slug': slug, 'title': title}), 201
+
+@app.route('/api/admin/gallery/albums/<int:album_id>', methods=['PUT'])
+@token_required
+def update_gallery_album(current_user, album_id):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+    data = request.get_json() or {}
+    title = data.get('title', '').strip()
+    description = data.get('description', '').strip()
+
+    if not title:
+        return jsonify({'message': 'Album category title is required'}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE gallery_albums SET title = %s, description = %s WHERE id = %s", (title, description, album_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Category album updated successfully'})
+
+@app.route('/api/admin/gallery/albums/<int:album_id>', methods=['DELETE'])
+@token_required
+def delete_gallery_album(current_user, album_id):
+    if current_user['role'] != 'admin':
+        return jsonify({'message': 'Admin access required'}), 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT slug FROM gallery_albums WHERE id = %s", (album_id,))
+    album = cursor.fetchone()
+    if not album:
+        cursor.close()
+        conn.close()
+        return jsonify({'message': 'Album not found'}), 404
+
+    slug = album['slug']
+    cursor.execute("DELETE FROM gallery_items WHERE album_slug = %s", (slug,))
+    cursor.execute("DELETE FROM gallery_albums WHERE id = %s", (album_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({'message': 'Category album and all its photos deleted successfully'})
 
 @app.route('/api/gallery/items/<album_slug>', methods=['GET'])
 def get_gallery_items(album_slug):
@@ -840,6 +888,24 @@ def get_gallery_items(album_slug):
     cursor.close()
     conn.close()
     return jsonify(items)
+
+@app.route('/api/gallery/all', methods=['GET'])
+def get_all_gallery_items():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT gi.*, ga.title as album_title 
+        FROM gallery_items gi 
+        LEFT JOIN gallery_albums ga ON gi.album_slug = ga.slug 
+        ORDER BY gi.id DESC
+    """)
+    rows = cursor.fetchall()
+    for item in rows:
+        if item.get('created_at'):
+            item['created_at'] = str(item['created_at'])
+    cursor.close()
+    conn.close()
+    return jsonify(rows)
 
 @app.route('/api/admin/gallery/items', methods=['POST'])
 @token_required

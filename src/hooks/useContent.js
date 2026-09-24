@@ -10,7 +10,7 @@ export function useContent(section, fallback) {
     fetch(`${CONTENT_API_URL}/api/content/${section}`)
       .then((response) => (response.ok ? response.json() : []))
       .then((data) => {
-        if (active && Array.isArray(data) && data.length > 0) setItems(data);
+        if (active && Array.isArray(data)) setItems(data);
       })
       .catch(() => {
         // Keep the local fallback when the CMS is unavailable.

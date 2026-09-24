@@ -87,6 +87,13 @@ export default function AdminDashboard() {
   });
   const [galleryUploadLoading, setGalleryUploadLoading] = useState(false);
 
+  // Gallery Category (Album) Management State
+  const [albumManageModalOpen, setAlbumManageModalOpen] = useState(false);
+  const [editingAlbum, setEditingAlbum] = useState(null);
+  const [newAlbumTitle, setNewAlbumTitle] = useState('');
+  const [newAlbumDesc, setNewAlbumDesc] = useState('');
+  const [albumSaving, setAlbumSaving] = useState(false);
+
   // Admissions & Settings state
   const [admissionsData, setAdmissionsData] = useState({
     status: 'Open for 2026–2027',
@@ -671,6 +678,104 @@ export default function AdminDashboard() {
     }
   };
 
+  // ---------- GALLERY CATEGORY (ALBUM) ACTIONS ----------
+  const handleCreateAlbum = async (e) => {
+    e.preventDefault();
+    const trimmed = newAlbumTitle.trim();
+    if (!trimmed) {
+      showToast('Please enter a category title', 'error');
+      return;
+    }
+    setAlbumSaving(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/gallery/albums`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: trimmed,
+          description: newAlbumDesc.trim()
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to create category');
+      showToast('Category created successfully!');
+      setNewAlbumTitle('');
+      setNewAlbumDesc('');
+      await loadGalleryAlbums();
+      if (data.slug) {
+        setSelectedAlbum(data.slug);
+      }
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setAlbumSaving(false);
+    }
+  };
+
+  const handleUpdateAlbum = async (e) => {
+    e.preventDefault();
+    if (!editingAlbum || !editingAlbum.title?.trim()) {
+      showToast('Category title cannot be empty', 'error');
+      return;
+    }
+    setAlbumSaving(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/gallery/albums/${editingAlbum.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: editingAlbum.title.trim(),
+          description: (editingAlbum.description || '').trim()
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to update category');
+      showToast('Category updated successfully!');
+      setEditingAlbum(null);
+      await loadGalleryAlbums();
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setAlbumSaving(false);
+    }
+  };
+
+  const handleDeleteAlbum = async (albumId, albumTitle) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete category "${albumTitle}"? All photos inside this category will also be deleted.`
+      )
+    ) {
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/gallery/albums/${albumId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to delete category');
+      showToast('Category deleted successfully!');
+      const updatedAlbums = galleryAlbums.filter((a) => a.id !== albumId);
+      setGalleryAlbums(updatedAlbums);
+      if (updatedAlbums.length > 0) {
+        setSelectedAlbum(updatedAlbums[0].slug);
+      } else {
+        setSelectedAlbum('');
+        setGalleryItems([]);
+      }
+      loadStats();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  };
+
   // ---------- ADMISSIONS & SETTINGS ACTIONS ----------
   const handleCircularDocUpload = async (e) => {
     const file = e.target.files[0];
@@ -791,9 +896,11 @@ export default function AdminDashboard() {
       {/* TOP CMS HEADER */}
       <header className="admin-header-bar">
         <div className="admin-header-brand">
-          <div className="admin-brand-crest">
-            <i className="fa-solid fa-graduation-cap"></i>
-          </div>
+          <img
+            src="/logo.jpg"
+            alt="The Rabindra Bharati Heritage Day School"
+            className="admin-brand-logo-img"
+          />
           <div>
             <h1 className="admin-portal-title">THE RABINDRA BHARATI HERITAGE DAY SCHOOL</h1>
             <p className="admin-portal-subtitle">Institutional CMS & Executive Administration Console</p>
@@ -1340,21 +1447,32 @@ export default function AdminDashboard() {
                   Manage album-based photos, YouTube videos, and arrange display order.
                 </p>
               </div>
-              <button
-                type="button"
-                className="admin-action-btn primary"
-                onClick={() => {
-                  setGalleryFormData({ title: '', media_url: '', video_url: '' });
-                  setGalleryModalOpen(true);
-                }}
-              >
-                <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
-                Add Media to Album
-              </button>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="admin-action-btn secondary"
+                  onClick={() => setAlbumManageModalOpen(true)}
+                >
+                  <i className="fa-solid fa-layer-group" style={{ marginRight: '6px', color: '#D4AF37' }}></i>
+                  Manage Categories
+                </button>
+                <button
+                  type="button"
+                  className="admin-action-btn primary"
+                  disabled={galleryAlbums.length === 0}
+                  onClick={() => {
+                    setGalleryFormData({ title: '', media_url: '', video_url: '' });
+                    setGalleryModalOpen(true);
+                  }}
+                >
+                  <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                  Add Media to Album
+                </button>
+              </div>
             </div>
 
             {/* ALBUM SELECTOR TABS */}
-            <div className="admin-album-tabs-bar">
+            <div className="admin-album-tabs-bar" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
               {galleryAlbums.map((alb) => (
                 <button
                   key={alb.slug}
@@ -1366,15 +1484,23 @@ export default function AdminDashboard() {
                   <span className="album-count">{alb.item_count || 0}</span>
                 </button>
               ))}
+              <button
+                type="button"
+                className="album-tab-chip"
+                style={{
+                  background: '#F1F5F9',
+                  border: '1.5px dashed #94A3B8',
+                  color: '#0B1B3D',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+                onClick={() => setAlbumManageModalOpen(true)}
+                title="Create or manage gallery categories"
+              >
+                <i className="fa-solid fa-plus" style={{ marginRight: '5px', color: '#D4AF37' }}></i>
+                New Category
+              </button>
             </div>
-
-            {/* ACTIVE ALBUM DESCRIPTION */}
-            {galleryAlbums.find((a) => a.slug === selectedAlbum) && (
-              <div className="album-info-bar">
-                <i className="fa-solid fa-circle-info" style={{ color: '#D4AF37', marginRight: '8px' }}></i>
-                <span>{galleryAlbums.find((a) => a.slug === selectedAlbum).description}</span>
-              </div>
-            )}
 
             {/* GALLERY ITEMS GRID */}
             {galleryLoading ? (
@@ -2444,6 +2570,293 @@ export default function AdminDashboard() {
                 Done
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: MANAGE GALLERY CATEGORIES (ALBUMS) */}
+      {/* ============================================================== */}
+      {albumManageModalOpen && (
+        <div className="admin-modal-overlay" onClick={() => setAlbumManageModalOpen(false)}>
+          <div
+            className="admin-modal-card"
+            style={{ maxWidth: '640px', width: '92%' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '8px',
+                    background: 'rgba(212, 175, 55, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#B8860B',
+                    fontSize: '1.1rem'
+                  }}
+                >
+                  <i className="fa-solid fa-layer-group"></i>
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Manage Gallery Categories</h3>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B' }}>
+                    Create, edit, and organize albums displayed in the photo gallery
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setAlbumManageModalOpen(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <div style={{ padding: '20px' }}>
+              {/* Add New Album Form */}
+              <form
+                onSubmit={handleCreateAlbum}
+                style={{
+                  background: '#F8FAFC',
+                  border: '1.5px solid #E2E8F0',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  marginBottom: '20px'
+                }}
+              >
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '0.9rem',
+                    fontWeight: 700,
+                    color: '#0B1B3D',
+                    marginBottom: '8px'
+                  }}
+                >
+                  + Add New Gallery Category
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <input
+                    type="text"
+                    placeholder="Category / Album Title (e.g. Science Exhibition, Sports Meet 2026...)"
+                    value={newAlbumTitle}
+                    onChange={(e) => setNewAlbumTitle(e.target.value)}
+                    style={{
+                      padding: '9px 12px',
+                      borderRadius: '6px',
+                      border: '1.5px solid #CBD5E1',
+                      fontSize: '0.88rem',
+                      outline: 'none',
+                      background: '#FFFFFF'
+                    }}
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Short description (optional, e.g. Annual science fair and dynamic prototypes)"
+                    value={newAlbumDesc}
+                    onChange={(e) => setNewAlbumDesc(e.target.value)}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '1.5px solid #CBD5E1',
+                      fontSize: '0.85rem',
+                      outline: 'none',
+                      background: '#FFFFFF'
+                    }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="submit"
+                      className="admin-action-btn primary"
+                      disabled={albumSaving}
+                      style={{ padding: '8px 18px', fontSize: '0.85rem' }}
+                    >
+                      <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                      {albumSaving ? 'Creating...' : 'Create Category'}
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              {/* Existing Categories List */}
+              <div>
+                <h4 style={{ fontSize: '0.92rem', color: '#0B1B3D', fontWeight: 700, marginBottom: '10px' }}>
+                  Existing Categories ({galleryAlbums.length})
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '280px', overflowY: 'auto' }}>
+                  {galleryAlbums.map((alb) => (
+                    <div
+                      key={alb.id || alb.slug}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '10px 14px',
+                        background: '#FFFFFF',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: '8px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontWeight: 700, color: '#0B1B3D', fontSize: '0.92rem' }}>
+                            {alb.title}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: '0.72rem',
+                              background: '#F1F5F9',
+                              color: '#64748B',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              fontWeight: 600
+                            }}
+                          >
+                            {alb.item_count || 0} photo{(alb.item_count || 0) === 1 ? '' : 's'}
+                          </span>
+                        </div>
+                        {alb.description && (
+                          <span style={{ fontSize: '0.78rem', color: '#64748B', maxWidth: '380px' }} className="truncate-text">
+                            {alb.description}
+                          </span>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingAlbum({ ...alb });
+                          }}
+                          style={{
+                            background: '#F1F5F9',
+                            border: 'none',
+                            color: '#0B1B3D',
+                            cursor: 'pointer',
+                            padding: '6px 10px',
+                            borderRadius: '5px',
+                            fontSize: '0.82rem'
+                          }}
+                          title={`Edit category "${alb.title}"`}
+                        >
+                          <i className="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteAlbum(alb.id, alb.title)}
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            border: 'none',
+                            color: '#DC2626',
+                            cursor: 'pointer',
+                            padding: '6px 10px',
+                            borderRadius: '5px',
+                            fontSize: '0.82rem'
+                          }}
+                          title={`Delete category "${alb.title}"`}
+                        >
+                          <i className="fa-solid fa-trash-can"></i>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div
+              className="modal-footer-btns"
+              style={{
+                borderTop: '1px solid #E2E8F0',
+                padding: '14px 20px',
+                display: 'flex',
+                justifyContent: 'flex-end',
+                background: '#F8FAFC',
+                borderBottomLeftRadius: '12px',
+                borderBottomRightRadius: '12px'
+              }}
+            >
+              <button
+                type="button"
+                className="admin-action-btn secondary"
+                onClick={() => setAlbumManageModalOpen(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: EDIT GALLERY CATEGORY */}
+      {/* ============================================================== */}
+      {editingAlbum && (
+        <div className="admin-modal-overlay" onClick={() => setEditingAlbum(null)}>
+          <div
+            className="admin-modal-card"
+            style={{ maxWidth: '500px', width: '92%' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h3>Edit Gallery Category</h3>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setEditingAlbum(null)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateAlbum} className="modal-form" style={{ padding: '20px' }}>
+              <div className="form-group">
+                <label>Category Title *</label>
+                <input
+                  type="text"
+                  value={editingAlbum.title || ''}
+                  onChange={(e) =>
+                    setEditingAlbum({ ...editingAlbum, title: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Category Description</label>
+                <textarea
+                  rows="3"
+                  value={editingAlbum.description || ''}
+                  onChange={(e) =>
+                    setEditingAlbum({ ...editingAlbum, description: e.target.value })
+                  }
+                  placeholder="Short description of this photo album category..."
+                ></textarea>
+              </div>
+
+              <div className="modal-footer-btns" style={{ marginTop: '16px' }}>
+                <button
+                  type="button"
+                  className="admin-action-btn secondary"
+                  onClick={() => setEditingAlbum(null)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="admin-action-btn primary"
+                  disabled={albumSaving}
+                >
+                  {albumSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

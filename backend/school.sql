@@ -26,7 +26,6 @@ CREATE TABLE `content` (
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table `content`
-INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (1, 'gallery', 'xcvbnm', 'fdghjkl', '/uploads/gallery/004be27e7c2946c08ba7fa32a4009643.webp', NULL, 0, '2026-09-20 05:29:08');
 INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (2, 'banners', 'Nurturing Minds, Cultivating Character', 'Affiliated to CBSE, New Delhi • Established on Unwavering Academic Rigor & Ethical Foundation', 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1600&auto=format&fit=crop', NULL, 1, '2026-09-24 04:23:36');
 INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (3, 'banners', 'State-of-the-Art Scientific & STEM Laboratories', 'Inspiring young innovators through experiential robotics, physics, chemistry, and smart digital classrooms', 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1600&auto=format&fit=crop', NULL, 2, '2026-09-24 04:23:36');
 INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (4, 'banners', 'Admissions Open for Academic Session 2026–2027', 'Welcoming scholars from Pre-Primary (Nursery) through Secondary Grade X under CBSE Curriculum', 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1600&auto=format&fit=crop', NULL, 3, '2026-09-24 04:23:36');
@@ -36,7 +35,7 @@ INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extr
 INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (8, 'facilities', 'Computing & Artificial Intelligence Lab', 'High-speed gigabit fiber connected workstations featuring Python, Robotics, and foundational coding platforms.', 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800&auto=format&fit=crop', NULL, 4, '2026-09-24 04:23:36');
 INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (9, 'facilities', 'Athletic Complex & Sports Arena', 'Full-size regulation basketball courts, cricket practice nets with automated bowling machines, and badminton courts.', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800&auto=format&fit=crop', NULL, 5, '2026-09-24 04:23:36');
 INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (10, 'facilities', 'Performing Arts & Auditorium', 'Acoustically engineered auditorium supporting theatrical productions, choir performances, and annual functions.', 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800&auto=format&fit=crop', NULL, 6, '2026-09-24 04:23:36');
-INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (11, 'faculty', 'Mithu Sinha Bhattacharya', 'Principal & Academic Leader (M.Sc, B.Ed • 18+ Years Pedagogy)', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop', NULL, 1, '2026-09-24 04:23:36');
+INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (11, 'faculty', 'Mithu Sinha Bhattacharya', 'Principal & Academic Leader (M.Sc, B.Ed • 18+ Years Pedagogy)', '/principal.png', NULL, 1, '2026-09-24 04:23:36');
 INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (12, 'faculty', 'Dr. Subhash Chandra Ghosh', 'Dean of Academic Development & Senior Science Advisor (Ph.D Physics)', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop', NULL, 2, '2026-09-24 04:23:36');
 INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (13, 'faculty', 'Anamika Roy Chowdhury', 'Head of Mathematics & STEM Instruction (M.Sc Mathematics, B.Ed)', 'https://images.unsplash.com/photo-1580894732444-8ecded7900cd?q=80&w=600&auto=format&fit=crop', NULL, 3, '2026-09-24 04:23:36');
 INSERT INTO `content` (`id`, `section`, `title`, `subtitle`, `image_path`, `extra_data`, `display_order`, `created_at`) VALUES (14, 'faculty', 'Debabrata Mukherjee', 'Head of Humanities & Social Sciences (M.A History, B.Ed)', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop', NULL, 4, '2026-09-24 04:23:36');
@@ -66,9 +65,6 @@ CREATE TABLE `enquiries` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table `enquiries`
-INSERT INTO `enquiries` (`id`, `parent_name`, `student_name`, `parent_email`, `parent_phone`, `grade`, `academic_year`, `message`, `created_at`) VALUES (1, 'dfghjkl', 'asdfghjk', 'nitishpaul7529@gmail.com', '7974646464646464', 'Middle School (Grades VI-VIII)', '2025-2026', '', '2026-09-20 05:26:50');
-
 -- -------------------------------------------------------------
 -- Table structure for table `events`
 -- -------------------------------------------------------------
@@ -83,13 +79,11 @@ CREATE TABLE `events` (
   `is_archived` tinyint(1) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table `events`
-INSERT INTO `events` (`id`, `title`, `event_date`, `event_time`, `venue`, `description`, `is_archived`, `created_at`) VALUES (1, 'Annual Sports Meet & Inter-House Championship', '15/12/2026', '9:00 AM – 3:30 PM', 'Main Academy Sports Grounds', 'Track and field athletics, house drills, obstacle races, and awards ceremony.', 0, '2026-09-24 04:23:36');
-INSERT INTO `events` (`id`, `title`, `event_date`, `event_time`, `venue`, `description`, `is_archived`, `created_at`) VALUES (2, 'Rabindra Jayanti & Cultural Evening', '09/05/2026', '10:00 AM – 1:30 PM', 'School Main Auditorium', 'Tribute to Gurudev Rabindranath Tagore featuring student dance, poetry recitation, and choir.', 0, '2026-09-24 04:23:36');
-INSERT INTO `events` (`id`, `title`, `event_date`, `event_time`, `venue`, `description`, `is_archived`, `created_at`) VALUES (3, 'Annual Science, Technology & Innovation Exhibition', '28/11/2026', '10:30 AM – 4:00 PM', 'School Innovation Laboratories', 'Display of dynamic STEM prototypes, robotics demonstrations, and eco-green projects.', 0, '2026-09-24 04:23:36');
-INSERT INTO `events` (`id`, `title`, `event_date`, `event_time`, `venue`, `description`, `is_archived`, `created_at`) VALUES (4, 'Investiture Ceremony & Prefectorial Board Induction', '18/07/2026', '10:00 AM – 1:00 PM', 'Heritage Quadrangle', 'Solemn swearing-in ceremony of Head Boy, Head Girl, Sports Captains, and House Prefects.', 0, '2026-09-24 04:23:36');
+INSERT INTO `events` (`id`, `title`, `event_date`, `event_time`, `venue`, `description`, `is_archived`, `created_at`) VALUES (6, 'sports meet', '25/9/2026', '10:00 AM – 1:00 PM', 'School Ground', 'zxcvbnmnbvcxvbnmbvcbnm', 0, '2026-09-24 15:23:38');
+INSERT INTO `events` (`id`, `title`, `event_date`, `event_time`, `venue`, `description`, `is_archived`, `created_at`) VALUES (7, 'rakhi', '26/9/2026', '10:00 AM – 1:00 PM', 'School Auditorium / Ground', 'dxfcgvbnm', 0, '2026-09-24 15:24:23');
 
 -- -------------------------------------------------------------
 -- Table structure for table `gallery_albums`
@@ -104,15 +98,10 @@ CREATE TABLE `gallery_albums` (
   `display_order` int(11) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table `gallery_albums`
-INSERT INTO `gallery_albums` (`id`, `slug`, `title`, `description`, `cover_image`, `display_order`) VALUES (1, 'annual-function', 'Annual Function', 'Grand celebrations, student theatrical performances, awards, and yearly fest.', 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000&auto=format&fit=crop', 1);
-INSERT INTO `gallery_albums` (`id`, `slug`, `title`, `description`, `cover_image`, `display_order`) VALUES (2, 'sports-day', 'Sports Day', 'Track and field athletics, house championships, drills, and medal ceremonies.', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1000&auto=format&fit=crop', 2);
-INSERT INTO `gallery_albums` (`id`, `slug`, `title`, `description`, `cover_image`, `display_order`) VALUES (3, 'cultural-events', 'Cultural Events', 'Music, traditional dance, Rabindra Jayanti, independence day, and art exhibitions.', 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1000&auto=format&fit=crop', 3);
-INSERT INTO `gallery_albums` (`id`, `slug`, `title`, `description`, `cover_image`, `display_order`) VALUES (4, 'trips', 'Trips & Excursions', 'Educational field excursions, science park explorations, nature camps, and heritage walks.', 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1000&auto=format&fit=crop', 4);
-INSERT INTO `gallery_albums` (`id`, `slug`, `title`, `description`, `cover_image`, `display_order`) VALUES (5, 'celebrations', 'Celebrations', 'Teachers Day, Childrens Day, Saraswati Puja, and festive occasions at campus.', 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1000&auto=format&fit=crop', 5);
-INSERT INTO `gallery_albums` (`id`, `slug`, `title`, `description`, `cover_image`, `display_order`) VALUES (6, 'campus', 'Campus & Infrastructure', 'Classrooms, high-tech science laboratories, smart halls, library, and sports arena.', 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1000&auto=format&fit=crop', 6);
+INSERT INTO `gallery_albums` (`id`, `slug`, `title`, `description`, `cover_image`, `display_order`) VALUES (7, 'teachers-day', 'Teachers Day', 'Celebrating Teachers Day 2026', NULL, 1);
 
 -- -------------------------------------------------------------
 -- Table structure for table `gallery_items`
@@ -127,17 +116,13 @@ CREATE TABLE `gallery_items` (
   `display_order` int(11) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table `gallery_items`
-INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (1, 'annual-function', 'image', 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000&auto=format&fit=crop', 'Auditorium & Performing Arts Grand Finale', 2, '2026-09-24 04:23:36');
-INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (2, 'annual-function', 'image', 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1000&auto=format&fit=crop', 'Classical Dance & Vocal Harmony Ensemble', 1, '2026-09-24 04:23:36');
-INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (3, 'sports-day', 'image', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1000&auto=format&fit=crop', 'Inter-House Sprint & Relay Finals', 1, '2026-09-24 04:23:36');
-INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (4, 'sports-day', 'image', 'https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?q=80&w=1000&auto=format&fit=crop', 'Medal Felicitation by Principal', 2, '2026-09-24 04:23:36');
-INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (5, 'cultural-events', 'image', 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1000&auto=format&fit=crop', 'Rabindra Jayanti Heritage Celebrations', 1, '2026-09-24 04:23:36');
-INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (6, 'trips', 'image', 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1000&auto=format&fit=crop', 'Botanical Gardens Educational Excursion', 1, '2026-09-24 04:23:36');
-INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (7, 'celebrations', 'image', 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop', 'Kindergarten Festive Carnival', 1, '2026-09-24 04:23:36');
-INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (8, 'campus', 'image', 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1000&auto=format&fit=crop', 'Main Academic Building & Quadrangle', 1, '2026-09-24 04:23:36');
+INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (9, 'teachers-day', 'image', '/uploads/gallery/892c9f5bb6fd4ff3aaf7cf8e2ac3fbcd_ht1.jpg', 'celebration', 1, '2026-09-24 15:19:32');
+INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (10, 'teachers-day', 'image', '/uploads/gallery/d28a30f67bb34b5fbec5f555171ac508_ht2.jpeg', 'celebration', 2, '2026-09-24 15:20:03');
+INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (11, 'teachers-day', 'image', '/uploads/gallery/7dce8ce6a5854bc4b5bf5d34408f4755_ht3.jpeg', 'celebration', 3, '2026-09-24 15:20:24');
+INSERT INTO `gallery_items` (`id`, `album_slug`, `item_type`, `media_url`, `title`, `display_order`, `created_at`) VALUES (12, 'teachers-day', 'image', '/uploads/gallery/9659fe5887be42528f0164dc97a36ca9_ht4.jpg', 'celebration', 4, '2026-09-24 15:20:44');
 
 -- -------------------------------------------------------------
 -- Table structure for table `notices`
@@ -154,10 +139,12 @@ CREATE TABLE `notices` (
   `is_archived` tinyint(1) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table `notices`
-INSERT INTO `notices` (`id`, `title`, `notice_date`, `category`, `description`, `attachment_path`, `attachment_name`, `is_archived`, `created_at`) VALUES (1, 'dfghjkl;', '24/09/2026', 'games', 'gvhbnm,.', '', '', 0, '2026-09-24 05:40:45');
+INSERT INTO `notices` (`id`, `title`, `notice_date`, `category`, `description`, `attachment_path`, `attachment_name`, `is_archived`, `created_at`) VALUES (5, 'exam 2026', '24/09/2026', 'exam', 'dfghjkhgcvbnjhgfdghjkhgfvb', '', '', 0, '2026-09-24 15:22:32');
+INSERT INTO `notices` (`id`, `title`, `notice_date`, `category`, `description`, `attachment_path`, `attachment_name`, `is_archived`, `created_at`) VALUES (6, 'games', '24/09/2026', 'games', 'fcgvhbjnmnvcxcvbnm,', '', '', 0, '2026-09-24 15:25:02');
+INSERT INTO `notices` (`id`, `title`, `notice_date`, `category`, `description`, `attachment_path`, `attachment_name`, `is_archived`, `created_at`) VALUES (8, 'zxcvbnm,', '24/09/2026', 'ghgjkl', 'sdfghjkl', '', '', 0, '2026-09-24 15:26:19');
 
 -- -------------------------------------------------------------
 -- Table structure for table `site_settings`
@@ -173,7 +160,7 @@ CREATE TABLE `site_settings` (
 -- Dumping data for table `site_settings`
 INSERT INTO `site_settings` (`setting_key`, `setting_value`, `updated_at`) VALUES ('admission_config', '{"status": "Open for 2026\\u20132027", "startDate": "01/10/2025", "lastDate": "31/03/2026", "prospectusFee": "500", "headline": "Admissions Open for Session 2026\\u20132027 (Nursery to Class X)", "guidelines": "Collect physical application packets from the Admissions Desk (Mon\\u2013Fri 10:30 AM to 3:00 PM). Complete verification and submit along with attested municipal birth certificate.", "feeNotice": "Admission and monthly tuition fees are non-refundable as established under institutional guidelines.", "booklistUniformInfo": "Uniform fabric and textbooks as per CBSE guidelines can be collected from the school store starting March 15th."}', '2026-09-24 04:23:36');
 INSERT INTO `site_settings` (`setting_key`, `setting_value`, `updated_at`) VALUES ('fee_structure', '{"session": "2026-2027", "schoolName": "HERITAGE DAY SCHOOL", "admissionFees": {"nursery": "5,000", "primary": "8,000", "middle": "10,000", "secondary": "10,000"}, "monthlyFees": {"nursery": "1,500", "primary": "1,700", "middle": "1,900", "secondary": "2,100"}, "refundable": "Not Refundable"}', '2026-09-24 04:23:36');
-INSERT INTO `site_settings` (`setting_key`, `setting_value`, `updated_at`) VALUES ('notice_categories', '[{"id": "sports", "label": "Sports"}, {"id": "games", "label": "games"}]', '2026-09-24 05:40:16');
+INSERT INTO `site_settings` (`setting_key`, `setting_value`, `updated_at`) VALUES ('notice_categories', '[{"id": "games", "label": "games"}, {"id": "exam", "label": "exam"}, {"id": "ghgjkl", "label": "ghgjkl"}]', '2026-09-24 15:26:05');
 
 -- -------------------------------------------------------------
 -- Table structure for table `users`

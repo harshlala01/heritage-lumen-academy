@@ -1,42 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { contentImage, useContent } from '../hooks/useContent';
+
+const API_BASE = 'http://localhost:5000';
 
 export default function PhotoGallery() {
   const [activePhoto, setActivePhoto] = useState(null);
+  const [moments, setMoments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const fallbackMoments = [
-    {
-      id: 1,
-      category: 'TRADITIONS',
-      title: 'Annual Valedictory & Commencement Convocation',
-      image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200&auto=format&fit=crop'
-    },
-    {
-      id: 2,
-      category: 'ATHLETICS',
-      title: 'Morning Crew & Athletics Fellowship',
-      image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=1200&auto=format&fit=crop'
-    },
-    {
-      id: 3,
-      category: 'PERFORMING ARTS',
-      title: 'Symphony Rehearsal & Brass Ensemble',
-      image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1200&auto=format&fit=crop'
-    },
-    {
-      id: 4,
-      category: 'INNOVATION',
-      title: 'Genomics & Applied Chemistry Laboratory',
-      image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1200&auto=format&fit=crop'
-    }
-  ];
-  const moments = useContent('gallery', fallbackMoments);
+  useEffect(() => {
+    // 1. Fetch live gallery items across all albums from backend
+    fetch(`${API_BASE}/api/gallery/all`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const formatted = data.slice(0, 4).map((item) => ({
+            id: item.id,
+            category: (item.album_title || item.album_slug || 'MOMENTS').toUpperCase(),
+            title: item.title || 'Campus Moment',
+            image: item.media_url.startsWith('http')
+              ? item.media_url
+              : `${API_BASE}${item.media_url}`
+          }));
+          setMoments(formatted);
+          setLoading(false);
+        } else {
+          // Check /api/content/gallery
+          fetch(`${API_BASE}/api/content/gallery`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((cData) => {
+              if (Array.isArray(cData) && cData.length > 0) {
+                const formatted = cData.slice(0, 4).map((item) => ({
+                  id: item.id,
+                  category: (item.subtitle || 'CAMPUS').toUpperCase(),
+                  title: item.title,
+                  image: item.image_path.startsWith('http')
+                    ? item.image_path
+                    : `${API_BASE}${item.image_path}`
+                }));
+                setMoments(formatted);
+              } else {
+                setMoments([]); // Completely empty when user deleted all photos!
+              }
+              setLoading(false);
+            })
+            .catch(() => {
+              setMoments([]);
+              setLoading(false);
+            });
+        }
+      })
+      .catch(() => {
+        setMoments([]);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <section className="campus-moments-vibrancy-section">
       <div className="container">
-        {/* Header matching Image 2 */}
+        {/* Header */}
         <div className="cm-vibrancy-header">
           <div className="cm-vibrancy-header-left">
             <span className="cm-vibrancy-eyebrow">EXPERIENCE THE VIBRANCY</span>
@@ -47,30 +70,68 @@ export default function PhotoGallery() {
           </Link>
         </div>
 
-        {/* 2x2 Grid matching Image 2 */}
-        <div className="cm-vibrancy-2x2-grid">
-          {moments.map((item) => (
-            <div
-              className="cm-vibrancy-card"
-              key={item.id}
-              onClick={() => setActivePhoto(item)}
-              title={`Inspect ${item.title}`}
-            >
-              <div className="cm-vibrancy-card-inner">
-                <img 
-                  src={contentImage(item.image_path || item.image)} 
-                  alt={item.title} 
-                  className="cm-vibrancy-img"
-                  loading="lazy"
-                />
-                <div className="cm-vibrancy-gradient-overlay">
-                  <span className="cm-vibrancy-category">{item.category}</span>
-                  <h3 className="cm-vibrancy-title">{item.title}</h3>
+        {/* Dynamic Photo Grid or Clean Empty State */}
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '50px 20px', color: '#64748B' }}>
+            <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '24px', color: '#D4AF37', marginBottom: '10px' }}></i>
+            <p style={{ margin: 0, fontSize: '0.92rem' }}>Loading campus moments...</p>
+          </div>
+        ) : moments.length > 0 ? (
+          <div className="cm-vibrancy-2x2-grid">
+            {moments.map((item) => (
+              <div
+                className="cm-vibrancy-card"
+                key={item.id}
+                onClick={() => setActivePhoto(item)}
+                title={`Inspect ${item.title}`}
+              >
+                <div className="cm-vibrancy-card-inner">
+                  <img 
+                    src={item.image} 
+                    alt={item.title} 
+                    className="cm-vibrancy-img"
+                    loading="lazy"
+                  />
+                  <div className="cm-vibrancy-gradient-overlay">
+                    <span className="cm-vibrancy-category">{item.category}</span>
+                    <h3 className="cm-vibrancy-title">{item.title}</h3>
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{
+            textAlign: 'center',
+            padding: '60px 24px',
+            background: '#FAF7F2',
+            borderRadius: '16px',
+            border: '1.5px dashed rgba(212, 175, 55, 0.45)',
+            margin: '20px 0'
+          }}>
+            <div style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              background: '#FAF5EA',
+              border: '1.5px solid #D4AF37',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px',
+              color: '#D4AF37',
+              fontSize: '24px'
+            }}>
+              <i className="fa-regular fa-images"></i>
             </div>
-          ))}
-        </div>
+            <h4 style={{ color: '#0B1B3D', fontSize: '1.25rem', fontWeight: 700, marginBottom: '8px' }}>
+              No Photographs Published Yet
+            </h4>
+            <p style={{ color: '#64748B', fontSize: '0.95rem', maxWidth: '460px', margin: '0 auto', lineHeight: 1.6 }}>
+              Photographs of campus events and student activities will be published here soon.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Lightbox Modal */}
@@ -128,5 +189,3 @@ export default function PhotoGallery() {
     </section>
   );
 }
-
-

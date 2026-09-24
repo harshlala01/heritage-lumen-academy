@@ -58,9 +58,11 @@ export default function Navbar({ onOpenBanner }) {
             className="brand-logo-link"
             onClick={closeMobile}
           >
-            <div className="brand-crest-icon">
-              <i className="fa-solid fa-graduation-cap"></i>
-            </div>
+            <img
+              src="/logo.jpg"
+              alt="The Rabindra Bharati Heritage Day School"
+              className="brand-logo-img"
+            />
             <div className="brand-title-wrap">
               <span className="brand-main-title">THE RABINDRA BHARATI</span>
               <span className="brand-sub-title">HERITAGE DAY SCHOOL</span>
@@ -238,9 +240,11 @@ export default function Navbar({ onOpenBanner }) {
       <div className={`mobile-navigation-drawer ${mobileOpen ? 'open' : ''}`}>
         <div className="mobile-drawer-top">
           <div className="brand-logo-link">
-            <div className="brand-crest-icon" style={{ width: '38px', height: '38px' }}>
-              <i className="fa-solid fa-graduation-cap"></i>
-            </div>
+            <img
+              src="/logo.jpg"
+              alt="The Rabindra Bharati Heritage Day School"
+              className="brand-logo-img mobile"
+            />
             <div className="brand-title-wrap">
               <span className="brand-main-title" style={{ fontSize: '0.95rem' }}>THE RABINDRA BHARATI</span>
               <span className="brand-sub-title" style={{ fontSize: '0.62rem' }}>HERITAGE DAY SCHOOL</span>

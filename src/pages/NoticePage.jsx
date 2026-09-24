@@ -26,7 +26,7 @@ export default function NoticePage() {
     fetch(`${API_BASE}/api/notices`)
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           const formatted = data.map((n) => ({
             id: `live_${n.id}`,
             date: n.notice_date,
@@ -38,9 +38,11 @@ export default function NoticePage() {
             category: n.category || 'admissions'
           }));
           setLiveNotices(formatted);
+        } else {
+          setLiveNotices([]);
         }
       })
-      .catch(() => {});
+      .catch(() => setLiveNotices([]));
 
     // 2. Fetch live admission setting banner
     fetch(`${API_BASE}/api/settings/admission_config`)

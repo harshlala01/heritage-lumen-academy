@@ -59,9 +59,11 @@ sql_lines.append("COMMIT;\n")
 
 full_sql = "\n".join(sql_lines)
 
-# Write to backend/heritage_db.sql and project root heritage_db.sql
+# Write to backend/heritage_db.sql, project root heritage_db.sql, and school.sql
 backend_path = os.path.join(os.path.dirname(__file__), "heritage_db.sql")
-root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "heritage_db.sql"))
+root_path = os.path.join(os.path.dirname(__file__), "..", "heritage_db.sql")
+backend_school_path = os.path.join(os.path.dirname(__file__), "school.sql")
+root_school_path = os.path.join(os.path.dirname(__file__), "..", "school.sql")
 
 with open(backend_path, "w", encoding="utf-8") as f:
     f.write(full_sql)
@@ -69,9 +71,17 @@ with open(backend_path, "w", encoding="utf-8") as f:
 with open(root_path, "w", encoding="utf-8") as f:
     f.write(full_sql)
 
+with open(backend_school_path, "w", encoding="utf-8") as f:
+    f.write(full_sql)
+
+with open(root_school_path, "w", encoding="utf-8") as f:
+    f.write(full_sql)
+
 print(f"✅ Successfully updated SQL dump files (universal database compatibility):")
 print(f"   -> {backend_path}")
 print(f"   -> {root_path}")
+print(f"   -> {backend_school_path}")
+print(f"   -> {root_school_path}")
 print(f"Total lines: {len(sql_lines)}")
 cur.close()
 conn.close()

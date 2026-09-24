@@ -59,6 +59,21 @@ function Login() {
     <div className="login-page">
       <div className="login-shell">
         <aside className="login-brand-panel">
+          <div style={{ marginBottom: '20px' }}>
+            <img
+              src="/logo.jpg"
+              alt="The Rabindra Bharati Heritage Day School"
+              style={{
+                width: '74px',
+                height: '74px',
+                borderRadius: '50%',
+                objectFit: 'contain',
+                background: '#ffffff',
+                border: '2px solid #D4AF37',
+                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.15)'
+              }}
+            />
+          </div>
           <h2>Learn with purpose.<br /><em>Lead with character.</em></h2>
           <p>A thoughtful learning community shaped by curiosity, discipline and heritage.</p>
           <div className="brand-rule" />

@@ -2,6 +2,7 @@ import React from 'react';
 import Hero from '../components/Hero';
 import AboutSection from '../components/AboutSection';
 import AcademicAchievers from '../components/AcademicAchievers';
+import NewsAndEventsSection from '../components/NewsAndEventsSection';
 import PrincipalMessage from '../components/PrincipalMessage';
 import StatutoryAuditTable from '../components/StatutoryAuditTable';
 import PhotoGallery from '../components/PhotoGallery';
@@ -15,10 +16,13 @@ export default function HomePage({ onEnquirySuccess }) {
       {/* 1. Custom About Us Section */}
       <AboutSection />
 
-      {/* 2. Academic Achievers Section (Replaces Facilities Slider) */}
+      {/* 2. News & Announcements + Dynamic Events Section */}
+      <NewsAndEventsSection />
+
+      {/* 3. Academic Achievers Section */}
       <AcademicAchievers />
 
-      {/* 3. Principal's Message with Image & Address */}
+      {/* 4. Principal's Message with Image & Address */}
       <PrincipalMessage />
 
       {/* 4. Filter Division & Class-Wise Statutory Audit Table */}
