@@ -1,7 +1,7 @@
 import React from 'react';
 import Hero from '../components/Hero';
 import AboutSection from '../components/AboutSection';
-import FacilitiesSlider from '../components/FacilitiesSlider';
+import AcademicAchievers from '../components/AcademicAchievers';
 import PrincipalMessage from '../components/PrincipalMessage';
 import StatutoryAuditTable from '../components/StatutoryAuditTable';
 import PhotoGallery from '../components/PhotoGallery';
@@ -15,8 +15,8 @@ export default function HomePage({ onEnquirySuccess }) {
       {/* 1. Custom About Us Section */}
       <AboutSection />
 
-      {/* 2. Facilities Cards & Scroller Section */}
-      <FacilitiesSlider />
+      {/* 2. Academic Achievers Section (Replaces Facilities Slider) */}
+      <AcademicAchievers />
 
       {/* 3. Principal's Message with Image & Address */}
       <PrincipalMessage />

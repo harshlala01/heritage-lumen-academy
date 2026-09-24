@@ -27,41 +27,32 @@ export default function Preloader({ onComplete }) {
 
   if (phase === 'hidden') return null;
 
- return (
-  <div 
-    className={`global-preloader ${phase === 'complete' ? 'preloader-slide-up' : ''}`}
-    style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#fdfbf7',
-      zIndex: 9999
-    }}
-  >
+  return (
     <div 
-      className="preloader-content"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center'
-      }}
+      className={`global-preloader ${phase === 'complete' ? 'preloader-slide-up' : ''}`}
     >
-      <img 
-        src="/school-banner.jpeg" 
-        alt="The Rabindra Bharati Heritage Day School" 
-        className="preloader-school-image"
-        style={{ 
-          maxWidth: '500px', 
-          width: '100%', 
-          height: 'auto' 
-        }}
-      />
+      <div className="preloader-content">
+        <div className="preloader-crest-wrapper">
+          <svg className="preloader-svg-border" viewBox="0 0 140 140">
+            <circle
+              className={`preloader-svg-circle ${phase === 'drawing' || phase === 'complete' ? 'draw' : ''}`}
+              cx="70"
+              cy="70"
+              r="60"
+            />
+          </svg>
+          <div className="preloader-crest-inner">
+            <i className="fa-solid fa-graduation-cap"></i>
+          </div>
+        </div>
+        <div className="preloader-title">THE RABINDRA BHARATI</div>
+        <div className="preloader-subtitle-wrap">
+          <span className="preloader-line"></span>
+          <span className="preloader-subtitle">Heritage Day School</span>
+          <span className="preloader-line"></span>
+        </div>
+        <div className="preloader-motto">ESTD 2003 • AFFILIATED TO CBSE, NEW DELHI</div>
+      </div>
     </div>
-  </div>
-);
+  );
 }

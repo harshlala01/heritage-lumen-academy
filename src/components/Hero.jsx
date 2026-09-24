@@ -76,48 +76,63 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
-  // IntersectionObserver for Stats Counting Animation (threshold 0.4, runs once)
+  // Stats Counting Animation (0 to Target)
   useEffect(() => {
+    let animationFrame;
+    const startCounting = () => {
+      if (hasAnimated.current) return;
+      hasAnimated.current = true;
+
+      let startTime = null;
+      const duration = 1800; // 1.8 seconds
+
+      // Ease-out cubic: 1 - Math.pow(1 - progress, 3)
+      const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+      const animateNumbers = (timestamp) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = easeOutCubic(progress);
+
+        setStats({
+          val1: Math.round(eased * 100),
+          val2: Math.round(eased * 7),
+          val3: Math.round(eased * 22),
+          val4: Math.round(eased * 100),
+        });
+
+        if (progress < 1) {
+          animationFrame = requestAnimationFrame(animateNumbers);
+        }
+      };
+
+      animationFrame = requestAnimationFrame(animateNumbers);
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true;
-
-          let startTime = null;
-          const duration = 2000; // 2 seconds
-
-          // Ease-out cubic: 1 - Math.pow(1 - progress, 3)
-          const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
-
-          const animateNumbers = (timestamp) => {
-            if (!startTime) startTime = timestamp;
-            const elapsed = timestamp - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = easeOutCubic(progress);
-
-            setStats({
-              val1: Math.round(eased * 100),
-              val2: Math.round(eased * 7),
-              val3: Math.round(eased * 22),
-              val4: Math.round(eased * 100),
-            });
-
-            if (progress < 1) {
-              requestAnimationFrame(animateNumbers);
-            }
-          };
-
-          requestAnimationFrame(animateNumbers);
+        if (entries[0].isIntersecting) {
+          startCounting();
         }
       },
-      { threshold: 0.4 }
+      { threshold: 0.1 }
     );
 
     if (statsBarRef.current) {
       observer.observe(statsBarRef.current);
     }
 
-    return () => observer.disconnect();
+    // Safety fallback trigger
+    const timer = setTimeout(() => {
+      startCounting();
+    }, 250);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+    };
   }, []);
 
   // Floating Golden Particles Canvas (Layer 3)

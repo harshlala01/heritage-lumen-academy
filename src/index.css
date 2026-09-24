@@ -2180,6 +2180,119 @@
   transform: scale(1.1) rotate(90deg);
 }
 
+/* Image Banner Specific Modal Styling */
+.image-banner-modal-card {
+  max-width: 620px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 3px solid var(--gold-primary);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.banner-image-container {
+  width: 100%;
+  background: #FAF7F2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.school-popup-banner-img {
+  width: 100%;
+  height: auto;
+  max-height: 72vh;
+  object-fit: contain;
+  display: block;
+}
+
+.banner-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: #0B1B3D;
+  border-top: 2px solid var(--gold-primary);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.banner-footer-info {
+  display: flex;
+  align-items: center;
+}
+
+.banner-badge-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #F8F9FA;
+  letter-spacing: 0.5px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: livePulse 1.5s infinite;
+}
+
+@keyframes livePulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.banner-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.banner-dismiss-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.banner-dismiss-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.banner-apply-btn {
+  background: linear-gradient(135deg, #D4AF37 0%, #B38E22 100%);
+  color: #07132B !important;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 7px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 3px 10px rgba(212, 175, 55, 0.35);
+  transition: all 0.2s ease;
+}
+
+.banner-apply-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.5);
+}
+
 .banner-inner-content {
   padding: 24px;
 }
@@ -8012,4 +8125,487 @@ img, video, canvas, svg {
 
 .facility-slide-card:hover .facility-card-image-box .auto-carousel-img {
   transform: scale(1.08);
+}
+
+/* ==========================================================
+   ACADEMIC ACHIEVERS SECTION (MATCHING SCREENSHOT 1 PALETTE)
+   ========================================================== */
+.achievers-section {
+  padding: 85px 0 95px;
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.achievers-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.achievers-sub-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #C2410C;
+  margin-bottom: 8px;
+  text-transform: capitalize;
+}
+
+.achievers-sub-badge i {
+  color: #EA580C;
+  font-size: 1.1rem;
+}
+
+.achievers-title {
+  font-family: var(--font-serif);
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #7C2D12;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.achievers-desc {
+  font-size: 1.05rem;
+  color: #64748B;
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* 4-Card Desktop Grid (Wraps gracefully when 5th card revealed) */
+.achievers-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 1100px) {
+  .achievers-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .achievers-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+
+/* Achiever Card Styling */
+.achiever-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1.5px solid #F1E2DA;
+  box-shadow: 0 8px 24px rgba(124, 45, 18, 0.08);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.achiever-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #9A3412 0%, #EA580C 50%, #C2410C 100%);
+  opacity: 0.9;
+  transition: height 0.3s ease;
+}
+
+.achiever-card:hover::before {
+  height: 6px;
+}
+
+/* Animations on the 4 cards */
+.achiever-card-anim-1 {
+  animation: achieverFloat1 4.5s ease-in-out infinite;
+}
+
+.achiever-card-anim-2 {
+  animation: achieverFloat2 4.8s ease-in-out infinite 0.6s;
+}
+
+.achiever-card-anim-3 {
+  animation: achieverFloat1 4.2s ease-in-out infinite 1.2s;
+}
+
+.achiever-card-anim-4 {
+  animation: achieverFloat2 5s ease-in-out infinite 1.8s;
+}
+
+@keyframes achieverFloat1 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes achieverFloat2 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.achiever-card:hover {
+  transform: translateY(-10px) !important;
+  box-shadow: 0 18px 40px rgba(154, 52, 18, 0.2);
+  border-color: #C2410C;
+}
+
+/* Smooth reveal animation for 5th item */
+.achiever-card-revealed {
+  animation: achieverReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes achieverReveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.achiever-card-inner {
+  padding: 28px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+}
+
+/* Top Rank Tag */
+.achiever-rank-tag {
+  align-self: flex-end;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #9A3412;
+  background: #FFF7ED;
+  border: 1px solid #FFEDD5;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.achiever-rank-tag i {
+  color: #EA580C;
+}
+
+/* Circular Avatar Frame with Animated Ring */
+.achiever-avatar-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 6px auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achiever-avatar-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid #9A3412;
+  box-shadow: 0 0 12px rgba(154, 52, 18, 0.25);
+  transition: all 0.4s ease;
+}
+
+.achiever-avatar-pulse {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid #EA580C;
+  opacity: 0;
+  animation: avatarPulse 2.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+@keyframes avatarPulse {
+  0% {
+    transform: scale(0.94);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.14);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.14);
+    opacity: 0;
+  }
+}
+
+.achiever-card:hover .achiever-avatar-ring {
+  border-color: #C2410C;
+  box-shadow: 0 0 18px rgba(194, 65, 12, 0.45);
+  transform: scale(1.05);
+}
+
+.achiever-avatar-img-box {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #FFF7ED;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.achiever-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.achiever-card:hover .achiever-avatar-img {
+  transform: scale(1.12);
+}
+
+/* Info Section */
+.achiever-info {
+  margin-top: 4px;
+  width: 100%;
+}
+
+.achiever-name {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1E293B;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  line-height: 1.35;
+  min-height: 2.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achiever-class {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #64748B;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* Score Badge with Warm Rust & Shimmer */
+.achiever-score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #9A3412 0%, #C2410C 100%);
+  color: #ffffff;
+  padding: 6px 24px;
+  border-radius: 25px;
+  box-shadow: 0 4px 14px rgba(154, 52, 18, 0.32);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.achiever-score-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: badgeShine 3.5s infinite;
+}
+
+@keyframes badgeShine {
+  0% {
+    left: -100%;
+  }
+  30% {
+    left: 140%;
+  }
+  100% {
+    left: 140%;
+  }
+}
+
+.achiever-card:hover .achiever-score-badge {
+  transform: scale(1.06);
+  box-shadow: 0 6px 18px rgba(194, 65, 12, 0.45);
+}
+
+.achiever-score-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+/* Action Buttons */
+.achievers-action-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.btn-achievers-see-more {
+  background: #9A3412;
+  color: #ffffff;
+  padding: 13px 32px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 20px rgba(154, 52, 18, 0.28);
+}
+
+.btn-achievers-see-more:hover {
+  background: #7C2D12;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(154, 52, 18, 0.42);
+}
+
+.btn-achievers-see-more .btn-icon-arrow {
+  transition: transform 0.3s ease;
+}
+
+.btn-achievers-see-more:hover .btn-icon-arrow {
+  transform: translateX(4px);
+}
+
+.btn-achievers-banner-view {
+  background: transparent;
+  color: #9A3412;
+  border: 1.5px solid #9A3412;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-achievers-banner-view:hover {
+  background: #FFF7ED;
+  border-color: #7C2D12;
+  color: #7C2D12;
+  transform: translateY(-2px);
+}
+
+/* Full Banner Modal */
+.achievers-banner-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.achievers-banner-modal-box {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 900px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+  animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.achievers-modal-header {
+  padding: 16px 22px;
+  background: #7C2D12;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.achievers-modal-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.achievers-modal-close-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.achievers-modal-close-btn:hover {
+  transform: scale(1.2);
+}
+
+.achievers-modal-img-wrap {
+  padding: 16px;
+  background: #f8fafc;
+  display: flex;
+  justify-content: center;
+}
+
+.achievers-modal-img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }

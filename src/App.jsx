@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Preloader from './components/Preloader';
 import SmoothScroll from './components/SmoothScroll';
 import ScrollProgress from './components/ScrollProgress';
 import TopBar from './components/TopBar';
@@ -35,6 +34,14 @@ export default function App() {
   const [enquiryData, setEnquiryData] = useState(null);
   const [isBannerOpen, setIsBannerOpen] = useState(false);
 
+  // Auto-open announcement popup banner on initial page visit
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsBannerOpen(true);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleEnquirySuccess = (data) => {
     setEnquiryData(data);
     setModalOpen(true);
@@ -42,13 +49,10 @@ export default function App() {
 
   return (
     <Router>
-      {/* 1. Global Preloader Animation */}
-      <Preloader />
-
-      {/* 2. Global Smooth Scroll Engine (Lenis) */}
+      {/* 1. Global Smooth Scroll Engine (Lenis) */}
       <SmoothScroll />
 
-      {/* 3. Scroll Progress Indicator Line (Top 3px Gold) */}
+      {/* 2. Scroll Progress Indicator Line (Top 3px Gold) */}
       <ScrollProgress />
 
       {/* Router Scroll to Top Helper */}
