@@ -295,7 +295,15 @@ export default function GalleryPage() {
                       onClick={() => setLightboxIndex(idx)}
                       title="Click to view full photo"
                     >
-                      <img src={photo.image} alt={photo.title} loading="lazy" />
+                      <img
+                        src={photo.image}
+                        alt={photo.title}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1000&auto=format&fit=crop';
+                        }}
+                      />
                       <div className="gallery-photo-caption">
                         <h5>{photo.title}</h5>
                         <span style={{ fontSize: '0.75rem', color: '#FBBF24', marginTop: '4px' }}>

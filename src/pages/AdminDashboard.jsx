@@ -1470,6 +1470,10 @@ export default function AdminDashboard() {
                           }
                           alt={item.title || 'Heritage Media'}
                           className="gallery-admin-img"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=600&auto=format&fit=crop';
+                          }}
                         />
                       )}
                       <span className="order-badge">#{idx + 1}</span>
