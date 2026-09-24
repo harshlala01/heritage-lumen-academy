@@ -7,7 +7,6 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const galleryFileRef = useRef(null);
-  const circularFileRef = useRef(null);
 
   // Authentication & User
   const [user, setUser] = useState(null);
@@ -94,21 +93,7 @@ export default function AdminDashboard() {
   const [newAlbumDesc, setNewAlbumDesc] = useState('');
   const [albumSaving, setAlbumSaving] = useState(false);
 
-  // Admissions & Settings state
-  const [admissionsData, setAdmissionsData] = useState({
-    status: 'Open for 2026–2027',
-    startDate: '01/10/2025',
-    lastDate: '31/03/2026',
-    prospectusFee: '500',
-    headline: 'Admissions Open for Session 2026–2027 (Nursery to Class X)',
-    guidelines: 'Collect physical application packets from the Admissions Desk (Mon–Fri 10:30 AM to 3:00 PM). Complete verification and submit along with attested municipal birth certificate.',
-    feeNotice: 'Admission and monthly tuition fees are non-refundable as established under institutional guidelines.',
-    booklistUniformInfo: 'Uniform fabric and textbooks as per CBSE guidelines can be collected from the school store starting March 15th.',
-    circularDocPath: '',
-    circularDocName: ''
-  });
-  const [settingsLoading, setSettingsLoading] = useState(false);
-  const [settingsSaveMsg, setSettingsSaveMsg] = useState('');
+
 
   // Enquiries state
   const [enquiries, setEnquiries] = useState([]);
@@ -155,7 +140,6 @@ export default function AdminDashboard() {
     loadNoticeCategories();
     loadEvents();
     loadGalleryAlbums();
-    loadAdmissionsSettings();
     loadEnquiries();
   }, [token]);
 
@@ -241,19 +225,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const loadAdmissionsSettings = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/api/settings/admission_config`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && Object.keys(data).length > 0) {
-          setAdmissionsData((prev) => ({ ...prev, ...data }));
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load settings', e);
-    }
-  };
+
 
   const loadEnquiries = async () => {
     setEnquiriesLoading(true);
@@ -776,48 +748,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // ---------- ADMISSIONS & SETTINGS ACTIONS ----------
-  const handleCircularDocUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-      const res = await handleGenericFileUpload(file, 'documents');
-      setAdmissionsData((prev) => ({
-        ...prev,
-        circularDocPath: res.path,
-        circularDocName: res.filename
-      }));
-      showToast('Document uploaded successfully.');
-    } catch (err) {
-      showToast(err.message, 'error');
-    }
-  };
 
-  const handleSaveAdmissions = async (e) => {
-    e.preventDefault();
-    setSettingsLoading(true);
-    setSettingsSaveMsg('');
-    try {
-      const res = await fetch(`${API_BASE}/api/admin/settings/admission_config`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(admissionsData)
-      });
-      if (res.ok) {
-        showToast('Admission & institutional details updated successfully.');
-        setSettingsSaveMsg('Changes saved and published live.');
-      } else {
-        throw new Error('Save failed');
-      }
-    } catch (err) {
-      showToast('Failed to save settings', 'error');
-    } finally {
-      setSettingsLoading(false);
-    }
-  };
 
   // ---------- ENQUIRY ACTIONS ----------
   const handleDeleteEnquiry = async (id) => {
@@ -962,13 +893,7 @@ export default function AdminDashboard() {
           <i className="fa-solid fa-images"></i>
           Albums & Gallery
         </button>
-        <button
-          className={`admin-tab-btn ${activeTab === 'admissions' ? 'active' : ''}`}
-          onClick={() => setActiveTab('admissions')}
-        >
-          <i className="fa-solid fa-file-pen"></i>
-          Admissions & Circulars
-        </button>
+
         <button
           className={`admin-tab-btn ${activeTab === 'enquiries' ? 'active' : ''}`}
           onClick={() => setActiveTab('enquiries')}
@@ -1065,14 +990,7 @@ export default function AdminDashboard() {
                   <i className="fa-solid fa-cloud-arrow-up"></i>
                   Upload Photo / Video
                 </button>
-                <button
-                  type="button"
-                  className="shortcut-chip"
-                  onClick={() => setActiveTab('admissions')}
-                >
-                  <i className="fa-solid fa-sliders"></i>
-                  Update Admission Dates & Circulars
-                </button>
+
               </div>
             </div>
 
@@ -1582,170 +1500,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ============================================================== */}
-        {/* 5. ADMISSIONS, FEE, BOOK & UNIFORM TAB */}
-        {/* ============================================================== */}
-        {activeTab === 'admissions' && (
-          <div className="admin-tab-content">
-            <div className="section-header-flex">
-              <div>
-                <h2 className="tab-main-heading">Admissions, Fees, Booklist & Uniforms</h2>
-                <p className="tab-sub-heading">
-                  Update live admission cycle dates, prospectus fees, circular notices, and downloadable guidelines.
-                </p>
-              </div>
-              {settingsSaveMsg && (
-                <span style={{ color: '#059669', fontWeight: 600 }}>
-                  <i className="fa-solid fa-circle-check" style={{ marginRight: '6px' }}></i>
-                  {settingsSaveMsg}
-                </span>
-              )}
-            </div>
 
-            <form onSubmit={handleSaveAdmissions} className="admin-form-panel">
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label>Admission Status Headline *</label>
-                  <input
-                    type="text"
-                    value={admissionsData.status}
-                    onChange={(e) =>
-                      setAdmissionsData({ ...admissionsData, status: e.target.value })
-                    }
-                    placeholder="e.g. Open for 2026–2027"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Prospectus / Form Processing Fee (INR)</label>
-                  <input
-                    type="text"
-                    value={admissionsData.prospectusFee}
-                    onChange={(e) =>
-                      setAdmissionsData({ ...admissionsData, prospectusFee: e.target.value })
-                    }
-                    placeholder="e.g. 500"
-                  />
-                </div>
-              </div>
-
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label>Session Start Date</label>
-                  <input
-                    type="text"
-                    value={admissionsData.startDate}
-                    onChange={(e) =>
-                      setAdmissionsData({ ...admissionsData, startDate: e.target.value })
-                    }
-                    placeholder="DD/MM/YYYY"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Application Closing Date</label>
-                  <input
-                    type="text"
-                    value={admissionsData.lastDate}
-                    onChange={(e) =>
-                      setAdmissionsData({ ...admissionsData, lastDate: e.target.value })
-                    }
-                    placeholder="DD/MM/YYYY"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Main Admissions Banner Text</label>
-                <input
-                  type="text"
-                  value={admissionsData.headline}
-                  onChange={(e) =>
-                    setAdmissionsData({ ...admissionsData, headline: e.target.value })
-                  }
-                  placeholder="Official headline displayed across website"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Admission Guidelines & Submission Instructions</label>
-                <textarea
-                  rows="3"
-                  value={admissionsData.guidelines}
-                  onChange={(e) =>
-                    setAdmissionsData({ ...admissionsData, guidelines: e.target.value })
-                  }
-                  placeholder="Instructions for prospective parents..."
-                ></textarea>
-              </div>
-
-              <div className="form-group">
-                <label>Fee Schedule & Non-Refundable Policy Notes</label>
-                <textarea
-                  rows="3"
-                  value={admissionsData.feeNotice}
-                  onChange={(e) =>
-                    setAdmissionsData({ ...admissionsData, feeNotice: e.target.value })
-                  }
-                  placeholder="Rules regarding admission and monthly tuition fees..."
-                ></textarea>
-              </div>
-
-              <div className="form-group">
-                <label>Booklist & School Uniform Guidelines</label>
-                <textarea
-                  rows="3"
-                  value={admissionsData.booklistUniformInfo}
-                  onChange={(e) =>
-                    setAdmissionsData({ ...admissionsData, booklistUniformInfo: e.target.value })
-                  }
-                  placeholder="Information regarding uniforms, house colours, and book distributions..."
-                ></textarea>
-              </div>
-
-              {/* PDF ATTACHMENT */}
-              <div className="form-group">
-                <label>Attach Official Circular / Prospectus PDF Document</label>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '6px' }}>
-                  <input
-                    type="file"
-                    ref={circularFileRef}
-                    style={{ display: 'none' }}
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleCircularDocUpload}
-                  />
-                  <button
-                    type="button"
-                    className="admin-action-btn secondary"
-                    onClick={() => circularFileRef.current?.click()}
-                  >
-                    <i className="fa-solid fa-file-pdf" style={{ marginRight: '6px' }}></i>
-                    {admissionsData.circularDocPath ? 'Change PDF File' : 'Upload PDF Document'}
-                  </button>
-                  {admissionsData.circularDocPath && (
-                    <span style={{ fontSize: '0.88rem', color: '#0F172A', fontWeight: 600 }}>
-                      <i className="fa-solid fa-check" style={{ color: '#059669', marginRight: '6px' }}></i>
-                      {admissionsData.circularDocName || 'prospectus_guidelines.pdf'}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ marginTop: '24px' }}>
-                <button
-                  type="submit"
-                  className="admin-action-btn primary"
-                  disabled={settingsLoading}
-                  style={{ minWidth: '180px' }}
-                >
-                  <i className="fa-solid fa-floppy-disk" style={{ marginRight: '6px' }}></i>
-                  {settingsLoading ? 'Saving...' : 'Save & Publish Changes'}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
 
         {/* ============================================================== */}
         {/* 6. ENQUIRIES TAB */}
