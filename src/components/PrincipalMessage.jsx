@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { contentImage, useContent } from '../hooks/useContent';
+import { useContent } from '../hooks/useContent';
 import principalImg from '../assets/principal.png';
 
 export default function PrincipalMessage() {
@@ -12,9 +12,7 @@ export default function PrincipalMessage() {
     image: principalImg
   }]);
   const principal = faculty[0];
-  const principalImageSrc = principal?.image_path
-    ? contentImage(principal.image_path)
-    : (principal?.image && !principal.image.includes('1573496359142') ? principal.image : principalImg);
+  const principalImageSrc = principalImg;
 
   return (
     <section 

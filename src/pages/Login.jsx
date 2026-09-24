@@ -57,50 +57,43 @@ function Login() {
 
   return (
     <div className="login-page">
-      <div className="login-box">
-        <h1>Portal Login</h1>
-        <p className="subtitle">The Rabindra Bharati Heritage Day School</p>
+      <div className="login-shell">
+        <aside className="login-brand-panel">
+          <h2>Learn with purpose.<br /><em>Lead with character.</em></h2>
+          <p>A thoughtful learning community shaped by curiosity, discipline and heritage.</p>
+          <div className="brand-rule" />
+          <span className="brand-motto">The Rabindra Bharati Heritage Day School</span>
+        </aside>
 
-        {/* Quick Admin Helper Box */}
-        <div style={{
-          background: '#EFF6FF',
-          border: '1px solid #BFDBFE',
-          borderRadius: '8px',
-          padding: '12px 14px',
-          marginBottom: '18px',
-          textAlign: 'left',
-          fontSize: '0.85rem'
-        }}>
-          <div style={{ fontWeight: 700, color: '#1E3A8A', marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>🔑 Admin Credentials:</span>
+        <main className="login-box">
+          <div className="login-heading">
+            <span className="eyebrow">Secure portal</span>
+            <h1>Welcome back</h1>
+            <p className="subtitle">Sign in to continue to your school dashboard.</p>
+          </div>
+
+        <div className="quick-fill-box">
+          <div className="quick-fill-heading">
+            <span>Admin access</span>
             <button
               type="button"
               onClick={handleQuickFillAdmin}
-              style={{
-                background: '#1D4ED8',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                padding: '3px 8px',
-                fontSize: '0.75rem',
-                cursor: 'pointer',
-                fontWeight: 600
-              }}
             >
-              Auto-Fill
+              Use demo login
             </button>
           </div>
-          <div style={{ color: '#1E40AF', fontSize: '0.82rem' }}>
-            Email: <b>admin@heritage.com</b><br />
-            Password: <b>admin123</b>
+          <div className="quick-fill-details">
+            <span>admin@heritage.com</span>
+            <span>admin123</span>
           </div>
         </div>
 
         {error && <div className="error">{error}</div>}
 
         <form onSubmit={handleLogin}>
-          <label>Email</label>
+          <label htmlFor="login-email">Email address</label>
           <input
+            id="login-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -109,38 +102,28 @@ function Login() {
             autoComplete="username"
           />
 
-          <label>Password</label>
-          <div style={{ position: 'relative' }}>
+          <label htmlFor="login-password">Password</label>
+          <div className="password-field">
             <input
+              id="login-password"
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password"
               required
               autoComplete="current-password"
-              style={{ width: '100%', paddingRight: '40px' }}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: 'absolute',
-                right: '10px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'none',
-                border: 'none',
-                color: '#64748B',
-                cursor: 'pointer',
-                fontSize: '0.95rem'
-              }}
+              className="password-toggle"
               title={showPassword ? 'Hide password' : 'Show password'}
             >
               <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
             </button>
           </div>
 
-          <button type="submit" disabled={loading} style={{ marginTop: '16px' }}>
+          <button className="submit-button" type="submit" disabled={loading}>
             {loading ? 'Logging in...' : 'Login to Dashboard'}
           </button>
         </form>
@@ -148,6 +131,7 @@ function Login() {
         <p className="back-home">
           <Link to="/">← Back to Home</Link>
         </p>
+        </main>
       </div>
     </div>
   );

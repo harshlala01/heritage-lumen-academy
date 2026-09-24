@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import SmoothScroll from './components/SmoothScroll';
 import ScrollProgress from './components/ScrollProgress';
-import TopBar from './components/TopBar';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import SuccessModal from './components/SuccessModal';
@@ -11,7 +10,6 @@ import AnnouncementBannerModal from './components/AnnouncementBannerModal';
 import AnnouncementTickerBar from './components/AnnouncementTickerBar';
 import ScrollToTop from './components/ScrollToTop';
 
-// Pages
 import HomePage from './pages/HomePage';
 import SchoolFoundation from './pages/about/SchoolFoundation';
 import Management from './pages/about/Management';
@@ -23,49 +21,28 @@ import CurricularActivitiesPage from './pages/CurricularActivitiesPage';
 import GalleryPage from './pages/GalleryPage';
 import NoticePage from './pages/NoticePage';
 import ContactPage from './pages/ContactPage';
-
-// 🔽 NEW IMPORTS (Portal)
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import ContentManager from './pages/ContentManager';
 
-export default function App() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [enquiryData, setEnquiryData] = useState(null);
-  const [isBannerOpen, setIsBannerOpen] = useState(false);
-
-  // Auto-open announcement popup banner on initial page visit
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsBannerOpen(true);
-    }, 1200);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const handleEnquirySuccess = (data) => {
-    setEnquiryData(data);
-    setModalOpen(true);
-  };
+function AppShell({ modalOpen, setModalOpen, enquiryData, isBannerOpen, setIsBannerOpen, handleEnquirySuccess }) {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin/');
 
   return (
-    <Router>
-      {/* 1. Global Smooth Scroll Engine (Lenis) */}
+    <>
       <SmoothScroll />
-
-      {/* 2. Scroll Progress Indicator Line (Top 3px Gold) */}
-      <ScrollProgress />
-
-      {/* Router Scroll to Top Helper */}
+      {!isAdminRoute && <ScrollProgress />}
       <ScrollToTop />
 
-      <div className="heritage-app">
-        {/* 1. Announcement Bar */}
-        <AnnouncementTickerBar onOpenBanner={() => setIsBannerOpen(true)} />
+      <div className={`heritage-app${isAdminRoute ? ' admin-app' : ''}`}>
+        {!isAdminRoute && (
+          <>
+            <AnnouncementTickerBar onOpenBanner={() => setIsBannerOpen(true)} />
+            <Navbar onOpenBanner={() => setIsBannerOpen(true)} />
+          </>
+        )}
 
-        {/* 2. Sticky & Transparent-to-Cream Main Navbar Header */}
-        <Navbar onOpenBanner={() => setIsBannerOpen(true)} />
-
-        {/* Page Routes */}
         <Routes>
           <Route path="/" element={<HomePage onEnquirySuccess={handleEnquirySuccess} />} />
           <Route path="/about/foundation" element={<SchoolFoundation />} />
@@ -78,34 +55,58 @@ export default function App() {
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/notice" element={<NoticePage />} />
           <Route path="/contact" element={<ContactPage onEnquirySuccess={handleEnquirySuccess} />} />
-
-          {/* 🔽 NEW ROUTES (Portal) */}
           <Route path="/login" element={<Login />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/content" element={<ContentManager />} />
-
           <Route path="*" element={<HomePage onEnquirySuccess={handleEnquirySuccess} />} />
         </Routes>
 
-        {/* Global Footer */}
-        <Footer />
+        {!isAdminRoute && <Footer />}
 
-        {/* Global Admission Success Celebration Modal */}
-        <SuccessModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          enquiryData={enquiryData}
-        />
-
-        {/* Promotional / Toppers Announcement Banner Popup Modal */}
-        <AnnouncementBannerModal
-          isOpen={isBannerOpen}
-          onClose={() => setIsBannerOpen(false)}
-        />
-
-        {/* Floating Back to Top Button */}
-        <BackToTop />
+        {!isAdminRoute && (
+          <>
+            <SuccessModal
+              isOpen={modalOpen}
+              onClose={() => setModalOpen(false)}
+              enquiryData={enquiryData}
+            />
+            <AnnouncementBannerModal
+              isOpen={isBannerOpen}
+              onClose={() => setIsBannerOpen(false)}
+            />
+            <BackToTop />
+          </>
+        )}
       </div>
+    </>
+  );
+}
+
+export default function App() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [enquiryData, setEnquiryData] = useState(null);
+  const [isBannerOpen, setIsBannerOpen] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsBannerOpen(true), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleEnquirySuccess = (data) => {
+    setEnquiryData(data);
+    setModalOpen(true);
+  };
+
+  return (
+    <Router>
+      <AppShell
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        enquiryData={enquiryData}
+        isBannerOpen={isBannerOpen}
+        setIsBannerOpen={setIsBannerOpen}
+        handleEnquirySuccess={handleEnquirySuccess}
+      />
     </Router>
   );
 }

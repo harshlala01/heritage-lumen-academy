@@ -36,7 +36,7 @@ DB_CONFIG = {
     'host': os.environ.get('DB_HOST', 'localhost'),
     'user': os.environ.get('DB_USER', 'root'),
     'password': os.environ.get('DB_PASSWORD', '1234'),              # XAMPP default is empty ('')
-    'database': os.environ.get('DB_NAME', 'heritage_db'),
+    'database': os.environ.get('DB_NAME', 'school'),
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
 }
