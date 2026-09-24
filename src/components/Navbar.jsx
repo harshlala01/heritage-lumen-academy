@@ -197,16 +197,16 @@ export default function Navbar({ onOpenBanner }) {
 
           {/* Right: Portal Login icon button + "APPLY ONLINE" button */}
           <div className="nav-actions-right">
-            <Link
+            {/* <Link
               to="/login"
               className="nav-portal-link"
               title="Portal Login"
               aria-label="Portal Login"
             >
               <i className="fa-solid fa-user-lock"></i>
-            </Link>
+            </Link> */}
 
-            <Link
+            {/* <Link
               to="/contact"
               className="btn-apply-online-gold"
               title="Apply for Admission"
@@ -214,7 +214,7 @@ export default function Navbar({ onOpenBanner }) {
               <span className="btn-shine-sweep"></span>
               <span>APPLY ONLINE</span>
               <i className="fa-solid fa-arrow-right"></i>
-            </Link>
+            </Link> */}
 
             {/* Mobile Menu Hamburger Toggle */}
             <button

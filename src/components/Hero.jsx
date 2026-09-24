@@ -1,372 +1,229 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import gsap from 'gsap';
-import { contentImage, useContent } from '../hooks/useContent';
+import './Hero.css';
 
 export default function Hero() {
-  const canvasRef = useRef(null);
   const heroRef = useRef(null);
-  const statsBarRef = useRef(null);
-  const hasAnimated = useRef(false);
+  const bgImgRef = useRef(null);
+  const overlayRef = useRef(null);
+  const contentRef = useRef(null);
+  const statsWrapRef = useRef(null);
 
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const banners = useContent('banners', [{
-    id: 1,
-    title: "Inspiring Intellect. Cultivating Character. Shaping Tomorrow's Leaders.",
-    subtitle: 'A distinguished tradition of intellectual rigor, bespoke mentorship, and moral integrity—nurturing extraordinary scholars for global impact since 2003.',
-    image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1920&auto=format&fit=crop'
-  }]);
-  const banner = banners[0];
+  // Background image with Indian school campus students walking
+  const bgImageSrc = '/hero-bg.jpg';
 
-  // Animated stat counters (0 to target)
+  // Animated stat counters (0 to target, 1s duration starting at 2.6s)
   const [stats, setStats] = useState({
-    val1: 0,
-    val2: 0,
-    val3: 0,
-    val4: 0,
+    passRate: 0,
+    ratio: 0,
+    years: 0,
+    placement: 0
   });
 
-  // Parallax mouse tracker
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth - 0.5) * 2; // -1 to 1
-      const y = (e.clientY / innerHeight - 0.5) * 2;
-      setMousePos({ x, y });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  // GSAP Entrance Animation Timeline
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-      tl.from('.hero-admissions-pill', {
-        opacity: 0,
-        y: -20,
-        duration: 0.8,
-        delay: 0.2,
-      })
-      .from('.hero-cormorant-heading', {
-        opacity: 0,
-        y: 30,
-        duration: 0.9,
-      }, '-=0.4')
-      .from('.hero-light-subtext', {
-        opacity: 0,
-        y: 20,
-        duration: 0.7,
-      }, '-=0.4')
-      .from('.hero-action-buttons', {
-        opacity: 0,
-        y: 20,
-        duration: 0.7,
-      }, '-=0.4')
-      .from('.hero-stat-item', {
-        opacity: 0,
-        y: 30,
-        duration: 0.6,
-        stagger: 0.12,
-      }, '-=0.3');
-    }, heroRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  // Stats Counting Animation (0 to Target)
+  // ═══════════════════════════════════════════
+  // 1. STATS COUNT-UP ANIMATION
+  // ═══════════════════════════════════════════
   useEffect(() => {
     let animationFrame;
+    let timeoutId;
+
     const startCounting = () => {
-      if (hasAnimated.current) return;
-      hasAnimated.current = true;
-
       let startTime = null;
-      const duration = 1800; // 1.8 seconds
+      const duration = 1000; // 1s count-up duration
 
-      // Ease-out cubic: 1 - Math.pow(1 - progress, 3)
-      const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+      const easeOutQuad = (t) => t * (2 - t);
 
-      const animateNumbers = (timestamp) => {
+      const step = (timestamp) => {
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const eased = easeOutCubic(progress);
+        const eased = easeOutQuad(progress);
 
         setStats({
-          val1: Math.round(eased * 100),
-          val2: Math.round(eased * 7),
-          val3: Math.round(eased * 22),
-          val4: Math.round(eased * 100),
+          passRate: Math.round(eased * 100),
+          ratio: Math.round(eased * 7),
+          years: Math.round(eased * 22),
+          placement: Math.round(eased * 100)
         });
 
         if (progress < 1) {
-          animationFrame = requestAnimationFrame(animateNumbers);
+          animationFrame = requestAnimationFrame(step);
         }
       };
 
-      animationFrame = requestAnimationFrame(animateNumbers);
+      animationFrame = requestAnimationFrame(step);
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          startCounting();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (statsBarRef.current) {
-      observer.observe(statsBarRef.current);
-    }
-
-    // Safety fallback trigger
-    const timer = setTimeout(() => {
+    // Trigger counting at 2.6s timeline sync
+    timeoutId = setTimeout(() => {
       startCounting();
-    }, 250);
+    }, 2600);
 
     return () => {
-      observer.disconnect();
-      clearTimeout(timer);
+      clearTimeout(timeoutId);
       if (animationFrame) cancelAnimationFrame(animationFrame);
     };
   }, []);
 
-  // Floating Golden Particles Canvas (Layer 3)
+  // ═══════════════════════════════════════════
+  // 2. SCROLL PARALLAX HANDLER
+  // ═══════════════════════════════════════════
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let animationFrame;
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
 
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    if (prefersReducedMotion) return;
 
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', handleResize);
+    let ticking = false;
 
-    const particles = Array.from({ length: 45 }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      size: Math.random() * 2.2 + 0.8,
-      speedX: (Math.random() - 0.5) * 0.4,
-      speedY: -Math.random() * 0.6 - 0.2,
-      opacity: Math.random() * 0.7 + 0.2,
-      pulse: Math.random() * 0.02 + 0.01,
-      glow: Math.random() * 8 + 4,
-    }));
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (!heroRef.current) {
+            ticking = false;
+            return;
+          }
 
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
+          const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+          const heroHeight = heroRef.current.offsetHeight || window.innerHeight;
 
-      particles.forEach((p) => {
-        p.x += p.speedX;
-        p.y += p.speedY;
-        p.opacity += Math.sin(Date.now() * p.pulse) * 0.005;
+          if (scrollY <= heroHeight && window.innerWidth > 768) {
+            // Background image moves DOWN at 0.5x scroll speed
+            if (bgImgRef.current) {
+              bgImgRef.current.style.transform = `translate3d(0, ${scrollY * 0.5}px, 0)`;
+            }
 
-        // Wrap around
-        if (p.y < -10) {
-          p.y = height + 10;
-          p.x = Math.random() * width;
-        }
-        if (p.x < -10) p.x = width + 10;
-        if (p.x > width + 10) p.x = -10;
+            // Text content moves UP at 0.3x scroll speed
+            if (contentRef.current) {
+              contentRef.current.style.transform = `translate3d(0, ${scrollY * -0.3}px, 0)`;
+            }
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(212, 175, 55, ${Math.max(0.1, Math.min(0.9, p.opacity))})`;
-        ctx.shadowBlur = p.glow;
-        ctx.shadowColor = 'rgba(229, 197, 110, 0.8)';
-        ctx.fill();
-        ctx.restore();
-      });
+            // Dark overlay gets slightly darker (0.72 -> 0.88)
+            if (overlayRef.current) {
+              const extraDarkness = Math.min(0.16, (scrollY / heroHeight) * 0.16);
+              overlayRef.current.style.backgroundColor = `rgba(11, 27, 58, ${
+                0.72 + extraDarkness
+              })`;
+            }
 
-      animationFrame = requestAnimationFrame(render);
+            // Stats bar fades out faster than text
+            if (statsWrapRef.current) {
+              const fadeRatio = Math.max(0, 1 - scrollY / (heroHeight * 0.45));
+              statsWrapRef.current.style.opacity = fadeRatio.toString();
+            }
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    render();
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationFrame);
-    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Magnetic button hover handler
-  const handleMagneticMove = (e) => {
-    const btn = e.currentTarget;
-    const rect = btn.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    btn.style.transform = `translate(${x * 0.25}px, ${y * 0.25}px)`;
-  };
-
-  const handleMagneticLeave = (e) => {
-    const btn = e.currentTarget;
-    btn.style.transform = 'translate(0px, 0px)';
-  };
-
-  const headingWords = banner.title.split(' ').map((text, index, words) => ({
-    text,
-    highlight: index === words.length - 2
-  }));
-
   return (
-    <section ref={heroRef} className="cinematic-hero-section">
-      {/* Background Video Layer */}
-      <div className="hero-video-container">
-        <video
-          className="hero-video-element"
-          autoPlay
-          loop
-          muted
-          playsInline
-          poster={contentImage(banner.image_path || banner.image)}
-        >
-          <source
-            src="https://assets.mixkit.co/videos/preview/mixkit-students-walking-in-a-university-hallway-4328-large.mp4"
-            type="video/mp4"
-          />
-        </video>
-        <div className="hero-video-overlay-gradient"></div>
+    <section ref={heroRef} className="hero-section" id="hero">
+      {/* 0.0s Background Image with Blur/Scale reveal + Ken Burns */}
+      <div className="hero-bg-wrapper">
+        <img
+          ref={bgImgRef}
+          src={bgImageSrc}
+          alt="The Rabindra Bharati Heritage Day School Campus"
+          className="hero-bg-image"
+          loading="eager"
+        />
       </div>
 
-      {/* 3 Parallax Layers */}
-      {/* Layer 1: Architectural Gothic Pattern */}
-      <div
-        className="hero-parallax-layer layer-architecture"
-        style={{
-          transform: `translate3d(${mousePos.x * -18}px, ${mousePos.y * -14}px, 0)`,
-        }}
-      />
-
-      {/* Layer 2: Soft Volumetric Light Beam */}
-      <div
-        className="hero-parallax-layer layer-light-beam"
-        style={{
-          transform: `translate3d(${mousePos.x * 24}px, ${mousePos.y * 20}px, 0)`,
-        }}
-      />
-
-      {/* Layer 3: Floating Golden Particles Canvas */}
-      <canvas ref={canvasRef} className="hero-particles-canvas" />
+      {/* 0.5s Dark Navy Overlay Fade */}
+      <div ref={overlayRef} className="hero-overlay" />
 
       {/* Hero Center Content */}
-      <div className="container hero-content-wrapper">
-        {/* Small badge: "ADMISSIONS OPEN FOR ACADEMIC YEAR 2025-2026" */}
-        <div className="hero-admissions-pill">
-          <span className="pill-dot"></span>
-          <span className="pill-text">ADMISSIONS OPEN FOR ACADEMIC YEAR 2025-2026</span>
-          <i className="fa-solid fa-sparkles pill-icon"></i>
+      <div ref={contentRef} className="hero-content">
+        {/* 1.0s Gold Badge Appearance & Continuous Pulse */}
+        <div className="hero-badge">
+          <span className="badge-star">★</span>
+          <span>ADMISSIONS OPEN FOR ACADEMIC YEAR 2026–2027</span>
         </div>
 
-        {/* Main Heading letter/word reveal */}
-        <h1 className="hero-cormorant-heading">
-          {headingWords.map((word, wIdx) => (
-            <span
-              key={wIdx}
-              className={`hero-word-wrap ${word.highlight ? 'gold-accent-word' : ''}`}
-            >
-              {word.text.split('').map((char, cIdx) => (
-                <span
-                  key={cIdx}
-                  className="hero-letter-reveal"
-                  style={{ animationDelay: `${0.2 + wIdx * 0.09 + cIdx * 0.025}s` }}
-                >
-                  {char}
-                </span>
-              ))}
-              <span className="hero-word-space">&nbsp;</span>
-            </span>
-          ))}
+        {/* 1.3s Heading Word-by-Word Reveal */}
+        <h1 className="hero-heading">
+          <div className="hero-heading-line">
+            <span className="hero-word hero-word-1">Nurturing</span>
+            <span className="hero-word hero-word-2">Minds,</span>
+          </div>
+          <div className="hero-heading-line">
+            <span className="hero-word hero-word-3">Cultivating</span>
+            <span className="hero-gold-italic hero-word-4">Character</span>
+          </div>
         </h1>
 
-        {/* Subtext in light cream */}
-        <p className="hero-light-subtext">
-          {banner.subtitle}
+        {/* 1.8s Subtitle Fade-Up */}
+        <p className="hero-subtitle">
+          Affiliated to CBSE, New Delhi • Established on Unwavering Academic Rigor
+          &amp; Ethical Foundation
         </p>
 
-        {/* Action Button */}
-        <div className="hero-action-buttons">
-          <Link
-            to="/contact"
-            className="btn-hero-magnetic-gold"
-            onMouseMove={handleMagneticMove}
-            onMouseLeave={handleMagneticLeave}
-          >
-            <span>Apply for Admission</span>
-            <i className="fa-solid fa-arrow-right"></i>
+        {/* 2.2s Buttons Slide In with Gold Shimmer Hover */}
+        <div className="hero-buttons-row">
+          <Link to="/contact" className="btn-hero-gold">
+            <span>APPLY FOR ADMISSION</span>
+            <span className="btn-arrow">→</span>
           </Link>
-        </div>
 
-        {/* Hero Section ke Neeche Stats Bar with Counting Animation */}
-        <div ref={statsBarRef} className="hero-stats-bar">
-          {/* Stat 1: 100% — Board Pass & Distinction Rate */}
-          <div className="hero-stat-item">
-            <div className="hero-stat-number-wrap">
-              <span className="hero-stat-value">{stats.val1}</span>
-              <span className="hero-stat-suffix">%</span>
-            </div>
-            <div className="hero-stat-label">Board Pass & Distinction Rate</div>
-          </div>
-
-          <div className="hero-stat-divider"></div>
-
-          {/* Stat 2: 7:1 — Student-Faculty Mentorship Ratio */}
-          <div className="hero-stat-item">
-            <div className="hero-stat-number-wrap">
-              <span className="hero-stat-value">{stats.val2}</span>
-              <span className="hero-stat-suffix">:1</span>
-            </div>
-            <div className="hero-stat-label">Student-Faculty Mentorship Ratio</div>
-          </div>
-
-          <div className="hero-stat-divider"></div>
-
-          {/* Stat 3: 22+ — Years of Academic Excellence */}
-          <div className="hero-stat-item">
-            <div className="hero-stat-number-wrap">
-              <span className="hero-stat-value">{stats.val3}</span>
-              <span className="hero-stat-suffix">+</span>
-            </div>
-            <div className="hero-stat-label">Years of Academic Excellence</div>
-          </div>
-
-          <div className="hero-stat-divider"></div>
-
-          {/* Stat 4: 100% — Premier University Placements */}
-          <div className="hero-stat-item">
-            <div className="hero-stat-number-wrap">
-              <span className="hero-stat-value">{stats.val4}</span>
-              <span className="hero-stat-suffix">%</span>
-            </div>
-            <div className="hero-stat-label">Premier University Placements</div>
-          </div>
+          <Link to="/contact" className="btn-hero-outline">
+            BOOK CAMPUS VISIT
+          </Link>
         </div>
       </div>
 
-      {/* Scroll Indicator: Thin gold vertical line at bottom center with "SCROLL" text */}
-      <div
-        className="hero-scroll-indicator"
-        onClick={() => {
-          const aboutEl = document.getElementById('about');
-          if (aboutEl) {
-            if (window.lenis) window.lenis.scrollTo(aboutEl);
-            else aboutEl.scrollIntoView({ behavior: 'smooth' });
-          }
-        }}
-      >
-        <span className="scroll-indicator-text">SCROLL</span>
-        <div className="scroll-indicator-line">
-          <div className="scroll-indicator-pip"></div>
+      {/* 2.6s Stats Bar Fade-Up (Glassmorphism + Curved Top Docking) */}
+      <div ref={statsWrapRef} className="hero-stats-wrapper">
+        <div className="hero-stats-glass">
+          {/* Stat 1: 100% */}
+          <div className="hero-stat-card">
+            <div className="hero-stat-num-box">
+              <span>{stats.passRate}</span>
+              <span className="stat-suffix">%</span>
+            </div>
+            <div className="hero-stat-label-text">
+              BOARD PASS &amp; DISTINCTION
+            </div>
+          </div>
+
+          {/* Stat 2: 7:1 */}
+          <div className="hero-stat-card">
+            <div className="hero-stat-num-box">
+              <span>{stats.ratio}</span>
+              <span className="stat-suffix">:1</span>
+            </div>
+            <div className="hero-stat-label-text">
+              STUDENT-FACULTY RATIO
+            </div>
+          </div>
+
+          {/* Stat 3: 22+ */}
+          <div className="hero-stat-card">
+            <div className="hero-stat-num-box">
+              <span>{stats.years}</span>
+              <span className="stat-suffix">+</span>
+            </div>
+            <div className="hero-stat-label-text">
+              YEARS OF EXCELLENCE
+            </div>
+          </div>
+
+          {/* Stat 4: 100% */}
+          <div className="hero-stat-card">
+            <div className="hero-stat-num-box">
+              <span>{stats.placement}</span>
+              <span className="stat-suffix">%</span>
+            </div>
+            <div className="hero-stat-label-text">
+              PRE-UNIVERSITY PLACEMENT
+            </div>
+          </div>
         </div>
       </div>
     </section>

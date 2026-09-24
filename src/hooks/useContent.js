@@ -31,9 +31,14 @@ export function contentImage(path) {
     path.startsWith('/@') ||
     path.startsWith('/src/') ||
     path.startsWith('/assets/') ||
+    path.startsWith('/achievers/') ||
+    path.startsWith('/hero-bg.jpg') ||
     path.startsWith('/principal.png')
   ) {
     return path;
   }
-  return `${CONTENT_API_URL}${path}`;
+  if (path.startsWith('/uploads/')) {
+    return `${CONTENT_API_URL}${path}`;
+  }
+  return path;
 }
