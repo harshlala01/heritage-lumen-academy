@@ -12,7 +12,9 @@ export default function PrincipalMessage() {
     image: principalImg
   }]);
   const principal = faculty[0];
-  const principalImageSrc = principalImg;
+  const principalImageSrc = (principal?.image_path && !principal.image_path.includes('unsplash') && !principal.image_path.includes('1573496359142'))
+    ? (principal.image_path === '/principal.png' ? principalImg : contentImage(principal.image_path))
+    : principalImg;
 
   return (
     <section 

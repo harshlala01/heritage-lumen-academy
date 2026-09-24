@@ -7,7 +7,6 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const galleryFileRef = useRef(null);
-  const circularFileRef = useRef(null);
 
   // Authentication & User
   const [user, setUser] = useState(null);
@@ -35,7 +34,7 @@ export default function AdminDashboard() {
   const [noticeFormData, setNoticeFormData] = useState({
     title: '',
     notice_date: '',
-    category: 'admissions',
+    category: '',
     description: '',
     attachment_path: '',
     attachment_name: '',
@@ -79,6 +78,7 @@ export default function AdminDashboard() {
   const [galleryItems, setGalleryItems] = useState([]);
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [galleryModalOpen, setGalleryModalOpen] = useState(false);
+  const [uploadAlbumSlug, setUploadAlbumSlug] = useState('');
   const [galleryMediaType, setGalleryMediaType] = useState('image'); // 'image' | 'video'
   const [galleryFormData, setGalleryFormData] = useState({
     title: '',
@@ -87,21 +87,14 @@ export default function AdminDashboard() {
   });
   const [galleryUploadLoading, setGalleryUploadLoading] = useState(false);
 
-  // Admissions & Settings state
-  const [admissionsData, setAdmissionsData] = useState({
-    status: 'Open for 2026–2027',
-    startDate: '01/10/2025',
-    lastDate: '31/03/2026',
-    prospectusFee: '500',
-    headline: 'Admissions Open for Session 2026–2027 (Nursery to Class X)',
-    guidelines: 'Collect physical application packets from the Admissions Desk (Mon–Fri 10:30 AM to 3:00 PM). Complete verification and submit along with attested municipal birth certificate.',
-    feeNotice: 'Admission and monthly tuition fees are non-refundable as established under institutional guidelines.',
-    booklistUniformInfo: 'Uniform fabric and textbooks as per CBSE guidelines can be collected from the school store starting March 15th.',
-    circularDocPath: '',
-    circularDocName: ''
-  });
-  const [settingsLoading, setSettingsLoading] = useState(false);
-  const [settingsSaveMsg, setSettingsSaveMsg] = useState('');
+  // Gallery Category (Album) Management State
+  const [albumManageModalOpen, setAlbumManageModalOpen] = useState(false);
+  const [editingAlbum, setEditingAlbum] = useState(null);
+  const [newAlbumTitle, setNewAlbumTitle] = useState('');
+  const [newAlbumDesc, setNewAlbumDesc] = useState('');
+  const [albumSaving, setAlbumSaving] = useState(false);
+
+
 
   // Enquiries state
   const [enquiries, setEnquiries] = useState([]);
@@ -148,7 +141,6 @@ export default function AdminDashboard() {
     loadNoticeCategories();
     loadEvents();
     loadGalleryAlbums();
-    loadAdmissionsSettings();
     loadEnquiries();
   }, [token]);
 
@@ -234,19 +226,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const loadAdmissionsSettings = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/api/settings/admission_config`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && Object.keys(data).length > 0) {
-          setAdmissionsData((prev) => ({ ...prev, ...data }));
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load settings', e);
-    }
-  };
+
 
   const loadEnquiries = async () => {
     setEnquiriesLoading(true);
@@ -288,7 +268,7 @@ export default function AdminDashboard() {
       setNoticeFormData({
         title: notice.title || '',
         notice_date: notice.notice_date || '',
-        category: notice.category || 'admissions',
+        category: notice.category || '',
         description: notice.description || '',
         attachment_path: notice.attachment_path || '',
         attachment_name: notice.attachment_name || '',
@@ -303,7 +283,7 @@ export default function AdminDashboard() {
       setNoticeFormData({
         title: '',
         notice_date: `${dd}/${mm}/${yyyy}`,
-        category: 'admissions',
+        category: '',
         description: '',
         attachment_path: '',
         attachment_name: '',
@@ -336,6 +316,10 @@ export default function AdminDashboard() {
     e.preventDefault();
     if (!noticeFormData.title.trim()) {
       showToast('Please provide a notice title.', 'error');
+      return;
+    }
+    if (!noticeFormData.category) {
+      showToast('Please select a category.', 'error');
       return;
     }
 
@@ -590,8 +574,20 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleOpenGalleryModal = () => {
+    setUploadAlbumSlug('');
+    setGalleryFormData({ title: '', media_url: '', video_url: '' });
+    setGalleryMediaType('image');
+    setGalleryModalOpen(true);
+  };
+
   const handleSaveGalleryItem = async (e) => {
     e.preventDefault();
+    if (!uploadAlbumSlug) {
+      showToast('Please select a category / album.', 'error');
+      return;
+    }
+
     const mediaUrl =
       galleryMediaType === 'image'
         ? galleryFormData.media_url
@@ -615,7 +611,7 @@ export default function AdminDashboard() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          album_slug: selectedAlbum,
+          album_slug: uploadAlbumSlug,
           item_type: galleryMediaType,
           media_url: mediaUrl,
           title: galleryFormData.title || 'Heritage Day School'
@@ -627,7 +623,8 @@ export default function AdminDashboard() {
       showToast('Item added to album.');
       setGalleryModalOpen(false);
       setGalleryFormData({ title: '', media_url: '', video_url: '' });
-      loadGalleryItems(selectedAlbum);
+      setSelectedAlbum(uploadAlbumSlug);
+      loadGalleryItems(uploadAlbumSlug);
       loadGalleryAlbums();
       loadStats();
     } catch (err) {
@@ -671,48 +668,105 @@ export default function AdminDashboard() {
     }
   };
 
-  // ---------- ADMISSIONS & SETTINGS ACTIONS ----------
-  const handleCircularDocUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-      const res = await handleGenericFileUpload(file, 'documents');
-      setAdmissionsData((prev) => ({
-        ...prev,
-        circularDocPath: res.path,
-        circularDocName: res.filename
-      }));
-      showToast('Document uploaded successfully.');
-    } catch (err) {
-      showToast(err.message, 'error');
-    }
-  };
-
-  const handleSaveAdmissions = async (e) => {
+  // ---------- GALLERY CATEGORY (ALBUM) ACTIONS ----------
+  const handleCreateAlbum = async (e) => {
     e.preventDefault();
-    setSettingsLoading(true);
-    setSettingsSaveMsg('');
+    const trimmed = newAlbumTitle.trim();
+    if (!trimmed) {
+      showToast('Please enter a category title', 'error');
+      return;
+    }
+    setAlbumSaving(true);
     try {
-      const res = await fetch(`${API_BASE}/api/admin/settings/admission_config`, {
+      const res = await fetch(`${API_BASE}/api/admin/gallery/albums`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(admissionsData)
+        body: JSON.stringify({
+          title: trimmed,
+          description: newAlbumDesc.trim()
+        })
       });
-      if (res.ok) {
-        showToast('Admission & institutional details updated successfully.');
-        setSettingsSaveMsg('Changes saved and published live.');
-      } else {
-        throw new Error('Save failed');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to create category');
+      showToast('Category created successfully!');
+      setNewAlbumTitle('');
+      setNewAlbumDesc('');
+      await loadGalleryAlbums();
+      if (data.slug) {
+        setSelectedAlbum(data.slug);
       }
     } catch (err) {
-      showToast('Failed to save settings', 'error');
+      showToast(err.message, 'error');
     } finally {
-      setSettingsLoading(false);
+      setAlbumSaving(false);
     }
   };
+
+  const handleUpdateAlbum = async (e) => {
+    e.preventDefault();
+    if (!editingAlbum || !editingAlbum.title?.trim()) {
+      showToast('Category title cannot be empty', 'error');
+      return;
+    }
+    setAlbumSaving(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/gallery/albums/${editingAlbum.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: editingAlbum.title.trim(),
+          description: (editingAlbum.description || '').trim()
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to update category');
+      showToast('Category updated successfully!');
+      setEditingAlbum(null);
+      await loadGalleryAlbums();
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setAlbumSaving(false);
+    }
+  };
+
+  const handleDeleteAlbum = async (albumId, albumTitle) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete category "${albumTitle}"? All photos inside this category will also be deleted.`
+      )
+    ) {
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/gallery/albums/${albumId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to delete category');
+      showToast('Category deleted successfully!');
+      const updatedAlbums = galleryAlbums.filter((a) => a.id !== albumId);
+      setGalleryAlbums(updatedAlbums);
+      if (updatedAlbums.length > 0) {
+        setSelectedAlbum(updatedAlbums[0].slug);
+      } else {
+        setSelectedAlbum('');
+        setGalleryItems([]);
+      }
+      loadStats();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  };
+
+
 
   // ---------- ENQUIRY ACTIONS ----------
   const handleDeleteEnquiry = async (id) => {
@@ -791,9 +845,11 @@ export default function AdminDashboard() {
       {/* TOP CMS HEADER */}
       <header className="admin-header-bar">
         <div className="admin-header-brand">
-          <div className="admin-brand-crest">
-            <i className="fa-solid fa-graduation-cap"></i>
-          </div>
+          <img
+            src="/logo.jpg"
+            alt="The Rabindra Bharati Heritage Day School"
+            className="admin-brand-logo-img"
+          />
           <div>
             <h1 className="admin-portal-title">THE RABINDRA BHARATI HERITAGE DAY SCHOOL</h1>
             <p className="admin-portal-subtitle">Institutional CMS & Executive Administration Console</p>
@@ -855,13 +911,7 @@ export default function AdminDashboard() {
           <i className="fa-solid fa-images"></i>
           Albums & Gallery
         </button>
-        <button
-          className={`admin-tab-btn ${activeTab === 'admissions' ? 'active' : ''}`}
-          onClick={() => setActiveTab('admissions')}
-        >
-          <i className="fa-solid fa-file-pen"></i>
-          Admissions & Circulars
-        </button>
+
         <button
           className={`admin-tab-btn ${activeTab === 'enquiries' ? 'active' : ''}`}
           onClick={() => setActiveTab('enquiries')}
@@ -952,20 +1002,13 @@ export default function AdminDashboard() {
                   className="shortcut-chip"
                   onClick={() => {
                     setActiveTab('gallery');
-                    setGalleryModalOpen(true);
+                    handleOpenGalleryModal();
                   }}
                 >
                   <i className="fa-solid fa-cloud-arrow-up"></i>
                   Upload Photo / Video
                 </button>
-                <button
-                  type="button"
-                  className="shortcut-chip"
-                  onClick={() => setActiveTab('admissions')}
-                >
-                  <i className="fa-solid fa-sliders"></i>
-                  Update Admission Dates & Circulars
-                </button>
+
               </div>
             </div>
 
@@ -1340,21 +1383,29 @@ export default function AdminDashboard() {
                   Manage album-based photos, YouTube videos, and arrange display order.
                 </p>
               </div>
-              <button
-                type="button"
-                className="admin-action-btn primary"
-                onClick={() => {
-                  setGalleryFormData({ title: '', media_url: '', video_url: '' });
-                  setGalleryModalOpen(true);
-                }}
-              >
-                <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
-                Add Media to Album
-              </button>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="admin-action-btn secondary"
+                  onClick={() => setAlbumManageModalOpen(true)}
+                >
+                  <i className="fa-solid fa-layer-group" style={{ marginRight: '6px', color: '#D4AF37' }}></i>
+                  Manage Categories
+                </button>
+                <button
+                  type="button"
+                  className="admin-action-btn primary"
+                  disabled={galleryAlbums.length === 0}
+                  onClick={() => handleOpenGalleryModal()}
+                >
+                  <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                  Add Media to Album
+                </button>
+              </div>
             </div>
 
             {/* ALBUM SELECTOR TABS */}
-            <div className="admin-album-tabs-bar">
+            <div className="admin-album-tabs-bar" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
               {galleryAlbums.map((alb) => (
                 <button
                   key={alb.slug}
@@ -1366,15 +1417,23 @@ export default function AdminDashboard() {
                   <span className="album-count">{alb.item_count || 0}</span>
                 </button>
               ))}
+              <button
+                type="button"
+                className="album-tab-chip"
+                style={{
+                  background: '#F1F5F9',
+                  border: '1.5px dashed #94A3B8',
+                  color: '#0B1B3D',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+                onClick={() => setAlbumManageModalOpen(true)}
+                title="Create or manage gallery categories"
+              >
+                <i className="fa-solid fa-plus" style={{ marginRight: '5px', color: '#D4AF37' }}></i>
+                New Category
+              </button>
             </div>
-
-            {/* ACTIVE ALBUM DESCRIPTION */}
-            {galleryAlbums.find((a) => a.slug === selectedAlbum) && (
-              <div className="album-info-bar">
-                <i className="fa-solid fa-circle-info" style={{ color: '#D4AF37', marginRight: '8px' }}></i>
-                <span>{galleryAlbums.find((a) => a.slug === selectedAlbum).description}</span>
-              </div>
-            )}
 
             {/* GALLERY ITEMS GRID */}
             {galleryLoading ? (
@@ -1387,7 +1446,7 @@ export default function AdminDashboard() {
                   type="button"
                   className="admin-action-btn primary"
                   style={{ marginTop: '12px' }}
-                  onClick={() => setGalleryModalOpen(true)}
+                  onClick={() => handleOpenGalleryModal()}
                 >
                   Upload First Image / Add Video
                 </button>
@@ -1456,170 +1515,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ============================================================== */}
-        {/* 5. ADMISSIONS, FEE, BOOK & UNIFORM TAB */}
-        {/* ============================================================== */}
-        {activeTab === 'admissions' && (
-          <div className="admin-tab-content">
-            <div className="section-header-flex">
-              <div>
-                <h2 className="tab-main-heading">Admissions, Fees, Booklist & Uniforms</h2>
-                <p className="tab-sub-heading">
-                  Update live admission cycle dates, prospectus fees, circular notices, and downloadable guidelines.
-                </p>
-              </div>
-              {settingsSaveMsg && (
-                <span style={{ color: '#059669', fontWeight: 600 }}>
-                  <i className="fa-solid fa-circle-check" style={{ marginRight: '6px' }}></i>
-                  {settingsSaveMsg}
-                </span>
-              )}
-            </div>
 
-            <form onSubmit={handleSaveAdmissions} className="admin-form-panel">
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label>Admission Status Headline *</label>
-                  <input
-                    type="text"
-                    value={admissionsData.status}
-                    onChange={(e) =>
-                      setAdmissionsData({ ...admissionsData, status: e.target.value })
-                    }
-                    placeholder="e.g. Open for 2026–2027"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Prospectus / Form Processing Fee (INR)</label>
-                  <input
-                    type="text"
-                    value={admissionsData.prospectusFee}
-                    onChange={(e) =>
-                      setAdmissionsData({ ...admissionsData, prospectusFee: e.target.value })
-                    }
-                    placeholder="e.g. 500"
-                  />
-                </div>
-              </div>
-
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label>Session Start Date</label>
-                  <input
-                    type="text"
-                    value={admissionsData.startDate}
-                    onChange={(e) =>
-                      setAdmissionsData({ ...admissionsData, startDate: e.target.value })
-                    }
-                    placeholder="DD/MM/YYYY"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Application Closing Date</label>
-                  <input
-                    type="text"
-                    value={admissionsData.lastDate}
-                    onChange={(e) =>
-                      setAdmissionsData({ ...admissionsData, lastDate: e.target.value })
-                    }
-                    placeholder="DD/MM/YYYY"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Main Admissions Banner Text</label>
-                <input
-                  type="text"
-                  value={admissionsData.headline}
-                  onChange={(e) =>
-                    setAdmissionsData({ ...admissionsData, headline: e.target.value })
-                  }
-                  placeholder="Official headline displayed across website"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Admission Guidelines & Submission Instructions</label>
-                <textarea
-                  rows="3"
-                  value={admissionsData.guidelines}
-                  onChange={(e) =>
-                    setAdmissionsData({ ...admissionsData, guidelines: e.target.value })
-                  }
-                  placeholder="Instructions for prospective parents..."
-                ></textarea>
-              </div>
-
-              <div className="form-group">
-                <label>Fee Schedule & Non-Refundable Policy Notes</label>
-                <textarea
-                  rows="3"
-                  value={admissionsData.feeNotice}
-                  onChange={(e) =>
-                    setAdmissionsData({ ...admissionsData, feeNotice: e.target.value })
-                  }
-                  placeholder="Rules regarding admission and monthly tuition fees..."
-                ></textarea>
-              </div>
-
-              <div className="form-group">
-                <label>Booklist & School Uniform Guidelines</label>
-                <textarea
-                  rows="3"
-                  value={admissionsData.booklistUniformInfo}
-                  onChange={(e) =>
-                    setAdmissionsData({ ...admissionsData, booklistUniformInfo: e.target.value })
-                  }
-                  placeholder="Information regarding uniforms, house colours, and book distributions..."
-                ></textarea>
-              </div>
-
-              {/* PDF ATTACHMENT */}
-              <div className="form-group">
-                <label>Attach Official Circular / Prospectus PDF Document</label>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '6px' }}>
-                  <input
-                    type="file"
-                    ref={circularFileRef}
-                    style={{ display: 'none' }}
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleCircularDocUpload}
-                  />
-                  <button
-                    type="button"
-                    className="admin-action-btn secondary"
-                    onClick={() => circularFileRef.current?.click()}
-                  >
-                    <i className="fa-solid fa-file-pdf" style={{ marginRight: '6px' }}></i>
-                    {admissionsData.circularDocPath ? 'Change PDF File' : 'Upload PDF Document'}
-                  </button>
-                  {admissionsData.circularDocPath && (
-                    <span style={{ fontSize: '0.88rem', color: '#0F172A', fontWeight: 600 }}>
-                      <i className="fa-solid fa-check" style={{ color: '#059669', marginRight: '6px' }}></i>
-                      {admissionsData.circularDocName || 'prospectus_guidelines.pdf'}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ marginTop: '24px' }}>
-                <button
-                  type="submit"
-                  className="admin-action-btn primary"
-                  disabled={settingsLoading}
-                  style={{ minWidth: '180px' }}
-                >
-                  <i className="fa-solid fa-floppy-disk" style={{ marginRight: '6px' }}></i>
-                  {settingsLoading ? 'Saving...' : 'Save & Publish Changes'}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
 
         {/* ============================================================== */}
         {/* 6. ENQUIRIES TAB */}
@@ -1817,7 +1713,9 @@ export default function AdminDashboard() {
                           setNoticeFormData({ ...noticeFormData, category: e.target.value });
                         }
                       }}
+                      required
                     >
+                      <option value="" disabled>Select Category</option>
                       {noticeCategories.map((c) => (
                         <option key={c.id} value={c.id}>
                           {c.label}
@@ -2022,10 +1920,14 @@ export default function AdminDashboard() {
           <div className="admin-modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>
-                Add to Album:{' '}
-                <span style={{ color: '#D4AF37' }}>
-                  {galleryAlbums.find((a) => a.slug === selectedAlbum)?.title || selectedAlbum}
-                </span>
+                Upload Media to Gallery
+                {uploadAlbumSlug && (
+                  <>
+                    {' '}: <span style={{ color: '#D4AF37' }}>
+                      {galleryAlbums.find((a) => a.slug === uploadAlbumSlug)?.title || uploadAlbumSlug}
+                    </span>
+                  </>
+                )}
               </h3>
               <button
                 type="button"
@@ -2037,6 +1939,33 @@ export default function AdminDashboard() {
             </div>
 
             <form onSubmit={handleSaveGalleryItem} className="modal-form">
+              {/* SELECT CATEGORY / ALBUM */}
+              <div className="form-group">
+                <label>Select Category / Album *</label>
+                <select
+                  value={uploadAlbumSlug}
+                  onChange={(e) => setUploadAlbumSlug(e.target.value)}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    border: '1.5px solid #CBD5E1',
+                    fontSize: '0.95rem',
+                    fontWeight: 600,
+                    color: uploadAlbumSlug ? '#0F172A' : '#64748B',
+                    background: '#FFFFFF'
+                  }}
+                >
+                  <option value="" disabled>Select Category</option>
+                  {galleryAlbums.map((a) => (
+                    <option key={a.id || a.slug} value={a.slug} style={{ color: '#0F172A' }}>
+                      {a.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {/* MEDIA TYPE SWITCH */}
               <div className="media-type-selector">
                 <button
@@ -2444,6 +2373,293 @@ export default function AdminDashboard() {
                 Done
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: MANAGE GALLERY CATEGORIES (ALBUMS) */}
+      {/* ============================================================== */}
+      {albumManageModalOpen && (
+        <div className="admin-modal-overlay" onClick={() => setAlbumManageModalOpen(false)}>
+          <div
+            className="admin-modal-card"
+            style={{ maxWidth: '640px', width: '92%' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '8px',
+                    background: 'rgba(212, 175, 55, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#B8860B',
+                    fontSize: '1.1rem'
+                  }}
+                >
+                  <i className="fa-solid fa-layer-group"></i>
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Manage Gallery Categories</h3>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B' }}>
+                    Create, edit, and organize albums displayed in the photo gallery
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setAlbumManageModalOpen(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <div style={{ padding: '20px' }}>
+              {/* Add New Album Form */}
+              <form
+                onSubmit={handleCreateAlbum}
+                style={{
+                  background: '#F8FAFC',
+                  border: '1.5px solid #E2E8F0',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  marginBottom: '20px'
+                }}
+              >
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '0.9rem',
+                    fontWeight: 700,
+                    color: '#0B1B3D',
+                    marginBottom: '8px'
+                  }}
+                >
+                  + Add New Gallery Category
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <input
+                    type="text"
+                    placeholder="Category / Album Title (e.g. Science Exhibition, Sports Meet 2026...)"
+                    value={newAlbumTitle}
+                    onChange={(e) => setNewAlbumTitle(e.target.value)}
+                    style={{
+                      padding: '9px 12px',
+                      borderRadius: '6px',
+                      border: '1.5px solid #CBD5E1',
+                      fontSize: '0.88rem',
+                      outline: 'none',
+                      background: '#FFFFFF'
+                    }}
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Short description (optional, e.g. Annual science fair and dynamic prototypes)"
+                    value={newAlbumDesc}
+                    onChange={(e) => setNewAlbumDesc(e.target.value)}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '1.5px solid #CBD5E1',
+                      fontSize: '0.85rem',
+                      outline: 'none',
+                      background: '#FFFFFF'
+                    }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="submit"
+                      className="admin-action-btn primary"
+                      disabled={albumSaving}
+                      style={{ padding: '8px 18px', fontSize: '0.85rem' }}
+                    >
+                      <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                      {albumSaving ? 'Creating...' : 'Create Category'}
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              {/* Existing Categories List */}
+              <div>
+                <h4 style={{ fontSize: '0.92rem', color: '#0B1B3D', fontWeight: 700, marginBottom: '10px' }}>
+                  Existing Categories ({galleryAlbums.length})
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '280px', overflowY: 'auto' }}>
+                  {galleryAlbums.map((alb) => (
+                    <div
+                      key={alb.id || alb.slug}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '10px 14px',
+                        background: '#FFFFFF',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: '8px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontWeight: 700, color: '#0B1B3D', fontSize: '0.92rem' }}>
+                            {alb.title}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: '0.72rem',
+                              background: '#F1F5F9',
+                              color: '#64748B',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              fontWeight: 600
+                            }}
+                          >
+                            {alb.item_count || 0} photo{(alb.item_count || 0) === 1 ? '' : 's'}
+                          </span>
+                        </div>
+                        {alb.description && (
+                          <span style={{ fontSize: '0.78rem', color: '#64748B', maxWidth: '380px' }} className="truncate-text">
+                            {alb.description}
+                          </span>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingAlbum({ ...alb });
+                          }}
+                          style={{
+                            background: '#F1F5F9',
+                            border: 'none',
+                            color: '#0B1B3D',
+                            cursor: 'pointer',
+                            padding: '6px 10px',
+                            borderRadius: '5px',
+                            fontSize: '0.82rem'
+                          }}
+                          title={`Edit category "${alb.title}"`}
+                        >
+                          <i className="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteAlbum(alb.id, alb.title)}
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            border: 'none',
+                            color: '#DC2626',
+                            cursor: 'pointer',
+                            padding: '6px 10px',
+                            borderRadius: '5px',
+                            fontSize: '0.82rem'
+                          }}
+                          title={`Delete category "${alb.title}"`}
+                        >
+                          <i className="fa-solid fa-trash-can"></i>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div
+              className="modal-footer-btns"
+              style={{
+                borderTop: '1px solid #E2E8F0',
+                padding: '14px 20px',
+                display: 'flex',
+                justifyContent: 'flex-end',
+                background: '#F8FAFC',
+                borderBottomLeftRadius: '12px',
+                borderBottomRightRadius: '12px'
+              }}
+            >
+              <button
+                type="button"
+                className="admin-action-btn secondary"
+                onClick={() => setAlbumManageModalOpen(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: EDIT GALLERY CATEGORY */}
+      {/* ============================================================== */}
+      {editingAlbum && (
+        <div className="admin-modal-overlay" onClick={() => setEditingAlbum(null)}>
+          <div
+            className="admin-modal-card"
+            style={{ maxWidth: '500px', width: '92%' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h3>Edit Gallery Category</h3>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setEditingAlbum(null)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateAlbum} className="modal-form" style={{ padding: '20px' }}>
+              <div className="form-group">
+                <label>Category Title *</label>
+                <input
+                  type="text"
+                  value={editingAlbum.title || ''}
+                  onChange={(e) =>
+                    setEditingAlbum({ ...editingAlbum, title: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Category Description</label>
+                <textarea
+                  rows="3"
+                  value={editingAlbum.description || ''}
+                  onChange={(e) =>
+                    setEditingAlbum({ ...editingAlbum, description: e.target.value })
+                  }
+                  placeholder="Short description of this photo album category..."
+                ></textarea>
+              </div>
+
+              <div className="modal-footer-btns" style={{ marginTop: '16px' }}>
+                <button
+                  type="button"
+                  className="admin-action-btn secondary"
+                  onClick={() => setEditingAlbum(null)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="admin-action-btn primary"
+                  disabled={albumSaving}
+                >
+                  {albumSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

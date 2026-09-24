@@ -12,9 +12,11 @@ export default function Footer() {
           {/* Col 1: Brand Foundation */}
           <div className="footer-col">
             <Link to="/" className="brand-logo-footer" style={{ marginBottom: '16px' }}>
-              <div className="logo-crest-box-gold">
-                <i className="fa-solid fa-graduation-cap"></i>
-              </div>
+              <img
+                src="/logo.jpg"
+                alt="The Rabindra Bharati Heritage Day School"
+                className="brand-logo-footer-img"
+              />
               <div className="brand-text-cream">
                 <h2>THE RABINDRA BHARATI</h2>
                 <p>Heritage Day School • CBSE Affiliated</p>

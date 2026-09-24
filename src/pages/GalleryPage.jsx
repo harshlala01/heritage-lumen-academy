@@ -2,272 +2,70 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import PageBanner from '../components/PageBanner';
 
+const API_BASE = 'http://localhost:5000';
+
 export default function GalleryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const albumParam = searchParams.get('album');
 
-  const [selectedAlbumId, setSelectedAlbumId] = useState(albumParam || null);
+  const [albums, setAlbums] = useState([]);
+  const [albumsLoading, setAlbumsLoading] = useState(true);
+  const [selectedAlbumSlug, setSelectedAlbumSlug] = useState(albumParam || null);
+  const [liveAlbumItems, setLiveAlbumItems] = useState([]);
+  const [itemsLoading, setItemsLoading] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(null);
 
   // Sync state with URL parameter if present
   useEffect(() => {
     if (albumParam) {
-      setSelectedAlbumId(albumParam);
+      setSelectedAlbumSlug(albumParam);
     } else {
-      setSelectedAlbumId(null);
+      setSelectedAlbumSlug(null);
     }
   }, [albumParam]);
 
-  const albums = [
-    {
-      id: 'campus',
-      title: 'Campus',
-      cover: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1000&auto=format&fit=crop',
-      description: 'Explore our state-of-the-art academic architecture, expansive courtyards, smart facilities, and lush sports grounds.',
-      photos: [
-        {
-          id: 1,
-          title: 'Main Academic Block & Heritage Quadrangle',
-          image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 2,
-          title: 'Historic Central Library & Digital Research Wing',
-          image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 3,
-          title: 'Modern Science & Innovation Wing',
-          image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 4,
-          title: 'Olympic-Standard Heated Aquatic Center',
-          image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 5,
-          title: 'St. Jude’s Lawn & Open-Air Courtyard',
-          image: 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 6,
-          title: 'Auditorium & Performing Arts Complex',
-          image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000&auto=format&fit=crop'
+  // Load all albums dynamically from backend
+  const loadAlbums = () => {
+    setAlbumsLoading(true);
+    fetch(`${API_BASE}/api/gallery/albums`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setAlbums(data);
+        } else {
+          setAlbums([]);
         }
-      ]
-    },
-    {
-      id: 'pre-primary',
-      title: 'Pre-Primary Activities',
-      cover: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop',
-      description: 'Joyful snapshots of early childhood wonder, playful learning, fancy dress festivals, and foundational activities.',
-      photos: [
-        {
-          id: 1,
-          title: 'Tiny Tots Eco-Green & Nature Day Celebration',
-          image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 2,
-          title: 'Kindergarten Fancy Dress Carnival Parade',
-          image: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 3,
-          title: 'Sensory Playroom & Montessori Learning Toys',
-          image: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 4,
-          title: 'Clay Modeling & Finger Painting Workshop',
-          image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 5,
-          title: 'Junior Sports Day & Fun Obstacle Races',
-          image: 'https://images.unsplash.com/photo-1472162072942-cd5147eb3902?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 6,
-          title: 'Storytelling Circle & Puppet Theater Hour',
-          image: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1000&auto=format&fit=crop'
-        }
-      ]
-    },
-    {
-      id: 'achievements',
-      title: 'Achievements',
-      cover: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1000&auto=format&fit=crop',
-      description: 'Honoring our academic toppers, board merit lists, scholarship winners, and state championship honors.',
-      photos: [
-        {
-          id: 1,
-          title: 'CBSE Class X & XII All-India Rankers Felicitation',
-          image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 2,
-          title: 'National Robotics Olympiad Gold Laurels',
-          image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 3,
-          title: 'State Inter-School Championship Debate Trophy',
-          image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 4,
-          title: 'Regional Swimming Meet Medals & Honors',
-          image: 'https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 5,
-          title: 'Governor’s Green Award for Campus Eco-Initiative',
-          image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 6,
-          title: 'Academic Excellence Annual Scholarship Awards',
-          image: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1000&auto=format&fit=crop'
-        }
-      ]
-    },
-    {
-      id: 'investiture',
-      title: 'Events & Investiture',
-      cover: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1000&auto=format&fit=crop',
-      description: 'The induction of the Student Prefectorial Board, house color traditions, and solemn school assemblies.',
-      photos: [
-        {
-          id: 1,
-          title: 'House Captains & Student Council Flag Ceremony',
-          image: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 2,
-          title: 'Head Boy & Head Girl Oath of Office',
-          image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 3,
-          title: 'Inter-House March Past & Grand Parade',
-          image: 'https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 4,
-          title: 'Founder’s Memorial Day Floral Homage',
-          image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 5,
-          title: 'Independence Day National Flag Hoisting Ceremony',
-          image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 6,
-          title: 'Valedictory Commencement & Sash Presentation',
-          image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1000&auto=format&fit=crop'
-        }
-      ]
-    },
-    {
-      id: 'annual-function',
-      title: 'Annual Function & Celebrations',
-      cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000&auto=format&fit=crop',
-      description: 'Spectacular nights of theater, choir, musical ensembles, and festive illuminations across the campus.',
-      photos: [
-        {
-          id: 1,
-          title: 'Night Illumination & Festive Campus Fair',
-          image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 2,
-          title: 'Symphony Orchestra & Classical Fusion Choir',
-          image: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 3,
-          title: 'Senior Dance Troupe Theatrical Performance',
-          image: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 4,
-          title: 'English Shakespearean Drama Onstage',
-          image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 5,
-          title: 'Christmas Tree Lighting & Carolers Evening',
-          image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 6,
-          title: 'Grand Finale Confetti & School Anthem Chorus',
-          image: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1000&auto=format&fit=crop'
-        }
-      ]
-    },
-    {
-      id: 'excursions',
-      title: 'Excursions & Outreach',
-      cover: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?q=80&w=1000&auto=format&fit=crop',
-      description: 'Educational expeditions, heritage walks, nature camps, and community health awareness rallies.',
-      photos: [
-        {
-          id: 1,
-          title: 'Public Health & Dengue Awareness Street Rally',
-          image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 2,
-          title: 'Heritage Archaeological Site & Historical Study Tour',
-          image: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 3,
-          title: 'Science Center & Planetary Space Observatory Visit',
-          image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 4,
-          title: 'Eco-Club Botanical Reserve Nature Trail',
-          image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 5,
-          title: 'Blood Donation & Community Health Checkup Camp',
-          image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1000&auto=format&fit=crop'
-        },
-        {
-          id: 6,
-          title: 'Rural Education Outreach & Book Distribution Drive',
-          image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop'
-        }
-      ]
-    }
-  ];
-
-  const currentAlbum = albums.find((a) => a.id === selectedAlbumId);
-
-  const [liveAlbumItems, setLiveAlbumItems] = useState([]);
+        setAlbumsLoading(false);
+      })
+      .catch(() => {
+        setAlbums([]);
+        setAlbumsLoading(false);
+      });
+  };
 
   useEffect(() => {
-    if (!selectedAlbumId) {
+    loadAlbums();
+  }, []);
+
+  const currentAlbum = albums.find((a) => a.slug === selectedAlbumSlug);
+
+  // Load live items for the selected album
+  useEffect(() => {
+    if (!selectedAlbumSlug) {
       setLiveAlbumItems([]);
       return;
     }
-    fetch(`http://localhost:5000/api/gallery/items/${selectedAlbumId}`)
-      .then((res) => res.json())
+    setItemsLoading(true);
+    fetch(`${API_BASE}/api/gallery/items/${selectedAlbumSlug}`)
+      .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
           const formatted = data.map((item) => ({
             id: `live_${item.id}`,
-            title: item.title || 'Heritage Day School',
+            title: item.title || currentAlbum?.title || 'Heritage Day School',
             image: item.media_url.startsWith('http')
               ? item.media_url
-              : `http://localhost:5000${item.media_url}`,
+              : `${API_BASE}${item.media_url}`,
             itemType: item.item_type,
             mediaUrl: item.media_url
           }));
@@ -275,27 +73,28 @@ export default function GalleryPage() {
         } else {
           setLiveAlbumItems([]);
         }
+        setItemsLoading(false);
       })
-      .catch(() => setLiveAlbumItems([]));
-  }, [selectedAlbumId]);
+      .catch(() => {
+        setLiveAlbumItems([]);
+        setItemsLoading(false);
+      });
+  }, [selectedAlbumSlug, currentAlbum?.title]);
 
-  const openAlbum = (albumId) => {
-    setSelectedAlbumId(albumId);
-    setSearchParams({ album: albumId });
+  const openAlbum = (slug) => {
+    setSelectedAlbumSlug(slug);
+    setSearchParams({ album: slug });
     window.scrollTo({ top: 380, behavior: 'smooth' });
   };
 
   const closeAlbum = () => {
-    setSelectedAlbumId(null);
+    setSelectedAlbumSlug(null);
     setSearchParams({});
     window.scrollTo({ top: 200, behavior: 'smooth' });
   };
 
   // Lightbox handlers for current album
-  const currentPhotos = [
-    ...liveAlbumItems,
-    ...(currentAlbum ? currentAlbum.photos : [])
-  ];
+  const currentPhotos = liveAlbumItems;
   const activeLightboxPhoto = lightboxIndex !== null ? currentPhotos[lightboxIndex] : null;
 
   const handlePrevPhoto = (e) => {
@@ -346,41 +145,120 @@ export default function GalleryPage() {
           {!currentAlbum && (
             <div>
               <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto 35px' }}>
-                <span className="section-label">CHRONICLES & MEMORIES</span>
-                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: '#7C2D12', margin: '6px 0 12px' }}>
-                  Photo Albums & Sections
+                <span className="section-label">CHRONICLES &amp; MEMORIES</span>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: '#0B1B3D', margin: '6px 0 12px' }}>
+                  Photo Albums &amp; Sections
                 </h2>
                 <p style={{ color: '#57534E', fontSize: '1rem', lineHeight: '1.6' }}>
-                  Click on any section card below to open and explore the high-resolution photo collection for that category.
+                  Click on any section card below to open and explore the photo collection for that category.
                 </p>
               </div>
 
-              {/* Grid of Section Cards matching screenshot */}
-              <div className="gallery-albums-grid">
-                {albums.map((album) => (
-                  <div
-                    key={album.id}
-                    className="gallery-album-card"
-                    onClick={() => openAlbum(album.id)}
-                    title={`Click to open ${album.title} photos`}
-                  >
-                    <img
-                      src={album.cover}
-                      alt={album.title}
-                      className="gallery-album-cover"
-                      loading="lazy"
-                    />
-                    <div className="gallery-album-badge">
-                      <i className="fa-solid fa-images" style={{ marginRight: '6px' }}></i>
-                      {album.photos.length} Photos
-                    </div>
-                    {/* Golden/warm bottom overlay matching screenshot */}
-                    <div className="gallery-album-overlay">
-                      <h3 className="gallery-album-title">{album.title}</h3>
-                    </div>
+              {albumsLoading ? (
+                <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748B' }}>
+                  <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '28px', color: '#D4AF37', marginBottom: '12px' }}></i>
+                  <p style={{ margin: 0, fontSize: '0.95rem' }}>Loading photo albums...</p>
+                </div>
+              ) : albums.length > 0 ? (
+                <div className="gallery-albums-grid">
+                  {albums.map((album) => {
+                    const coverUrl = album.cover_image
+                      ? (album.cover_image.startsWith('http') ? album.cover_image : `${API_BASE}${album.cover_image}`)
+                      : null;
+
+                    return (
+                      <div
+                        key={album.id || album.slug}
+                        className="gallery-album-card"
+                        onClick={() => openAlbum(album.slug)}
+                        title={`Click to open ${album.title} photos`}
+                      >
+                        {coverUrl ? (
+                          <img
+                            src={coverUrl}
+                            alt={album.title}
+                            className="gallery-album-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div style={{
+                            height: '240px',
+                            background: 'linear-gradient(135deg, #0B1B3D 0%, #162C5B 100%)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '20px',
+                            textAlign: 'center',
+                            position: 'relative'
+                          }}>
+                            <div style={{
+                              width: '56px',
+                              height: '56px',
+                              borderRadius: '50%',
+                              background: 'rgba(212, 175, 55, 0.15)',
+                              border: '1.5px solid #D4AF37',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              marginBottom: '12px',
+                              color: '#D4AF37',
+                              fontSize: '22px'
+                            }}>
+                              <i className="fa-regular fa-images"></i>
+                            </div>
+                            <span style={{ color: '#D4AF37', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>
+                              {album.item_count > 0 ? `${album.item_count} Photographs` : 'Album Ready'}
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="gallery-album-badge">
+                          <i className="fa-solid fa-images" style={{ marginRight: '6px' }}></i>
+                          {album.item_count || 0} {album.item_count === 1 ? 'Photo' : 'Photos'}
+                        </div>
+
+                        {/* Golden/navy bottom overlay */}
+                        <div className="gallery-album-overlay">
+                          <h3 className="gallery-album-title">{album.title}</h3>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div style={{
+                  textAlign: 'center',
+                  padding: '70px 24px',
+                  background: '#FAF7F2',
+                  borderRadius: '20px',
+                  border: '1.5px dashed rgba(212, 175, 55, 0.45)',
+                  margin: '30px auto',
+                  maxWidth: '680px'
+                }}>
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '50%',
+                    background: '#FAF5EA',
+                    border: '1.5px solid #D4AF37',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 18px',
+                    color: '#D4AF37',
+                    fontSize: '26px'
+                  }}>
+                    <i className="fa-regular fa-images"></i>
                   </div>
-                ))}
-              </div>
+                  <h3 style={{ color: '#0B1B3D', fontSize: '1.4rem', fontWeight: 700, marginBottom: '10px' }}>
+                    No Photographs Published Yet
+                  </h3>
+                  <p style={{ color: '#64748B', fontSize: '0.98rem', maxWidth: '480px', margin: '0 auto', lineHeight: 1.6 }}>
+                    Official school photo albums and campus moments will be published here soon.
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
@@ -396,31 +274,69 @@ export default function GalleryPage() {
                   <h2>{currentAlbum.title}</h2>
                   <p>{currentAlbum.description}</p>
                 </div>
-                <div style={{ fontWeight: '700', color: '#7C2D12', fontSize: '0.95rem' }}>
-                  <i className="fa-solid fa-camera" style={{ marginRight: '6px' }}></i>
-                  {currentAlbum.photos.length} Photographs
+                <div style={{ fontWeight: '700', color: '#0B1B3D', fontSize: '0.95rem' }}>
+                  <i className="fa-solid fa-camera" style={{ marginRight: '6px', color: '#D4AF37' }}></i>
+                  {currentPhotos.length} {currentPhotos.length === 1 ? 'Photograph' : 'Photographs'}
                 </div>
               </div>
 
               {/* Photos Grid for this Album */}
-              <div className="gallery-photos-grid">
-                {currentAlbum.photos.map((photo, idx) => (
-                  <div
-                    key={photo.id}
-                    className="gallery-photo-item"
-                    onClick={() => setLightboxIndex(idx)}
-                    title="Click to view full photo"
-                  >
-                    <img src={photo.image} alt={photo.title} loading="lazy" />
-                    <div className="gallery-photo-caption">
-                      <h5>{photo.title}</h5>
-                      <span style={{ fontSize: '0.75rem', color: '#FBBF24', marginTop: '4px' }}>
-                        Click to enlarge <i className="fa-solid fa-expand" style={{ marginLeft: '4px' }}></i>
-                      </span>
+              {itemsLoading ? (
+                <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748B' }}>
+                  <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '28px', color: '#D4AF37', marginBottom: '12px' }}></i>
+                  <p style={{ margin: 0, fontSize: '0.95rem' }}>Loading photographs...</p>
+                </div>
+              ) : currentPhotos.length > 0 ? (
+                <div className="gallery-photos-grid">
+                  {currentPhotos.map((photo, idx) => (
+                    <div
+                      key={photo.id || idx}
+                      className="gallery-photo-item"
+                      onClick={() => setLightboxIndex(idx)}
+                      title="Click to view full photo"
+                    >
+                      <img src={photo.image} alt={photo.title} loading="lazy" />
+                      <div className="gallery-photo-caption">
+                        <h5>{photo.title}</h5>
+                        <span style={{ fontSize: '0.75rem', color: '#FBBF24', marginTop: '4px' }}>
+                          Click to enlarge <i className="fa-solid fa-expand" style={{ marginLeft: '4px' }}></i>
+                        </span>
+                      </div>
                     </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{
+                  textAlign: 'center',
+                  padding: '60px 24px',
+                  background: '#FAF7F2',
+                  borderRadius: '16px',
+                  border: '1.5px dashed rgba(212, 175, 55, 0.4)',
+                  margin: '30px 0'
+                }}>
+                  <div style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '50%',
+                    background: '#FAF5EA',
+                    border: '1px solid #D4AF37',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 16px',
+                    color: '#D4AF37',
+                    fontSize: '22px'
+                  }}>
+                    <i className="fa-regular fa-images"></i>
                   </div>
-                ))}
-              </div>
+                  <h4 style={{ color: '#0B1B3D', fontSize: '1.25rem', fontWeight: 700, marginBottom: '8px' }}>
+                    No Photographs in this Album Yet
+                  </h4>
+                  <p style={{ color: '#64748B', fontSize: '0.92rem', maxWidth: '460px', margin: '0 auto', lineHeight: 1.5 }}>
+                    Photographs for this section will be published soon.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -541,4 +457,3 @@ export default function GalleryPage() {
     </div>
   );
 }
-

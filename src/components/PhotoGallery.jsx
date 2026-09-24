@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { contentImage, useContent } from '../hooks/useContent';
+import { contentImage } from '../hooks/useContent';
+
+const API_BASE = 'http://localhost:5000';
 
 const DEFAULT_GALLERY = [
   {
@@ -31,14 +33,55 @@ const DEFAULT_GALLERY = [
 
 export default function PhotoGallery() {
   const [activePhoto, setActivePhoto] = useState(null);
-  const rawMoments = useContent('gallery', DEFAULT_GALLERY);
+  const [moments, setMoments] = useState(DEFAULT_GALLERY);
+  const [loading, setLoading] = useState(false);
 
-  // Filter out any corrupted test entries like 'xcvbnm'
-  const validMoments = (rawMoments && rawMoments.length > 0)
-    ? rawMoments.filter(m => m.title && m.title !== 'xcvbnm')
-    : [];
-
-  const moments = validMoments.length >= 4 ? validMoments : DEFAULT_GALLERY;
+  useEffect(() => {
+    // 1. Fetch live gallery items across all albums from backend
+    fetch(`${API_BASE}/api/gallery/all`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const valid = data.filter(item => item.title && item.title !== 'xcvbnm');
+          if (valid.length > 0) {
+            const formatted = valid.slice(0, 4).map((item) => ({
+              id: item.id,
+              category: (item.album_title || item.album_slug || 'MOMENTS').toUpperCase(),
+              title: item.title || 'Campus Moment',
+              image: item.media_url ? contentImage(item.media_url) : DEFAULT_GALLERY[0].image
+            }));
+            setMoments(formatted);
+            return;
+          }
+        }
+        
+        // 2. Fallback to /api/content/gallery
+        fetch(`${API_BASE}/api/content/gallery`)
+          .then((r) => (r.ok ? r.json() : []))
+          .then((cData) => {
+            if (Array.isArray(cData) && cData.length > 0) {
+              const valid = cData.filter(item => item.title && item.title !== 'xcvbnm');
+              if (valid.length > 0) {
+                const formatted = valid.slice(0, 4).map((item, idx) => ({
+                  id: item.id || idx,
+                  category: (item.subtitle || 'CAMPUS').toUpperCase(),
+                  title: item.title,
+                  image: item.image_path ? contentImage(item.image_path) : DEFAULT_GALLERY[idx % DEFAULT_GALLERY.length].image
+                }));
+                setMoments(formatted);
+                return;
+              }
+            }
+            setMoments(DEFAULT_GALLERY);
+          })
+          .catch(() => {
+            setMoments(DEFAULT_GALLERY);
+          });
+      })
+      .catch(() => {
+        setMoments(DEFAULT_GALLERY);
+      });
+  }, []);
 
   return (
     <section className="campus-moments-vibrancy-section" id="gallery-moments">
@@ -56,21 +99,18 @@ export default function PhotoGallery() {
 
         {/* 2x2 Grid */}
         <div className="cm-vibrancy-2x2-grid">
-          {moments.slice(0, 4).map((item, idx) => {
+          {moments.map((item, idx) => {
             const fallbackImg = DEFAULT_GALLERY[idx % DEFAULT_GALLERY.length].image;
-            const imgSrc = contentImage(item.image_path || item.image || fallbackImg);
-            const categoryText = item.category || item.subtitle || 'CAMPUS LIFE';
-
             return (
               <div
                 className="cm-vibrancy-card"
                 key={item.id || idx}
-                onClick={() => setActivePhoto({ ...item, resolvedImg: imgSrc, categoryText })}
+                onClick={() => setActivePhoto(item)}
                 title={`Inspect ${item.title}`}
               >
                 <div className="cm-vibrancy-card-inner">
                   <img
-                    src={imgSrc}
+                    src={item.image}
                     alt={item.title}
                     className="cm-vibrancy-img"
                     loading="lazy"
@@ -80,7 +120,7 @@ export default function PhotoGallery() {
                     }}
                   />
                   <div className="cm-vibrancy-gradient-overlay">
-                    <span className="cm-vibrancy-category">{categoryText}</span>
+                    <span className="cm-vibrancy-category">{item.category}</span>
                     <h3 className="cm-vibrancy-title">{item.title}</h3>
                   </div>
                 </div>
@@ -111,7 +151,7 @@ export default function PhotoGallery() {
           >
             <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden' }}>
               <img
-                src={activePhoto.resolvedImg || contentImage(activePhoto.image_path || activePhoto.image)}
+                src={activePhoto.image}
                 alt={activePhoto.title}
                 style={{ maxHeight: '72vh', width: '100%', objectFit: 'cover' }}
                 onError={(e) => {
@@ -146,7 +186,7 @@ export default function PhotoGallery() {
             </div>
             <div style={{ padding: '16px 8px 8px', textAlign: 'left' }}>
               <span style={{ color: '#D4AF37', fontSize: '0.78rem', fontWeight: 800, letterSpacing: '1px' }}>
-                {activePhoto.categoryText || activePhoto.category || activePhoto.subtitle || 'CAMPUS LIFE'}
+                {activePhoto.category}
               </span>
               <h3 style={{ fontFamily: 'var(--font-serif)', color: '#FAF7F2', marginTop: '4px', fontSize: '1.35rem' }}>
                 {activePhoto.title}
