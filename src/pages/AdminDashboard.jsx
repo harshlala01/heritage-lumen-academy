@@ -78,6 +78,7 @@ export default function AdminDashboard() {
   const [galleryItems, setGalleryItems] = useState([]);
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [galleryModalOpen, setGalleryModalOpen] = useState(false);
+  const [uploadAlbumSlug, setUploadAlbumSlug] = useState('');
   const [galleryMediaType, setGalleryMediaType] = useState('image'); // 'image' | 'video'
   const [galleryFormData, setGalleryFormData] = useState({
     title: '',
@@ -573,9 +574,16 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleOpenGalleryModal = () => {
+    setUploadAlbumSlug('');
+    setGalleryFormData({ title: '', media_url: '', video_url: '' });
+    setGalleryMediaType('image');
+    setGalleryModalOpen(true);
+  };
+
   const handleSaveGalleryItem = async (e) => {
     e.preventDefault();
-    if (!selectedAlbum) {
+    if (!uploadAlbumSlug) {
       showToast('Please select a category / album.', 'error');
       return;
     }
@@ -603,7 +611,7 @@ export default function AdminDashboard() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          album_slug: selectedAlbum,
+          album_slug: uploadAlbumSlug,
           item_type: galleryMediaType,
           media_url: mediaUrl,
           title: galleryFormData.title || 'Heritage Day School'
@@ -615,7 +623,8 @@ export default function AdminDashboard() {
       showToast('Item added to album.');
       setGalleryModalOpen(false);
       setGalleryFormData({ title: '', media_url: '', video_url: '' });
-      loadGalleryItems(selectedAlbum);
+      setSelectedAlbum(uploadAlbumSlug);
+      loadGalleryItems(uploadAlbumSlug);
       loadGalleryAlbums();
       loadStats();
     } catch (err) {
@@ -993,7 +1002,7 @@ export default function AdminDashboard() {
                   className="shortcut-chip"
                   onClick={() => {
                     setActiveTab('gallery');
-                    setGalleryModalOpen(true);
+                    handleOpenGalleryModal();
                   }}
                 >
                   <i className="fa-solid fa-cloud-arrow-up"></i>
@@ -1387,10 +1396,7 @@ export default function AdminDashboard() {
                   type="button"
                   className="admin-action-btn primary"
                   disabled={galleryAlbums.length === 0}
-                  onClick={() => {
-                    setGalleryFormData({ title: '', media_url: '', video_url: '' });
-                    setGalleryModalOpen(true);
-                  }}
+                  onClick={() => handleOpenGalleryModal()}
                 >
                   <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
                   Add Media to Album
@@ -1440,7 +1446,7 @@ export default function AdminDashboard() {
                   type="button"
                   className="admin-action-btn primary"
                   style={{ marginTop: '12px' }}
-                  onClick={() => setGalleryModalOpen(true)}
+                  onClick={() => handleOpenGalleryModal()}
                 >
                   Upload First Image / Add Video
                 </button>
@@ -1914,12 +1920,11 @@ export default function AdminDashboard() {
           <div className="admin-modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>
-                Upload Media{' '}
-                {selectedAlbum && (
+                Upload Media to Gallery
+                {uploadAlbumSlug && (
                   <>
-                    to Album:{' '}
-                    <span style={{ color: '#D4AF37' }}>
-                      {galleryAlbums.find((a) => a.slug === selectedAlbum)?.title || selectedAlbum}
+                    {' '}: <span style={{ color: '#D4AF37' }}>
+                      {galleryAlbums.find((a) => a.slug === uploadAlbumSlug)?.title || uploadAlbumSlug}
                     </span>
                   </>
                 )}
@@ -1938,8 +1943,8 @@ export default function AdminDashboard() {
               <div className="form-group">
                 <label>Select Category / Album *</label>
                 <select
-                  value={selectedAlbum}
-                  onChange={(e) => setSelectedAlbum(e.target.value)}
+                  value={uploadAlbumSlug}
+                  onChange={(e) => setUploadAlbumSlug(e.target.value)}
                   required
                   style={{
                     width: '100%',
@@ -1948,13 +1953,13 @@ export default function AdminDashboard() {
                     border: '1.5px solid #CBD5E1',
                     fontSize: '0.95rem',
                     fontWeight: 600,
-                    color: '#0F172A',
+                    color: uploadAlbumSlug ? '#0F172A' : '#64748B',
                     background: '#FFFFFF'
                   }}
                 >
                   <option value="" disabled>Select Category</option>
                   {galleryAlbums.map((a) => (
-                    <option key={a.id || a.slug} value={a.slug}>
+                    <option key={a.id || a.slug} value={a.slug} style={{ color: '#0F172A' }}>
                       {a.title}
                     </option>
                   ))}
