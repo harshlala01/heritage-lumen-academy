@@ -34,7 +34,7 @@ export default function AdminDashboard() {
   const [noticeFormData, setNoticeFormData] = useState({
     title: '',
     notice_date: '',
-    category: 'admissions',
+    category: '',
     description: '',
     attachment_path: '',
     attachment_name: '',
@@ -267,7 +267,7 @@ export default function AdminDashboard() {
       setNoticeFormData({
         title: notice.title || '',
         notice_date: notice.notice_date || '',
-        category: notice.category || 'admissions',
+        category: notice.category || '',
         description: notice.description || '',
         attachment_path: notice.attachment_path || '',
         attachment_name: notice.attachment_name || '',
@@ -282,7 +282,7 @@ export default function AdminDashboard() {
       setNoticeFormData({
         title: '',
         notice_date: `${dd}/${mm}/${yyyy}`,
-        category: 'admissions',
+        category: '',
         description: '',
         attachment_path: '',
         attachment_name: '',
@@ -315,6 +315,10 @@ export default function AdminDashboard() {
     e.preventDefault();
     if (!noticeFormData.title.trim()) {
       showToast('Please provide a notice title.', 'error');
+      return;
+    }
+    if (!noticeFormData.category) {
+      showToast('Please select a category.', 'error');
       return;
     }
 
@@ -571,6 +575,11 @@ export default function AdminDashboard() {
 
   const handleSaveGalleryItem = async (e) => {
     e.preventDefault();
+    if (!selectedAlbum) {
+      showToast('Please select a category / album.', 'error');
+      return;
+    }
+
     const mediaUrl =
       galleryMediaType === 'image'
         ? galleryFormData.media_url
@@ -1698,7 +1707,9 @@ export default function AdminDashboard() {
                           setNoticeFormData({ ...noticeFormData, category: e.target.value });
                         }
                       }}
+                      required
                     >
+                      <option value="" disabled>Select Category</option>
                       {noticeCategories.map((c) => (
                         <option key={c.id} value={c.id}>
                           {c.label}
@@ -1903,10 +1914,15 @@ export default function AdminDashboard() {
           <div className="admin-modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>
-                Add to Album:{' '}
-                <span style={{ color: '#D4AF37' }}>
-                  {galleryAlbums.find((a) => a.slug === selectedAlbum)?.title || selectedAlbum}
-                </span>
+                Upload Media{' '}
+                {selectedAlbum && (
+                  <>
+                    to Album:{' '}
+                    <span style={{ color: '#D4AF37' }}>
+                      {galleryAlbums.find((a) => a.slug === selectedAlbum)?.title || selectedAlbum}
+                    </span>
+                  </>
+                )}
               </h3>
               <button
                 type="button"
@@ -1918,6 +1934,33 @@ export default function AdminDashboard() {
             </div>
 
             <form onSubmit={handleSaveGalleryItem} className="modal-form">
+              {/* SELECT CATEGORY / ALBUM */}
+              <div className="form-group">
+                <label>Select Category / Album *</label>
+                <select
+                  value={selectedAlbum}
+                  onChange={(e) => setSelectedAlbum(e.target.value)}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    border: '1.5px solid #CBD5E1',
+                    fontSize: '0.95rem',
+                    fontWeight: 600,
+                    color: '#0F172A',
+                    background: '#FFFFFF'
+                  }}
+                >
+                  <option value="" disabled>Select Category</option>
+                  {galleryAlbums.map((a) => (
+                    <option key={a.id || a.slug} value={a.slug}>
+                      {a.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {/* MEDIA TYPE SWITCH */}
               <div className="media-type-selector">
                 <button
