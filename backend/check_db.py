@@ -1,7 +1,6 @@
-import pymysql
-import json
+from app import get_db
 
-conn = pymysql.connect(host='localhost', user='root', password='1234', database='school', cursorclass=pymysql.cursors.DictCursor)
+conn = get_db()
 cur = conn.cursor()
 
 print("=== GALLERY ALBUMS ===")

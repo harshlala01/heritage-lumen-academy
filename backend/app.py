@@ -33,10 +33,29 @@ CORS(app)
 bcrypt = Bcrypt(app)
 
 # ---------- MYSQL CONFIG ----------
+def get_db_password():
+    env_pass = os.environ.get('DB_PASSWORD')
+    if env_pass is not None:
+        return env_pass
+    # XAMPP default is empty (''). Try '', then '1234', then 'root'
+    for candidate in ['', '1234', 'root']:
+        try:
+            test_conn = pymysql.connect(
+                host=os.environ.get('DB_HOST', 'localhost'),
+                user=os.environ.get('DB_USER', 'root'),
+                password=candidate,
+                connect_timeout=2
+            )
+            test_conn.close()
+            return candidate
+        except Exception:
+            continue
+    return ''
+
 DB_CONFIG = {
     'host': os.environ.get('DB_HOST', 'localhost'),
     'user': os.environ.get('DB_USER', 'root'),
-    'password': os.environ.get('DB_PASSWORD', '1234'),              # XAMPP default is empty ('')
+    'password': get_db_password(),
     'database': os.environ.get('DB_NAME', 'school'),
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
@@ -47,6 +66,19 @@ def get_db():
 
 # ---------- DATABASE SETUP ----------
 def init_db():
+    try:
+        server_conn = pymysql.connect(
+            host=DB_CONFIG['host'],
+            user=DB_CONFIG['user'],
+            password=DB_CONFIG['password']
+        )
+        with server_conn.cursor() as s_cur:
+            s_cur.execute(f"CREATE DATABASE IF NOT EXISTS `{DB_CONFIG['database']}`")
+        server_conn.commit()
+        server_conn.close()
+    except Exception as e:
+        print(f"Database check warning: {e}")
+
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute('''
@@ -1077,10 +1109,10 @@ def get_admin_stats(current_user):
 if __name__ == '__main__':
     try:
         init_db()
-        print("✅ MySQL Connected Successfully!")
+        print(f"✅ MySQL Connected Successfully! (Database: {DB_CONFIG['database']})")
     except Exception as e:
         print(f"❌ MySQL Connection Error: {e}")
-        print("👉 Check karo: XAMPP MySQL chalu hai? Database 'heritage_db' bana hai?")
+        print(f"👉 Check karo: XAMPP MySQL chalu hai? Database '{DB_CONFIG['database']}' bana hai?")
         exit(1)
 
     app.run(debug=True, port=5000)
