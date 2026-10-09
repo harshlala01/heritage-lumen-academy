@@ -4261,6 +4261,474 @@
 }
 
 /* ==========================================================
+   CLASS DIVISION LEDGER & INTERACTIVE FEE STRUCTURE (IMAGE 1)
+   ========================================================== */
+.class-division-ledger-section {
+  background: #F9FAFB;
+  padding: 60px 0 85px;
+  position: relative;
+}
+
+.cdl-header-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 28px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.cdl-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #B45309;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.cdl-main-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.1rem, 3.6vw, 2.9rem);
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+}
+
+.cdl-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cdl-annualized-tag {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #64748B;
+}
+
+.cdl-view-toggle-group {
+  display: inline-flex;
+  background: #E2E8F0;
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.cdl-toggle-btn {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cdl-toggle-btn.active {
+  background: #0F172A;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+}
+
+.cdl-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cdl-card {
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.cdl-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+.cdl-card.is-expanded {
+  border-color: #B45309;
+  box-shadow: 0 10px 28px rgba(180, 83, 9, 0.1);
+}
+
+.cdl-card-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 22px 28px;
+}
+
+.cdl-num-cell {
+  font-family: var(--font-serif);
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #CBD5E1;
+  transition: color 0.2s ease;
+  user-select: none;
+}
+
+.cdl-card.is-expanded .cdl-num-cell,
+.cdl-card:first-child .cdl-num-cell {
+  color: #B45309;
+}
+
+.cdl-main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cdl-title-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cdl-class-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
+.cdl-grades-sub {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: #64748B;
+  font-weight: 400;
+}
+
+.cdl-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.cdl-pill-badge.pill-age {
+  background: #F1F5F9;
+  color: #475569;
+}
+
+.cdl-pill-badge.pill-cbse {
+  background: #2563EB;
+  color: #FFFFFF;
+}
+
+.cdl-pill-badge.pill-stream {
+  background: #B45309;
+  color: #FFFFFF;
+}
+
+.cdl-desc-text {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: #475569;
+  margin: 2px 0 6px;
+  line-height: 1.45;
+}
+
+.cdl-terms-line {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #1E293B;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cdl-terms-line span.dot-separator {
+  color: #94A3B8;
+  font-size: 0.9rem;
+}
+
+.cdl-right-cell {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cdl-annual-block {
+  text-align: right;
+}
+
+.cdl-annual-label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #64748B;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.cdl-annual-amount {
+  font-family: var(--font-sans);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.cdl-arrow-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  border: 1px solid #E2E8F0;
+  flex-shrink: 0;
+}
+
+.cdl-card:hover .cdl-arrow-button {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+.cdl-card.is-expanded .cdl-arrow-button {
+  background: #0F172A;
+  color: #FFFFFF;
+  transform: rotate(90deg);
+  border-color: #0F172A;
+}
+
+/* EXPANDED CLASS-WISE FEE BREAKDOWN DRAWER */
+.cdl-drawer {
+  border-top: 1px solid #F1F5F9;
+  background: #FAFBFD;
+  padding: 24px 30px 28px;
+  animation: cdlSlideDown 0.25s ease-out;
+}
+
+@keyframes cdlSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cdl-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #ECEFF2;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cdl-drawer-title-group h4 {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0 0 4px;
+}
+
+.cdl-drawer-title-group p {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: #64748B;
+  margin: 0;
+}
+
+.cdl-drawer-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.cdl-kpi-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+}
+
+.cdl-kpi-card-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748B;
+  margin-bottom: 6px;
+}
+
+.cdl-kpi-card-value {
+  font-family: var(--font-sans);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.2;
+}
+
+.cdl-kpi-card-sub {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  color: #64748B;
+  margin-top: 4px;
+}
+
+.cdl-drawer-table-wrap {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.cdl-drawer-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cdl-drawer-table th {
+  background: #0E1828;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 11px 16px;
+  text-align: left;
+}
+
+.cdl-drawer-table td {
+  padding: 12px 16px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: #334155;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.cdl-drawer-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cdl-drawer-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cdl-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #B45309;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.cdl-btn-primary:hover {
+  background: #9A3412;
+  transform: translateY(-1px);
+  color: #FFFFFF;
+}
+
+.cdl-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF;
+  color: #0F172A;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid #CBD5E1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cdl-btn-secondary:hover {
+  background: #F8FAFC;
+  border-color: #94A3B8;
+}
+
+@media (max-width: 768px) {
+  .cdl-card-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px;
+  }
+  .cdl-num-cell {
+    font-size: 2.2rem;
+  }
+  .cdl-right-cell {
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 12px;
+    border-top: 1px solid #F1F5F9;
+  }
+  .cdl-annual-block {
+    text-align: left;
+  }
+}
+
+/* ==========================================================
    8. CAMPUS MOMENTS & TRADITIONS (2x2 GRID MATCHING IMAGE 2)
    ========================================================== */
 .campus-moments-vibrancy-section {
