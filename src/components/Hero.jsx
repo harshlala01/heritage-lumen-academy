@@ -16,8 +16,7 @@ export default function Hero() {
   const [stats, setStats] = useState({
     passRate: 0,
     ratio: 0,
-    years: 0,
-    placement: 0
+    years: 0
   });
 
   // ═══════════════════════════════════════════
@@ -42,8 +41,7 @@ export default function Hero() {
         setStats({
           passRate: Math.round(eased * 100),
           ratio: Math.round(eased * 7),
-          years: Math.round(eased * 22),
-          placement: Math.round(eased * 100)
+          years: Math.round(eased * 7)
         });
 
         if (progress < 1) {
@@ -203,7 +201,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Stat 3: 22+ */}
+          {/* Stat 3: 7+ */}
           <div className="hero-stat-card">
             <div className="hero-stat-num-box">
               <span>{stats.years}</span>
@@ -211,17 +209,6 @@ export default function Hero() {
             </div>
             <div className="hero-stat-label-text">
               YEARS OF EXCELLENCE
-            </div>
-          </div>
-
-          {/* Stat 4: 100% */}
-          <div className="hero-stat-card">
-            <div className="hero-stat-num-box">
-              <span>{stats.placement}</span>
-              <span className="stat-suffix">%</span>
-            </div>
-            <div className="hero-stat-label-text">
-              PRE-UNIVERSITY PLACEMENT
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 export default function Navbar({ onOpenBanner }) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -7,6 +7,7 @@ export default function Navbar({ onOpenBanner }) {
   const [aboutDropdownOpen, setAboutDropdownOpen] = useState(false);
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,15 +49,41 @@ export default function Navbar({ onOpenBanner }) {
   const closeMobile = () => setMobileOpen(false);
   const isAboutActive = location.pathname.startsWith('/about');
 
+  // Brand logo click handler: forces full page reload to '/' so announcement banner shows
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+    closeMobile();
+    if (window.location.pathname === '/') {
+      window.location.reload();
+    } else {
+      window.location.href = '/';
+    }
+  };
+
+  // Home click handler: navigates directly to home page without reload or reopening banner
+  const handleHomeClick = (e) => {
+    e.preventDefault();
+    closeMobile();
+    if (location.pathname === '/') {
+      if (window.lenis) {
+        window.lenis.scrollTo(0);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <>
       <header className={`main-nav-header ${isScrolled ? 'nav-scrolled' : 'nav-transparent'}`}>
         <div className="container nav-inner-container">
           {/* Left: Logo + "The Rabindra Bharati Heritage Day School" in serif */}
-          <Link
-            to="/"
+          <a
+            href="/"
             className="brand-logo-link"
-            onClick={closeMobile}
+            onClick={handleLogoClick}
           >
             <img
               src="/logo.jpg"
@@ -67,19 +94,20 @@ export default function Navbar({ onOpenBanner }) {
               <span className="brand-main-title">THE RABINDRA BHARATI</span>
               <span className="brand-sub-title">HERITAGE DAY SCHOOL</span>
             </div>
-          </Link>
+          </a>
 
           {/* Center: Nav links in elegant uppercase serif with animated gold underline */}
           <nav className="nav-desktop-menu" aria-label="Main Navigation">
             <ul className="nav-items-list">
               <li className="nav-item">
-                <NavLink
-                  to="/"
-                  className={({ isActive }) => `nav-link-serif ${isActive ? 'active' : ''}`}
+                <a
+                  href="/"
+                  onClick={handleHomeClick}
+                  className={`nav-link-serif ${location.pathname === '/' ? 'active' : ''}`}
                 >
                   <span>Home</span>
                   <span className="nav-gold-underline"></span>
-                </NavLink>
+                </a>
               </li>
 
               {/* About Us Dropdown */}
@@ -160,7 +188,7 @@ export default function Navbar({ onOpenBanner }) {
                   to="/activities"
                   className={({ isActive }) => `nav-link-serif ${isActive ? 'active' : ''}`}
                 >
-                  <span>Activities</span>
+                  <span>Extra Curricular Activities</span>
                   <span className="nav-gold-underline"></span>
                 </NavLink>
               </li>
@@ -239,7 +267,7 @@ export default function Navbar({ onOpenBanner }) {
       {/* Mobile Drawer */}
       <div className={`mobile-navigation-drawer ${mobileOpen ? 'open' : ''}`}>
         <div className="mobile-drawer-top">
-          <div className="brand-logo-link">
+          <a href="/" onClick={handleLogoClick} className="brand-logo-link">
             <img
               src="/logo.jpg"
               alt="The Rabindra Bharati Heritage Day School"
@@ -249,7 +277,7 @@ export default function Navbar({ onOpenBanner }) {
               <span className="brand-main-title" style={{ fontSize: '0.95rem' }}>THE RABINDRA BHARATI</span>
               <span className="brand-sub-title" style={{ fontSize: '0.62rem' }}>HERITAGE DAY SCHOOL</span>
             </div>
-          </div>
+          </a>
           <button
             className="mobile-close-btn"
             onClick={closeMobile}
@@ -261,10 +289,10 @@ export default function Navbar({ onOpenBanner }) {
 
         <ul className="mobile-menu-list">
           <li>
-            <NavLink to="/" onClick={closeMobile} className={({ isActive }) => (isActive ? 'active' : '')}>
+            <a href="/" onClick={handleHomeClick} className={location.pathname === '/' ? 'active' : ''}>
               <span>Home</span>
               <i className="fa-solid fa-chevron-right"></i>
-            </NavLink>
+            </a>
           </li>
 
           <li>
@@ -302,7 +330,7 @@ export default function Navbar({ onOpenBanner }) {
 
           <li>
             <NavLink to="/activities" onClick={closeMobile}>
-              <span>Curricular Activities</span>
+              <span>Extra Curricular Activities</span>
               <i className="fa-solid fa-chevron-right"></i>
             </NavLink>
           </li>
@@ -343,7 +371,7 @@ export default function Navbar({ onOpenBanner }) {
           </Link>
           <div className="mobile-contact-pill">
             <a href="tel:+918001271960"><i className="fa-solid fa-phone"></i> +91 8001271960</a>
-            <a href="mailto:therabindrabharatihds@gmail.com"><i className="fa-solid fa-envelope"></i> therabindrabharatihds@gmail.com</a>
+            <a href="mailto:newrabindrabharattschool@gmail.com"><i className="fa-solid fa-envelope"></i> newrabindrabharattschool@gmail.com</a>
           </div>
         </div>
       </div>

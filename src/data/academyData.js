@@ -2,7 +2,7 @@ export const academyData = {
   hero: {
     badge: "ADMISSIONS OPEN FOR ACADEMIC YEAR 2025-2026",
     title: "Inspiring Intellect. Cultivating Character. Shaping Tomorrow's Leaders.",
-    subtitle: "A tradition of scholarly excellence, pioneering research, and global leadership training, with 15+ years of historic campus legacy.",
+    subtitle: "A tradition of scholarly excellence, pioneering research, and global leadership training, with dedicated campus legacy since 2019.",
     applyCta: "Apply for Admission",
     tourCta: "Book Campus Visit"
   },
@@ -88,27 +88,27 @@ export const academyData = {
   facilities: [
     {
       id: 1,
-      tag: "01 — STEM",
+      tag: "01 — DIGITAL",
       tagClass: "stem",
-      title: "Biotechnology & AI Discovery Center",
-      desc: "Advanced research labs for genomics, robotics, and computational science.",
-      image: "https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=800&auto=format&fit=crop"
+      title: "Audio-visual Teaching & Smart Classes",
+      desc: "Interactive audiovisual projection and digital multimedia content for intuitive conceptual mastery.",
+      image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop"
     },
     {
       id: 2,
-      tag: "02 — ATHLETICS",
-      tagClass: "athletics",
-      title: "Olympic-Scale Athletics Pavilion",
-      desc: "Regulation facilities for swimming, track & field, basketball, and fitness.",
-      image: "https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?q=80&w=800&auto=format&fit=crop"
+      tag: "02 — LABORATORIES",
+      tagClass: "stem",
+      title: "High Quality Science & Computer Labs",
+      desc: "State-of-the-art modern Science laboratories and cutting-edge Computer workstations.",
+      image: "https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=800&auto=format&fit=crop"
     },
     {
       id: 3,
-      tag: "03 — ARTS",
+      tag: "03 — PEDAGOGY",
       tagClass: "arts",
-      title: "McAllister Fine Arts Hall of Conservatory",
-      desc: "Acoustic performance hall, recording studio, and dedicated gallery spaces.",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800&auto=format&fit=crop"
+      title: "Multiple Intelligence & Special Math",
+      desc: "Child-centric curriculum tailored to Multiple Intelligences and intensive mathematical problem-solving drills.",
+      image: "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?q=80&w=800&auto=format&fit=crop"
     }
   ],
   divisions: [
@@ -143,14 +143,6 @@ export const academyData = {
       age: "Grades IX–X",
       title: "Secondary School (CBSE Board)",
       desc: "Comprehensive board preparation, laboratory mastery, and Olympiad mentoring."
-    },
-    {
-      id: 5,
-      icon: "fa-graduation-cap",
-      iconColor: "c5",
-      age: "Grades XI–XII",
-      title: "Senior Secondary (CBSE Board)",
-      desc: "Specialized Science, Commerce & Humanities streams with pre-university prep."
     }
   ],
   news: [

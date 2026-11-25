@@ -12,9 +12,19 @@ export default function EnquiryForm({ onSubmitSuccess }) {
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [phoneError, setPhoneError] = useState('');
 
   const handleChange = (e) => {
     const { id, value } = e.target;
+    if (id === 'parentPhone') {
+      const digitsOnly = value.replace(/\D/g, '').slice(0, 10);
+      setPhoneError('');
+      setFormData((prev) => ({
+        ...prev,
+        parentPhone: digitsOnly
+      }));
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
       [id]: value
@@ -45,6 +55,11 @@ export default function EnquiryForm({ onSubmitSuccess }) {
   // };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!/^\d{10}$/.test(formData.parentPhone)) {
+      setPhoneError('Please enter a valid 10-digit phone number.');
+      return;
+    }
+    setPhoneError('');
     setSubmitting(true);
 
     try {
@@ -90,9 +105,15 @@ export default function EnquiryForm({ onSubmitSuccess }) {
           <div>
             <span className="section-label">CONNECT WITH ADMISSIONS</span>
             <h2 className="main-heading">Schedule Your Campus Visit</h2>
-            <p style={{ color: 'var(--text-muted)', lineHeight: '1.7' }}>
+            <p style={{ color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '12px' }}>
               We welcome prospective scholars and their families to experience the vibrant
               atmosphere of The Rabindra Bharati Heritage Day School firsthand.
+            </p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: '1.7', marginBottom: '12px' }}>
+              The school would like parents to maintain a close rapport with their ward's teachers and meet them periodically. The Principal and members of the faculty will make every effort to make themselves available to meet parents on request, at mutually convenient times on working days, by prior appointment.
+            </p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: '1.7', marginBottom: '22px' }}>
+              Parents are required to call up the school in advance to ask for an appointment and visit the school only after they have been given a confirmed time and date. Any visiting parent seek to meet school authorities or teachers without appointment, they may be denied the request.
             </p>
 
             <div className="contact-card-box">
@@ -122,7 +143,7 @@ export default function EnquiryForm({ onSubmitSuccess }) {
                 </div>
                 <div className="contact-line-text">
                   <h6>Email Address</h6>
-                  <p><a href="mailto:therabindrabharatihds@gmail.com" style={{ color: 'inherit', textDecoration: 'none', wordBreak: 'break-all' }}>therabindrabharatihds@gmail.com</a></p>
+                  <p><a href="mailto:newrabindrabharattschool@gmail.com" style={{ color: 'inherit', textDecoration: 'none', wordBreak: 'break-all' }}>newrabindrabharattschool@gmail.com</a></p>
                 </div>
               </div>
 
@@ -131,8 +152,24 @@ export default function EnquiryForm({ onSubmitSuccess }) {
                   <i className="fa-solid fa-clock"></i>
                 </div>
                 <div className="contact-line-text">
-                  <h6>Office Hours</h6>
-                  <p>Monday – Saturday: 8:00 AM – 4:30 PM</p>
+                  <h6>School Office Hours</h6>
+                  <p>10:00 AM – 3:30 PM (Monday – Friday)</p>
+                  <p style={{ fontSize: '0.78rem', color: '#b91c1c', marginTop: '2px' }}>
+                    *School will remain closed on Sundays and other holidays of the months.
+                  </p>
+                </div>
+              </div>
+
+              <div className="contact-line">
+                <div className="contact-line-icon">
+                  <i className="fa-solid fa-user-tie"></i>
+                </div>
+                <div className="contact-line-text">
+                  <h6>Visiting Timing (The Principal)</h6>
+                  <p>Monday, Wednesday and Friday – 11:00 AM – 1:00 PM</p>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--navy-primary)', fontWeight: 600, marginTop: '2px' }}>
+                    *By confirmed prior appointment only
+                  </p>
                 </div>
               </div>
             </div>
@@ -219,12 +256,21 @@ export default function EnquiryForm({ onSubmitSuccess }) {
                   <label htmlFor="parentPhone">Phone Number *</label>
                   <input
                     type="tel"
+                    inputMode="numeric"
                     id="parentPhone"
                     value={formData.parentPhone}
                     onChange={handleChange}
-                    placeholder="+1 (555) 000-0000"
+                    maxLength={10}
+                    pattern="[0-9]{10}"
+                    title="Please enter a valid 10-digit phone number"
+                    placeholder="Enter 10-digit phone number"
                     required
                   />
+                  {phoneError && (
+                    <span style={{ color: '#DC2626', fontSize: '0.8rem', marginTop: '4px', display: 'block', fontWeight: 600 }}>
+                      {phoneError}
+                    </span>
+                  )}
                 </div>
               </div>
 

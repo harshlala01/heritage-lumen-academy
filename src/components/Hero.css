@@ -538,7 +538,7 @@
 
 .hero-stats-glass {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   background: rgba(11, 27, 58, 0.7);
   backdrop-filter: blur(12px);

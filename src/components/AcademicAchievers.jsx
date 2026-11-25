@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AnnouncementBannerModal from './AnnouncementBannerModal';
 
 const ACHIEVERS_DATA = [
   {
@@ -58,13 +59,13 @@ export default function AcademicAchievers() {
   return (
     <section className="achievers-section" id="academic-achievers">
       <div className="container">
-        {/* Header matching Image 1 color & typography */}
+        {/* Header */}
         <div className="achievers-header">
           <div className="achievers-sub-badge">
-            <i className="fa-solid fa-medal"></i> Academic Achievers
+            <i className="fa-solid fa-star"></i> Stars of Our School
           </div>
           <h2 className="achievers-title">
-            Our Academic Achievers
+            Stars of Our School
           </h2>
           <p className="achievers-desc">
             Celebrating the outstanding performance of our students in the recent Board Examinations.
@@ -83,11 +84,6 @@ export default function AcademicAchievers() {
             >
               {/* Card Top Accent Ring & Glow */}
               <div className="achiever-card-inner">
-                {/* Floating Rank Pill */}
-                <div className="achiever-rank-tag">
-                  <i className="fa-solid fa-award"></i> {student.rank}
-                </div>
-
                 {/* Animated Avatar Circle Frame */}
                 <div className="achiever-avatar-wrap">
                   <div className="achiever-avatar-ring"></div>
@@ -106,13 +102,7 @@ export default function AcademicAchievers() {
 
                 {/* Student Details */}
                 <div className="achiever-info">
-                  <h3 className="achiever-name">{student.name}</h3>
                   <div className="achiever-class">{student.class}</div>
-                  
-                  {/* Highlighted Percentage Score Badge */}
-                  <div className="achiever-score-badge">
-                    <span className="achiever-score-value">{student.score}</span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -141,36 +131,11 @@ export default function AcademicAchievers() {
           </button>
         </div>
 
-        {/* Full Banner Modal */}
-        {bannerModalOpen && (
-          <div
-            className="achievers-banner-modal-overlay"
-            onClick={() => setBannerModalOpen(false)}
-          >
-            <div
-              className="achievers-banner-modal-box"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="achievers-modal-header">
-                <h3>The Rabindra Bharati Heritage Day School - Board Toppers</h3>
-                <button
-                  type="button"
-                  className="achievers-modal-close-btn"
-                  onClick={() => setBannerModalOpen(false)}
-                >
-                  <i className="fa-solid fa-xmark"></i>
-                </button>
-              </div>
-              <div className="achievers-modal-img-wrap">
-                <img
-                  src="/achievers/board_toppers_banner.jpg"
-                  alt="Congratulations To all who excelled 10th CBSE Board"
-                  className="achievers-modal-img"
-                />
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Full Stratford-style Toppers Banner Modal */}
+        <AnnouncementBannerModal
+          isOpen={bannerModalOpen}
+          onClose={() => setBannerModalOpen(false)}
+        />
       </div>
     </section>
   );

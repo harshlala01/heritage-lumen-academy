@@ -1,5 +1,6 @@
 import React from 'react';
 import PageBanner from '../../components/PageBanner';
+import RevealTextBlock from '../../components/RevealTextBlock';
 
 export default function Management() {
   const trustees = [
@@ -42,14 +43,18 @@ export default function Management() {
 
       <section className="subpage-content-wrap">
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <span className="section-label">BOARD OF GOVERNORS</span>
+          <RevealTextBlock style={{ textAlign: 'center', marginBottom: '50px' }}>
+            <div className="about-badge-tagline">
+              <span className="tagline-ornament">❖</span>
+              <span>BOARD OF GOVERNORS</span>
+              <span className="tagline-ornament">❖</span>
+            </div>
             <h2 className="main-heading">Leadership & Board of Trustees</h2>
-            <p style={{ color: 'var(--text-muted)', maxWidth: '700px', margin: '0 auto' }}>
+            <p className="about-paragraph" style={{ color: 'var(--text-muted)', maxWidth: '700px', margin: '0 auto' }}>
               Our managing committee blends legal, academic, medical, and financial acumen to ensure
               uncompromising standards across curriculum, student life, and ethical compliance.
             </p>
-          </div>
+          </RevealTextBlock>
 
           <div
             style={{

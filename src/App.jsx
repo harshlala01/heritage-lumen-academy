@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import SmoothScroll from './components/SmoothScroll';
 import ScrollProgress from './components/ScrollProgress';
@@ -85,12 +85,10 @@ function AppShell({ modalOpen, setModalOpen, enquiryData, isBannerOpen, setIsBan
 export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [enquiryData, setEnquiryData] = useState(null);
-  const [isBannerOpen, setIsBannerOpen] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsBannerOpen(true), 1200);
-    return () => clearTimeout(timer);
-  }, []);
+  // Banner loads immediately on initial page load if on home page
+  const [isBannerOpen, setIsBannerOpen] = useState(
+    typeof window !== 'undefined' ? (window.location.pathname === '/' || window.location.pathname === '') : true
+  );
 
   const handleEnquirySuccess = (data) => {
     setEnquiryData(data);

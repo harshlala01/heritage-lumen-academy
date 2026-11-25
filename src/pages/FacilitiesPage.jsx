@@ -3,8 +3,8 @@ import PageBanner from '../components/PageBanner';
 
 export default function FacilitiesPage() {
   // Only ONE accordion item open at a time per section/column
-  const [openCol1, setOpenCol1] = useState('col1_0'); // Spacious Classrooms open by default
-  const [openCol2, setOpenCol2] = useState('col2_0'); // Playground open by default
+  const [openCol1, setOpenCol1] = useState('col1_0'); // Audio-visual Teaching open by default
+  const [openCol2, setOpenCol2] = useState('col2_0'); // Well G.K Practices open by default
 
   const toggleCol1 = (id) => {
     setOpenCol1((prev) => (prev === id ? null : id));
@@ -14,99 +14,106 @@ export default function FacilitiesPage() {
     setOpenCol2((prev) => (prev === id ? null : id));
   };
 
+  // Exactly matching the 12 facilities from the official brochure image
   const col1Facilities = [
     {
       id: 'col1_0',
-      title: 'SPACIOUS CLASSROOMS',
-      image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=600&auto=format&fit=crop',
-      desc: 'Bright and child-friendly classrooms provide the right ambience for learning, classroom are spacious and are well-ventilated with comfortable furniture.'
+      title: 'AUDIO-VISUAL TEACHING',
+      subtitle: 'Audio-visual Teaching',
+      icon: 'fa-solid fa-chalkboard-user',
+      image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop',
+      desc: 'Smart 4K interactive digital display consoles, projector-based audiovisual instruction, and multimedia pedagogical software making complex curricular concepts engaging, visual, and easily understood.'
     },
     {
       id: 'col1_1',
-      title: 'SMART CLASS',
-      image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop',
-      desc: 'Interactive 4K smart digital display consoles, audio-visual projection, and high-tech multimedia content to make difficult concepts easy and visual.'
+      title: 'CCTV - 24/7 SURVEILLANCE',
+      subtitle: 'CCTV -',
+      icon: 'fa-solid fa-video',
+      image: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?q=80&w=600&auto=format&fit=crop',
+      desc: 'Comprehensive 24/7 high-definition CCTV security surveillance spanning all classroom halls, gates, playgrounds, stairways, and corridors ensuring an entirely secure environment for every child.'
     },
     {
       id: 'col1_2',
-      title: 'LIBRARY',
-      image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=600&auto=format&fit=crop',
-      desc: 'Rich collection of over 25,000 books including encyclopedias, reference texts, international journals, classical literature, and quiet study carrels.'
+      title: 'HIGH QUALITY SCIENCE AND COMPUTER',
+      subtitle: 'High Quality Science and computer',
+      icon: 'fa-solid fa-flask-vial',
+      image: 'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=600&auto=format&fit=crop',
+      desc: 'Modern Physics, Chemistry, Biology laboratories alongside high-speed Computer laboratories equipped with advanced practical instruments, apparatus, and individual computer workstations.'
     },
     {
       id: 'col1_3',
-      title: 'LABORATORIES',
-      image: 'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=600&auto=format&fit=crop',
-      desc: 'Modern Physics, Chemistry, Biology, and Computer/Robotics laboratories equipped with scientific apparatus, fume hoods, and IoT discovery kits.'
+      title: 'LANGUAGE TRAINING',
+      subtitle: 'Language Training',
+      icon: 'fa-solid fa-language',
+      image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=600&auto=format&fit=crop',
+      desc: 'Specialized English phonetics, linguistic lab drills, public speaking sessions, and vocabulary building programs designed to instill effortless verbal fluency, pronunciation accuracy, and bilingual confidence.'
     },
     {
       id: 'col1_4',
-      title: 'SPACIOUS MULTIPURPOSE HALL',
-      image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop',
-      desc: 'Acoustically designed large auditorium and multipurpose hall for morning assemblies, annual prize distributions, debates, and musical concerts.'
+      title: 'SPECIAL MATH PRACTICES',
+      subtitle: 'Special math Practices.',
+      icon: 'fa-solid fa-calculator',
+      image: 'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?q=80&w=600&auto=format&fit=crop',
+      desc: 'Daily quantitative problem-solving practice, Vedic mathematics shortcut techniques, conceptual arithmetic modules, and analytical exercises to eliminate math fear and build sharp numerical intuition.'
     },
     {
       id: 'col1_5',
-      title: 'WELL MAINTAINED TOILETS',
-      image: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?q=80&w=600&auto=format&fit=crop',
-      desc: 'Hygienic, automated sanitization restrooms on all academic floors with dedicated female attendants, continuous water supply, and clean safety.'
-    },
-    {
-      id: 'col1_6',
-      title: 'TRANSPORT',
-      image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=600&auto=format&fit=crop',
-      desc: 'Safe, air-conditioned bus fleet fitted with GPS tracking, speed regulators, onboard CCTV cameras, first-aid kits, and verified female escorts.'
-    },
-    {
-      id: 'col1_7',
-      title: 'CCTV MONITORING',
-      image: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?q=80&w=600&auto=format&fit=crop',
-      desc: 'Comprehensive 24/7 CCTV surveillance network spanning all entry gates, corridors, activity zones, and perimeter fences ensuring student safety.'
+      title: 'MULTIPLE INTELLIGENCE BASED PEDAGOGY',
+      subtitle: 'Multiple Intelligence based pedagogy.',
+      icon: 'fa-solid fa-brain',
+      image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop',
+      desc: 'Progressive curriculum designed around Howard Gardner’s Multiple Intelligences theory—tailoring instruction to each student’s unique linguistic, logical-mathematical, spatial, bodily-kinesthetic, musical, and interpersonal strengths.'
     }
   ];
 
   const col2Facilities = [
     {
       id: 'col2_0',
-      title: 'PLAYGROUND',
-      image: 'https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?q=80&w=600&auto=format&fit=crop',
-      desc: 'Multiple fields for outdoor and sports activities are available for the students to play freely. There is also a small separate playground for the lower section students.'
+      title: 'WELL G.K PRACTICES & IDEAL COUNSELLING',
+      subtitle: "Well G.K Practices, Ideal counselling to Analyse Student's Problem and Solution",
+      icon: 'fa-solid fa-lightbulb',
+      image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop',
+      desc: "Structured daily General Knowledge quizzes, national affairs discussions, and dedicated one-on-one psychological counseling to diagnose each student's challenges and formulate effective solutions."
     },
     {
       id: 'col2_1',
-      title: 'KIDS PLAY AREA',
-      image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=600&auto=format&fit=crop',
-      desc: 'Dedicated safe rubberized play arena with colorful slides, swings, seesaws, and sensory developmental play installations for Pre-Primary children.'
+      title: "QUALITY TEACHER'S",
+      subtitle: "Quality Teacher's",
+      icon: 'fa-solid fa-user-graduate',
+      image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=600&auto=format&fit=crop',
+      desc: 'A dedicated cohort of highly qualified, compassionate, and experienced CBSE educators committed to personalized mentoring, modern child pedagogy, and inspiring intellectual curiosity.'
     },
     {
       id: 'col2_2',
-      title: 'AMENITIES FOR INDOOR GAMES',
-      image: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=600&auto=format&fit=crop',
-      desc: 'Specialized indoor sports hall for table tennis, carrom, chess, yoga, and gymnastics conditioning under certified coaches.'
+      title: 'TRANSPORT',
+      subtitle: 'Transport',
+      icon: 'fa-solid fa-bus',
+      image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=600&auto=format&fit=crop',
+      desc: 'Safe, punctual, and comfortable fleet of school buses and vans connecting Nagarukhra, Jagulia, Barasat, and surrounding areas, equipped with verified drivers and student care attendants.'
     },
     {
       id: 'col2_3',
-      title: 'OUTDOOR GAMES AREA',
-      image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop',
-      desc: 'Full-size regulation basketball courts, cricket practice nets with bowling machines, volleyball arena, and badminton courts.'
+      title: 'CHILD MOTIVATION CLASS',
+      subtitle: 'Child motivation class.',
+      icon: 'fa-solid fa-award',
+      image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=600&auto=format&fit=crop',
+      desc: 'Regular inspirational seminars, moral guidance assemblies, positive mindset coaching, and leadership workshops that foster resilience, enthusiasm, and strong character in children.'
     },
     {
       id: 'col2_4',
-      title: 'FIRE SAFETY',
-      image: 'https://images.unsplash.com/photo-1582139329536-e7284fece509?q=80&w=600&auto=format&fit=crop',
-      desc: 'Certified modern fire extinguishers, smoke alarm detectors, wide emergency evacuation exits, and regular mock drill rehearsals.'
+      title: 'PARENT COUNSELLING AND PTM',
+      subtitle: 'Parent conseelling and PTM',
+      icon: 'fa-solid fa-users',
+      image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=600&auto=format&fit=crop',
+      desc: 'Collaborative Parent-Teacher Meetings (PTM) and professional parenting guidance sessions to build a harmonious bridge between home and school for holistic child development.'
     },
     {
       id: 'col2_5',
-      title: 'MEDICAL AIDS',
-      image: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=600&auto=format&fit=crop',
-      desc: 'Well-equipped infirmary with trained medical staff, emergency oxygen, first-aid essentials, and direct tie-ups with multi-speciality hospitals.'
-    },
-    {
-      id: 'col2_6',
-      title: 'ONLINE CLASS AND EXAMINATION',
-      image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop',
-      desc: 'Integrated digital e-learning platform facilitating live lecture broadcasts, online quizzes, digital homework submissions, and student performance tracking.'
+      title: 'EXTRA COACHING AFTER SCHOOL',
+      subtitle: 'Extra coaching After School',
+      icon: 'fa-solid fa-book-open-reader',
+      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=600&auto=format&fit=crop',
+      desc: 'Specialized after-school tutorial and remedial coaching sessions providing individualized attention, homework assistance, and intensive board examination preparation.'
     }
   ];
 
@@ -114,13 +121,14 @@ export default function FacilitiesPage() {
     <div>
       <PageBanner
         title="Our Campus Facilities"
-        subtitle="Modern infrastructure, lush green environment, and child-centric amenities designed for safety, comfort, and holistic learning."
+        subtitle="12 core educational and developmental facilities designed to foster academic excellence, personal safety, and well-rounded growth."
         breadcrumbs={[{ label: 'Facilities' }]}
       />
 
       <section className="facilities-page-wrap">
         <div className="container">
-          {/* Top Hero Section matching screenshot */}
+          
+          {/* Top Hero Section matching brochure */}
           <div className="facilities-hero-grid">
             {/* Left Image with offset yellow border frame */}
             <div className="facilities-hero-img-box">
@@ -148,9 +156,20 @@ export default function FacilitiesPage() {
             </div>
           </div>
 
+          {/* Section Header */}
+          <div className="facilities-list-header-bar">
+            <div className="facilities-bar-title-box">
+              <span className="facilities-bar-tag">OUR EXCLUSIVE AMENITIES</span>
+              <h2 className="facilities-bar-heading">Facilities :</h2>
+            </div>
+            <p className="facilities-bar-desc">
+              Explore the 12 specialized academic, pedagogical, and infrastructural facilities provided for our scholars:
+            </p>
+          </div>
+
           {/* Two-Column Accordions Grid matching screenshot */}
           <div className="facilities-accordions-grid">
-            {/* Column 1 (Section 1) */}
+            {/* Column 1 (Section 1: Items 1 to 6) */}
             <div>
               {col1Facilities.map((item) => {
                 const isOpen = openCol1 === item.id;
@@ -164,7 +183,12 @@ export default function FacilitiesPage() {
                       onClick={() => toggleCol1(item.id)}
                       aria-expanded={isOpen}
                     >
-                      <span className="facility-acc-title">{item.title}</span>
+                      <div className="facility-acc-title-wrap">
+                        <span className="facility-acc-icon-circle">
+                          <i className={item.icon}></i>
+                        </span>
+                        <span className="facility-acc-title">{item.title}</span>
+                      </div>
                       <div className="facility-acc-btn">
                         <i className={`fa-solid ${isOpen ? 'fa-minus' : 'fa-plus'}`}></i>
                       </div>
@@ -185,7 +209,7 @@ export default function FacilitiesPage() {
               })}
             </div>
 
-            {/* Column 2 (Section 2) */}
+            {/* Column 2 (Section 2: Items 7 to 12) */}
             <div>
               {col2Facilities.map((item) => {
                 const isOpen = openCol2 === item.id;
@@ -199,7 +223,12 @@ export default function FacilitiesPage() {
                       onClick={() => toggleCol2(item.id)}
                       aria-expanded={isOpen}
                     >
-                      <span className="facility-acc-title">{item.title}</span>
+                      <div className="facility-acc-title-wrap">
+                        <span className="facility-acc-icon-circle">
+                          <i className={item.icon}></i>
+                        </span>
+                        <span className="facility-acc-title">{item.title}</span>
+                      </div>
                       <div className="facility-acc-btn">
                         <i className={`fa-solid ${isOpen ? 'fa-minus' : 'fa-plus'}`}></i>
                       </div>

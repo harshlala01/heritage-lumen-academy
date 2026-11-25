@@ -5,9 +5,36 @@ import { contentImage } from '../hooks/useContent';
 const API_BASE = 'http://localhost:5000';
 
 export default function PhotoGallery() {
-  const [activePhoto, setActivePhoto] = useState(null);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(null);
   const [moments, setMoments] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const activePhoto = activePhotoIndex !== null ? moments[activePhotoIndex] : null;
+
+  const handlePrevPhoto = (e) => {
+    e.stopPropagation();
+    if (activePhotoIndex !== null && moments.length > 0) {
+      setActivePhotoIndex((prev) => (prev > 0 ? prev - 1 : moments.length - 1));
+    }
+  };
+
+  const handleNextPhoto = (e) => {
+    e.stopPropagation();
+    if (activePhotoIndex !== null && moments.length > 0) {
+      setActivePhotoIndex((prev) => (prev < moments.length - 1 ? prev + 1 : 0));
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (activePhotoIndex === null || moments.length === 0) return;
+      if (e.key === 'Escape') setActivePhotoIndex(null);
+      if (e.key === 'ArrowLeft') setActivePhotoIndex((prev) => (prev > 0 ? prev - 1 : moments.length - 1));
+      if (e.key === 'ArrowRight') setActivePhotoIndex((prev) => (prev < moments.length - 1 ? prev + 1 : 0));
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activePhotoIndex, moments.length]);
 
   useEffect(() => {
     // 1. Fetch live gallery items across all albums from backend
@@ -88,7 +115,7 @@ export default function PhotoGallery() {
               <div
                 className="cm-vibrancy-card"
                 key={item.id || idx}
-                onClick={() => setActivePhoto(item)}
+                onClick={() => setActivePhotoIndex(idx)}
                 title={`Inspect ${item.title}`}
               >
                 <div className="cm-vibrancy-card-inner">
@@ -163,7 +190,7 @@ export default function PhotoGallery() {
       {activePhoto && (
         <div
           className="modal-bg active"
-          onClick={() => setActivePhoto(null)}
+          onClick={() => setActivePhotoIndex(null)}
           style={{ cursor: 'zoom-out' }}
         >
           <div
@@ -184,9 +211,31 @@ export default function PhotoGallery() {
                 alt={activePhoto.title}
                 style={{ maxHeight: '72vh', width: '100%', objectFit: 'cover' }}
               />
+              {moments.length > 1 && (
+                <div className="lightbox-controls">
+                  <button
+                    type="button"
+                    className="lightbox-arrow-btn"
+                    onClick={handlePrevPhoto}
+                    title="Previous (Left Arrow)"
+                    aria-label="Previous photo"
+                  >
+                    <i className="fa-solid fa-chevron-left"></i>
+                  </button>
+                  <button
+                    type="button"
+                    className="lightbox-arrow-btn"
+                    onClick={handleNextPhoto}
+                    title="Next (Right Arrow)"
+                    aria-label="Next photo"
+                  >
+                    <i className="fa-solid fa-chevron-right"></i>
+                  </button>
+                </div>
+              )}
               <button
                 type="button"
-                onClick={() => setActivePhoto(null)}
+                onClick={() => setActivePhotoIndex(null)}
                 style={{
                   position: 'absolute',
                   top: '12px',
@@ -202,20 +251,26 @@ export default function PhotoGallery() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
+                  zIndex: 10
                 }}
                 aria-label="Close photo"
               >
                 ✕
               </button>
             </div>
-            <div style={{ padding: '16px 8px 8px', textAlign: 'left' }}>
-              <span style={{ color: '#D4AF37', fontSize: '0.78rem', fontWeight: 800, letterSpacing: '1px' }}>
-                {activePhoto.category}
-              </span>
-              <h3 style={{ fontFamily: 'var(--font-serif)', color: '#FAF7F2', marginTop: '4px', fontSize: '1.35rem' }}>
-                {activePhoto.title}
-              </h3>
+            <div style={{ padding: '16px 8px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', textAlign: 'left' }}>
+              <div>
+                <span style={{ color: '#D4AF37', fontSize: '0.78rem', fontWeight: 800, letterSpacing: '1px' }}>
+                  {activePhoto.category}
+                </span>
+                <h3 style={{ fontFamily: 'var(--font-serif)', color: '#FAF7F2', marginTop: '4px', fontSize: '1.35rem' }}>
+                  {activePhoto.title}
+                </h3>
+              </div>
+              <div style={{ color: '#94A3B8', fontSize: '0.85rem', fontWeight: '600' }}>
+                Photo {activePhotoIndex + 1} of {moments.length}
+              </div>
             </div>
           </div>
         </div>

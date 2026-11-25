@@ -56,19 +56,6 @@ export default function ClassDivisionBanner() {
       link: '/academics',
       location: 'STEM & SCIENCE LABS',
       image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1200&auto=format&fit=crop'
-    },
-    {
-      id: 5,
-      num: '05',
-      className: 'Senior Secondary',
-      grades: '(Class XI & XII)',
-      tag: { text: 'CBSE', type: 'icse' },
-      subBadge: 'Pre-University',
-      age: 'Ages 16–18',
-      desc: 'Pure Science • Commerce & Economics • Humanities & Fine Arts',
-      link: '/academics',
-      location: 'COLLEGIATE SCHOLARS TOWER',
-      image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1200&auto=format&fit=crop'
     }
   ];
 

@@ -63,12 +63,20 @@ export default function AdminDashboard() {
   const [eventsLoading, setEventsLoading] = useState(false);
   const [eventModalOpen, setEventModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
+  const [eventStatuses, setEventStatuses] = useState([]);
+  const [eventDays, setEventDays] = useState([]);
+  const [newStatusInput, setNewStatusInput] = useState('');
+  const [showAddStatus, setShowAddStatus] = useState(false);
+  const [newDayInput, setNewDayInput] = useState('');
+  const [showAddDay, setShowAddDay] = useState(false);
   const [eventFormData, setEventFormData] = useState({
     title: '',
     event_date: '',
+    event_day: '',
     event_time: '',
     venue: 'School Auditorium / Campus',
     description: '',
+    status: '',
     is_archived: false
   });
 
@@ -95,6 +103,11 @@ export default function AdminDashboard() {
   const [albumSaving, setAlbumSaving] = useState(false);
 
 
+
+  // Important Notice Banner state (admission_config.headline)
+  const [admissionConfig, setAdmissionConfig] = useState({});
+  const [importantNoticeText, setImportantNoticeText] = useState('');
+  const [importantNoticeSaving, setImportantNoticeSaving] = useState(false);
 
   // Enquiries state
   const [enquiries, setEnquiries] = useState([]);
@@ -139,7 +152,9 @@ export default function AdminDashboard() {
     loadStats();
     loadNotices();
     loadNoticeCategories();
+    loadImportantNotice();
     loadEvents();
+    loadEventOptions();
     loadGalleryAlbums();
     loadEnquiries();
   }, [token]);
@@ -401,6 +416,44 @@ export default function AdminDashboard() {
     }
   };
 
+  const loadImportantNotice = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/settings/admission_config`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data === 'object') {
+          setAdmissionConfig(data);
+          setImportantNoticeText(data.headline || '');
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load important notice', e);
+    }
+  };
+
+  const handleSaveImportantNotice = async (e) => {
+    e.preventDefault();
+    setImportantNoticeSaving(true);
+    try {
+      const payload = { ...admissionConfig, headline: importantNoticeText.trim() };
+      const res = await fetch(`${API_BASE}/api/admin/settings/admission_config`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Failed to save important notice');
+      setAdmissionConfig(payload);
+      showToast('Important notice banner updated successfully.');
+    } catch (err) {
+      showToast(err.message || 'Error saving important notice', 'error');
+    } finally {
+      setImportantNoticeSaving(false);
+    }
+  };
+
   const saveNoticeCategories = async (updatedList) => {
     setCategorySaving(true);
     try {
@@ -460,15 +513,108 @@ export default function AdminDashboard() {
   };
 
   // ---------- EVENTS ACTIONS ----------
+  const loadEventOptions = async () => {
+    try {
+      const [statusRes, daysRes] = await Promise.all([
+        fetch(`${API_BASE}/api/settings/event_statuses`),
+        fetch(`${API_BASE}/api/settings/event_days`)
+      ]);
+      if (statusRes.ok) {
+        const sData = await statusRes.json();
+        if (Array.isArray(sData)) setEventStatuses(sData);
+      }
+      if (daysRes.ok) {
+        const dData = await daysRes.json();
+        if (Array.isArray(dData)) setEventDays(dData);
+      }
+    } catch (e) {
+      console.error('Failed to load event dropdown options', e);
+    }
+  };
+
+  const saveEventSettingList = async (key, list, setter, label) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/settings/${key}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(list)
+      });
+      if (!res.ok) throw new Error(`Failed to save ${label}`);
+      setter(list);
+      showToast(`${label} updated.`);
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  };
+
+  const handleAddEventStatus = async () => {
+    const trimmed = newStatusInput.trim();
+    if (!trimmed) return;
+    if (eventStatuses.some((s) => s.toLowerCase() === trimmed.toLowerCase())) {
+      showToast('Status already exists', 'error');
+      return;
+    }
+    const updated = [...eventStatuses, trimmed];
+    await saveEventSettingList('event_statuses', updated, setEventStatuses, 'Event statuses');
+    setEventFormData((prev) => ({ ...prev, status: trimmed }));
+    setNewStatusInput('');
+    setShowAddStatus(false);
+  };
+
+  const handleRemoveEventStatus = async (statusToRemove) => {
+    if (!statusToRemove || eventStatuses.length <= 1) {
+      showToast('At least one status option is required', 'error');
+      return;
+    }
+    const updated = eventStatuses.filter((s) => s !== statusToRemove);
+    await saveEventSettingList('event_statuses', updated, setEventStatuses, 'Event statuses');
+    if (eventFormData.status === statusToRemove) {
+      setEventFormData((prev) => ({ ...prev, status: updated[0] || '' }));
+    }
+  };
+
+  const handleAddEventDay = async () => {
+    const trimmed = newDayInput.trim();
+    if (!trimmed) return;
+    if (eventDays.some((d) => d.toLowerCase() === trimmed.toLowerCase())) {
+      showToast('Day already exists', 'error');
+      return;
+    }
+    const updated = [...eventDays, trimmed];
+    await saveEventSettingList('event_days', updated, setEventDays, 'Event days');
+    setEventFormData((prev) => ({ ...prev, event_day: trimmed }));
+    setNewDayInput('');
+    setShowAddDay(false);
+  };
+
+  const handleRemoveEventDay = async (dayToRemove) => {
+    if (!dayToRemove || eventDays.length <= 1) {
+      showToast('At least one day option is required', 'error');
+      return;
+    }
+    const updated = eventDays.filter((d) => d !== dayToRemove);
+    await saveEventSettingList('event_days', updated, setEventDays, 'Event days');
+    if (eventFormData.event_day === dayToRemove) {
+      setEventFormData((prev) => ({ ...prev, event_day: updated[0] || '' }));
+    }
+  };
+
   const handleOpenEventModal = (event = null) => {
+    setShowAddStatus(false);
+    setShowAddDay(false);
     if (event) {
       setEditingEvent(event);
       setEventFormData({
         title: event.title || '',
         event_date: event.event_date || '',
+        event_day: event.event_day || '',
         event_time: event.event_time || '',
         venue: event.venue || 'School Campus',
         description: event.description || '',
+        status: event.status || (event.is_archived ? 'Completed' : (eventStatuses[0] || '')),
         is_archived: Boolean(event.is_archived)
       });
     } else {
@@ -476,9 +622,11 @@ export default function AdminDashboard() {
       setEventFormData({
         title: '',
         event_date: '',
+        event_day: eventDays[0] || '',
         event_time: '10:00 AM – 1:00 PM',
         venue: 'School Auditorium / Ground',
         description: '',
+        status: eventStatuses[0] || '',
         is_archived: false
       });
     }
@@ -1116,6 +1264,50 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+            {/* IMPORTANT NOTICE BANNER EDITOR */}
+            <form
+              onSubmit={handleSaveImportantNotice}
+              style={{
+                background: 'rgba(212, 175, 55, 0.1)',
+                border: '1.5px solid #D4AF37',
+                borderRadius: '12px',
+                padding: '16px 20px',
+                marginBottom: '22px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                flexWrap: 'wrap'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0B1B3A', fontWeight: 700, fontSize: '0.9rem' }}>
+                <i className="fa-solid fa-bullhorn" style={{ color: '#B8860B', fontSize: '1.1rem' }}></i>
+                <span>IMPORTANT NOTICE BANNER:</span>
+              </div>
+              <input
+                type="text"
+                value={importantNoticeText}
+                onChange={(e) => setImportantNoticeText(e.target.value)}
+                placeholder="Enter important notice text (leave empty to hide banner on Notice page)"
+                style={{
+                  flex: '1 1 320px',
+                  padding: '9px 14px',
+                  borderRadius: '8px',
+                  border: '1px solid #CBD5E1',
+                  fontSize: '0.9rem',
+                  background: '#FFFFFF',
+                  color: '#0F172A'
+                }}
+              />
+              <button
+                type="submit"
+                disabled={importantNoticeSaving}
+                className="admin-action-btn primary"
+                style={{ padding: '9px 18px', fontSize: '0.88rem' }}
+              >
+                {importantNoticeSaving ? 'Saving...' : 'Save Banner'}
+              </button>
+            </form>
+
             {/* FILTERS & SEARCH */}
             <div className="admin-filter-controls">
               <div className="search-input-box">
@@ -1318,7 +1510,14 @@ export default function AdminDashboard() {
                   <tbody>
                     {events.map((ev) => (
                       <tr key={ev.id} style={{ opacity: ev.is_archived ? 0.6 : 1 }}>
-                        <td style={{ fontWeight: 600 }}>{ev.event_date}</td>
+                        <td style={{ fontWeight: 600 }}>
+                          {ev.event_date}
+                          {ev.event_day && (
+                            <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 500 }}>
+                              {ev.event_day}
+                            </div>
+                          )}
+                        </td>
                         <td style={{ color: '#475569', fontSize: '0.9rem' }}>{ev.event_time || 'All Day'}</td>
                         <td>
                           <div style={{ fontWeight: 600, color: '#0F172A' }}>{ev.title}</div>
@@ -1331,7 +1530,7 @@ export default function AdminDashboard() {
                         <td>{ev.venue || 'School Campus'}</td>
                         <td style={{ textAlign: 'center' }}>
                           <span className={`status-pill ${ev.is_archived ? 'archived' : 'active'}`}>
-                            {ev.is_archived ? 'Concluded' : 'Upcoming'}
+                            {ev.status || (ev.is_archived ? 'Concluded' : 'Upcoming')}
                           </span>
                         </td>
                         <td style={{ textAlign: 'center' }}>
@@ -1858,6 +2057,170 @@ export default function AdminDashboard() {
                     }
                     placeholder="e.g. 9:30 AM – 2:00 PM"
                   />
+                </div>
+              </div>
+
+              <div className="form-grid-2">
+                <div className="form-group">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label>Day</label>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddDay((v) => !v)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#B8860B',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {showAddDay ? 'Close' : '+ Add / Edit Days'}
+                    </button>
+                  </div>
+                  <select
+                    value={eventFormData.event_day}
+                    onChange={(e) =>
+                      setEventFormData({ ...eventFormData, event_day: e.target.value })
+                    }
+                  >
+                    <option value="">Select Day</option>
+                    {eventDays.map((day) => (
+                      <option key={day} value={day}>
+                        {day}
+                      </option>
+                    ))}
+                  </select>
+                  {showAddDay && (
+                    <div style={{ marginTop: '8px', padding: '10px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+                        <input
+                          type="text"
+                          value={newDayInput}
+                          onChange={(e) => setNewDayInput(e.target.value)}
+                          placeholder="Add day (e.g. Monday)"
+                          style={{ flex: 1, padding: '6px 10px', fontSize: '0.82rem' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddEventDay}
+                          className="admin-action-btn primary"
+                          style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                        >
+                          Add
+                        </button>
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {eventDays.map((d) => (
+                          <span
+                            key={d}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              padding: '3px 8px',
+                              background: '#FFFFFF',
+                              border: '1px solid #CBD5E1',
+                              borderRadius: '14px',
+                              fontSize: '0.75rem'
+                            }}
+                          >
+                            {d}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveEventDay(d)}
+                              style={{ background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', padding: 0, fontWeight: 700 }}
+                              title={`Remove ${d}`}
+                            >
+                              &times;
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label>Event Status</label>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddStatus((v) => !v)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#B8860B',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {showAddStatus ? 'Close' : '+ Add / Edit Status'}
+                    </button>
+                  </div>
+                  <select
+                    value={eventFormData.status}
+                    onChange={(e) =>
+                      setEventFormData({ ...eventFormData, status: e.target.value })
+                    }
+                  >
+                    <option value="">Select Status</option>
+                    {eventStatuses.map((st) => (
+                      <option key={st} value={st}>
+                        {st}
+                      </option>
+                    ))}
+                  </select>
+                  {showAddStatus && (
+                    <div style={{ marginTop: '8px', padding: '10px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+                        <input
+                          type="text"
+                          value={newStatusInput}
+                          onChange={(e) => setNewStatusInput(e.target.value)}
+                          placeholder="Add status (e.g. Upcoming)"
+                          style={{ flex: 1, padding: '6px 10px', fontSize: '0.82rem' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddEventStatus}
+                          className="admin-action-btn primary"
+                          style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                        >
+                          Add
+                        </button>
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {eventStatuses.map((st) => (
+                          <span
+                            key={st}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              padding: '3px 8px',
+                              background: '#FFFFFF',
+                              border: '1px solid #CBD5E1',
+                              borderRadius: '14px',
+                              fontSize: '0.75rem'
+                            }}
+                          >
+                            {st}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveEventStatus(st)}
+                              style={{ background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', padding: 0, fontWeight: 700 }}
+                              title={`Remove ${st}`}
+                            >
+                              &times;
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

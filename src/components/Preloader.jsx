@@ -51,7 +51,7 @@ export default function Preloader({ onComplete }) {
           <span className="preloader-subtitle">Heritage Day School</span>
           <span className="preloader-line"></span>
         </div>
-        <div className="preloader-motto">ESTD 2003 • AFFILIATED TO CBSE, NEW DELHI</div>
+        <div className="preloader-motto">ESTD 2019 • AFFILIATED TO CBSE, NEW DELHI</div>
       </div>
     </div>
   );

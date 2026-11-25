@@ -133,7 +133,7 @@ export default function Footer() {
             </p>
             <p className="footer-map-address" style={{ marginTop: '8px' }}>
               <i className="fa-solid fa-envelope" style={{ color: 'var(--gold-primary)' }}></i>
-              <a href="mailto:therabindrabharatihds@gmail.com" style={{ color: 'inherit', textDecoration: 'none', wordBreak: 'break-all' }}>therabindrabharatihds@gmail.com</a>
+              <a href="mailto:newrabindrabharattschool@gmail.com" style={{ color: 'inherit', textDecoration: 'none', wordBreak: 'break-all' }}>newrabindrabharattschool@gmail.com</a>
             </p>
           </div>
         </div>

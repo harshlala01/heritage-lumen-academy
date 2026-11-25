@@ -1,6 +1,6 @@
 import React from 'react';
 import PageBanner from '../../components/PageBanner';
-import { Link } from 'react-router-dom';
+import RevealTextBlock from '../../components/RevealTextBlock';
 
 export default function SchoolFoundation() {
   return (
@@ -17,22 +17,28 @@ export default function SchoolFoundation() {
       <section className="subpage-content-wrap">
         <div className="container">
           <div className="about-split-grid" style={{ marginBottom: '50px' }}>
-            <div>
-              <span className="section-label">OUR GENESIS & HERITAGE</span>
-              <h2 className="main-heading">Founding Principles of The Rabindra Bharati Heritage Day School</h2>
-              <div className="about-body">
-                <p>
-                  Established in 2003, The Rabindra Bharati Heritage Day School was established with the
+            <RevealTextBlock>
+              <div className="about-badge-tagline">
+                <span className="tagline-ornament">❖</span>
+                <span>OUR GENESIS & HERITAGE</span>
+                <span className="tagline-ornament">❖</span>
+              </div>
+              <h2 className="about-heritage-headline" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', display: 'block' }}>
+                <span className="about-dropcap-letter">F</span>ounding Principles of The Rabindra Bharati Heritage Day School
+              </h2>
+              <div className="about-paragraph-stack">
+                <p className="about-paragraph">
+                  Established in 2019, The Rabindra Bharati Heritage Day School was established with the
                   singular aspiration to pioneer a learning sanctuary where classical humanist values
                   harmoniously converge with cutting-edge 21st-century inquiry.
                 </p>
-                <p>
+                <p className="about-paragraph">
                   Under the stewardship of visionary educationists and philanthropists, the institution
                   expanded from its initial historic campus to become one of the premier
                   CBSE co-educational day institutions in the region.
                 </p>
               </div>
-            </div>
+            </RevealTextBlock>
 
             <div className="about-photo-wrap">
               <img
@@ -85,57 +91,8 @@ export default function SchoolFoundation() {
               <h3>Board Affiliation</h3>
               <p>
                 Affiliated to the Central Board of Secondary Education (CBSE), New Delhi,
-                delivering standardized academic rigor from Pre-Primary through Senior Secondary.
+                delivering standardized academic rigor from Pre-Primary through Secondary (Class X).
               </p>
-            </div>
-          </div>
-
-          {/* Historical Timeline */}
-          <div className="subpage-card">
-            <span className="section-label">CHRONICLE OF EXCELLENCE</span>
-            <h3 style={{ fontFamily: 'var(--font-serif)', color: 'var(--navy-primary)', marginBottom: '24px' }}>
-              Milestones on Our Educational Journey
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                <div className="notice-date-badge">2003</div>
-                <div>
-                  <h5 style={{ color: 'var(--navy-primary)', fontWeight: 700 }}>Inception of The Rabindra Bharati Heritage Day School</h5>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
-                    Foundation stone laid with 120 students, 14 faculty members, and a commitment to moral rigor.
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                <div className="notice-date-badge">2010</div>
-                <div>
-                  <h5 style={{ color: 'var(--navy-primary)', fontWeight: 700 }}>Inauguration of McAllister Science Wing</h5>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
-                    State-of-the-art physics, chemistry, biology, and computer laboratories inaugurated.
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                <div className="notice-date-badge">2018</div>
-                <div>
-                  <h5 style={{ color: 'var(--navy-primary)', fontWeight: 700 }}>Robotics & Olympic Athletic Complex</h5>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
-                    Expansion of campus to include indoor swimming arena, tennis courts, and maker lab.
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                <div className="notice-date-badge">2025</div>
-                <div>
-                  <h5 style={{ color: 'var(--navy-primary)', fontWeight: 700 }}>Ranked #1 Day School for Academic Distinctions</h5>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
-                    100% university placement with scholars matriculating into Oxford, Cambridge, IITs, and Ivy League.
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </div>

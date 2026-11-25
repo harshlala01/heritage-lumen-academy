@@ -1,5 +1,6 @@
 import React from 'react';
 import PageBanner from '../../components/PageBanner';
+import RevealTextBlock from '../../components/RevealTextBlock';
 import { Link } from 'react-router-dom';
 
 export default function SecretaryDesk() {
@@ -28,27 +29,33 @@ export default function SecretaryDesk() {
               </div>
             </div>
 
-            <div>
-              <span className="section-label">FROM THE SECRETARY'S DESK</span>
+            <RevealTextBlock>
+              <div className="about-badge-tagline">
+                <span className="tagline-ornament">❖</span>
+                <span>FROM THE SECRETARY'S DESK</span>
+                <span className="tagline-ornament">❖</span>
+              </div>
               <blockquote className="principal-quote-text">
                 "Our constant endeavor is to provide an infrastructure where curiosity meets discipline,
                 and where every child is empowered to reach their highest self."
               </blockquote>
-              <p className="principal-body" style={{ marginBottom: '16px' }}>
-                Dear Parents, Guardians, and Esteemed Well-Wishers,
-              </p>
-              <p className="principal-body" style={{ marginBottom: '16px' }}>
-                At The Rabindra Bharati Heritage Day School, we perceive educational administration not as mere
-                logistics, but as the deliberate crafting of an inspiring habitat. Over the past two decades,
-                we have consistently invested in modern pedagogical infrastructure: from digital interactive
-                classrooms and robotics laboratories to pristine sports arenas and expansive libraries.
-              </p>
-              <p className="principal-body" style={{ marginBottom: '24px' }}>
-                We believe that education must transcend textbooks. Our transparent administrative framework
-                ensures that every parent is an active collaborator in our journey. Our office is always open
-                to progressive dialogue, constructive suggestions, and unified efforts for the holistic
-                well-being of our students.
-              </p>
+              <div className="about-paragraph-stack">
+                <p className="about-paragraph">
+                  Dear Parents, Guardians, and Esteemed Well-Wishers,
+                </p>
+                <p className="about-paragraph">
+                  At The Rabindra Bharati Heritage Day School, we perceive educational administration not as mere
+                  logistics, but as the deliberate crafting of an inspiring habitat. Over the past two decades,
+                  we have consistently invested in modern pedagogical infrastructure: from digital interactive
+                  classrooms and robotics laboratories to pristine sports arenas and expansive libraries.
+                </p>
+                <p className="about-paragraph">
+                  We believe that education must transcend textbooks. Our transparent administrative framework
+                  ensures that every parent is an active collaborator in our journey. Our office is always open
+                  to progressive dialogue, constructive suggestions, and unified efforts for the holistic
+                  well-being of our students.
+                </p>
+              </div>
 
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                 <Link to="/contact" className="btn-gold" style={{ fontSize: '0.85rem' }}>
@@ -58,7 +65,7 @@ export default function SecretaryDesk() {
                   Explore Campus Facilities <i className="fa-solid fa-arrow-right"></i>
                 </Link>
               </div>
-            </div>
+            </RevealTextBlock>
           </div>
 
           <div className="subpage-card">

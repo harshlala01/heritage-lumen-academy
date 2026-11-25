@@ -180,28 +180,6 @@ export default function StatutoryAuditTable() {
         { item: 'CBSE Board Candidacy & High-Performance Prep', cycle: 'Annual Scheduled', status: 'Not Refundable', amount: 'Included in Board Dues' },
         { item: 'Total Annual Investment (FY Schedule)', cycle: 'Annualized', status: 'Verified Fee', amount: '₹1,78,500' }
       ]
-    },
-    {
-      id: 'senior_secondary',
-      num: '05',
-      className: 'Senior Secondary',
-      grades: '(Class XI & XII)',
-      age: 'AGES 16–18',
-      badge: { text: 'CBSE STREAM', type: 'stream' },
-      desc: 'Pure Science (PCM/PCB) • Commerce & Economics • Humanities & Fine Arts • Pre-University',
-      tuitionTerm: '₹42,500 / TERM',
-      annualDuesLabel: 'ANNUAL + ADVANCED LABS',
-      annualDues: '₹44,000',
-      annualTotal: '₹2,14,000',
-      admissionFee: '12,000',
-      monthlyFee: '2,500',
-      breakdown: [
-        { item: 'Admission & Enrolment', cycle: 'One-Time (On Entry)', status: 'Not Refundable', amount: '₹12,000' },
-        { item: 'Monthly Tuition (April – March)', cycle: 'Monthly (12 Months)', status: 'Not Refundable', amount: '₹2,500 / mo' },
-        { item: 'Academic Curriculum & Term Dues', cycle: 'Quarterly (4 Terms)', status: 'Not Refundable', amount: '₹42,500 / term' },
-        { item: 'Pre-University & Entrance Coaching Laboratory', cycle: 'Annual Scheduled', status: 'Not Refundable', amount: 'Included in Advanced Labs' },
-        { item: 'Total Annual Investment (FY Schedule)', cycle: 'Annualized', status: 'Verified Fee', amount: '₹2,14,000' }
-      ]
     }
   ];
 

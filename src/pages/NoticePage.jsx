@@ -7,9 +7,7 @@ export default function NoticePage() {
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [liveNotices, setLiveNotices] = useState([]);
-  const [admissionsNoticeText, setAdmissionsNoticeText] = useState(
-    'Admissions Open for Academic Session 2026–2027. Registration forms available Monday to Friday (10:30 AM to 3:00 PM). Visit school admissions desk for details.'
-  );
+  const [admissionsNoticeText, setAdmissionsNoticeText] = useState('');
 
   const [categories, setCategories] = useState([
     { id: 'all', label: 'All Notices' },
@@ -48,7 +46,7 @@ export default function NoticePage() {
     fetch(`${API_BASE}/api/settings/admission_config`)
       .then((res) => res.json())
       .then((cfg) => {
-        if (cfg && cfg.headline) {
+        if (cfg && typeof cfg.headline === 'string') {
           setAdmissionsNoticeText(cfg.headline);
         }
       })
@@ -80,7 +78,7 @@ Date: ${notice.date}
 Subject: ${notice.subject}
 
 This is an authentic digital notice published by the Administrative Office of The Rabindra Bharati Heritage Day School.
-For further inquiries, contact therabindrabharatihds@gmail.com or call +91 8001271960.
+For further inquiries, contact newrabindrabharattschool@gmail.com or call +91 8001271960.
 =====================================================`;
 
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -126,26 +124,28 @@ For further inquiries, contact therabindrabharatihds@gmail.com or call +91 80012
       <section className="subpage-content-wrap" style={{ padding: '40px 0 80px' }}>
         <div className="container">
           {/* Important Urgent Notification Alert */}
-          <div
-            style={{
-              background: 'rgba(212, 175, 55, 0.12)',
-              border: '1.5px solid var(--gold-primary)',
-              borderRadius: '10px',
-              padding: '16px 20px',
-              marginBottom: '32px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px'
-            }}
-          >
-            <i className="fa-solid fa-bullhorn" style={{ color: 'var(--gold-dark)', fontSize: '1.4rem' }}></i>
-            <div style={{ flexGrow: 1 }}>
-              <strong style={{ color: 'var(--navy-primary)' }}>IMPORTANT NOTICE:</strong>{' '}
-              <span style={{ color: 'var(--text-dark)' }}>
-                {admissionsNoticeText}
-              </span>
+          {admissionsNoticeText && (
+            <div
+              style={{
+                background: 'rgba(212, 175, 55, 0.12)',
+                border: '1.5px solid var(--gold-primary)',
+                borderRadius: '10px',
+                padding: '16px 20px',
+                marginBottom: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px'
+              }}
+            >
+              <i className="fa-solid fa-bullhorn" style={{ color: 'var(--gold-dark)', fontSize: '1.4rem' }}></i>
+              <div style={{ flexGrow: 1 }}>
+                <strong style={{ color: 'var(--navy-primary)' }}>IMPORTANT NOTICE:</strong>{' '}
+                <span style={{ color: 'var(--text-dark)' }}>
+                  {admissionsNoticeText}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Controls Header: Category Tabs & Search */}
           <div
@@ -261,11 +261,6 @@ For further inquiries, contact therabindrabharatihds@gmail.com or call +91 80012
                 </tbody>
               </table>
             </div>
-          </div>
-
-          <div style={{ textAlign: 'right', fontSize: '0.82rem', color: '#64748B' }}>
-            <i className="fa-solid fa-shield-halved" style={{ marginRight: '6px', color: '#D4AF37' }}></i>
-            Official digital publications certified by CBSE Affiliated School
           </div>
         </div>
       </section>

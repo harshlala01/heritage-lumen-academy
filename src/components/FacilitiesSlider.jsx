@@ -17,45 +17,45 @@ export default function FacilitiesSlider() {
   const fallbackFacilities = [
     {
       id: 1,
-      name: 'SPACIOUS CLASSROOMS',
-      image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=800&auto=format&fit=crop',
-      link: '/facilities'
-    },
-    {
-      id: 2,
-      name: 'SMART CLASS',
+      name: 'AUDIO-VISUAL TEACHING',
       image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop',
       link: '/facilities'
     },
     {
-      id: 3,
-      name: 'LIBRARY',
-      image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop',
-      link: '/facilities'
-    },
-    {
-      id: 4,
-      name: 'SCIENCE & STEM LABS',
+      id: 2,
+      name: 'HIGH QUALITY SCIENCE & COMPUTER',
       image: 'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=800&auto=format&fit=crop',
       images: SCIENCE_LAB_IMAGES,
       link: '/facilities'
     },
     {
+      id: 3,
+      name: 'LANGUAGE TRAINING',
+      image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop',
+      link: '/facilities'
+    },
+    {
+      id: 4,
+      name: 'SPECIAL MATH PRACTICES',
+      image: 'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?q=80&w=800&auto=format&fit=crop',
+      link: '/facilities'
+    },
+    {
       id: 5,
-      name: 'COMPUTER LAB',
-      image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop',
+      name: 'MULTIPLE INTELLIGENCE PEDAGOGY',
+      image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop',
       link: '/facilities'
     },
     {
       id: 6,
-      name: 'SPORTS ARENA',
-      image: 'https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?q=80&w=800&auto=format&fit=crop',
+      name: 'TRANSPORT & CCTV SECURITY',
+      image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800&auto=format&fit=crop',
       link: '/facilities'
     },
     {
       id: 7,
-      name: 'PERFORMING ARTS HALL',
-      image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800&auto=format&fit=crop',
+      name: 'CHILD MOTIVATION & EXTRA COACHING',
+      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop',
       link: '/facilities'
     }
   ];

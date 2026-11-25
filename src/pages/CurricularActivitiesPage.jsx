@@ -1,257 +1,179 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PageBanner from '../components/PageBanner';
 import { Link } from 'react-router-dom';
 
 export default function CurricularActivitiesPage() {
-  const [activeCategory, setActiveCategory] = useState('clubs');
-
-  const clubs = [
+  const extraCurricularActivities = [
     {
-      title: 'Turing Robotics & AI Conclave',
-      icon: 'fa-robot',
-      desc: 'Hands-on training in autonomous robotics, microcontrollers (Arduino/Raspberry Pi), computer vision, and national conclaves.'
+      id: 1,
+      title: 'Dance',
+      tag: 'CULTURAL & PERFORMING ARTS',
+      icon: 'fa-person-walking',
+      image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=800&auto=format&fit=crop',
+      desc: 'Classical, folk, and contemporary creative choreography under professional mentors, developing poise, rhythmic discipline, and stage confidence.',
+      highlights: ['Classical & Folk Styles', 'Annual Cultural Stage Performances', 'Rhythm & Body Coordination', 'Certified Dance Choreographers']
     },
     {
-      title: 'Heritage Model United Nations (HMUN)',
-      icon: 'fa-earth-americas',
-      desc: 'Diplomacy, resolution drafting, parliamentary procedure, and participation in Harvard, Ivy, and national school MUNs.'
+      id: 2,
+      title: 'Drawing',
+      tag: 'VISUAL ARTS & CREATIVITY',
+      icon: 'fa-palette',
+      image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=800&auto=format&fit=crop',
+      desc: 'Freehand sketching, watercolor painting, visual art composition, and canvas workshops cultivating deep artistic sensibility and creative thinking.',
+      highlights: ['Oil Pastel & Water Color', 'Fine Art Sketching & Shading', 'Annual School Art Exhibitions', 'Olympiad & Contest Preparation']
     },
     {
-      title: 'Socratic Debating & Oratory Society',
-      icon: 'fa-microphone',
-      desc: 'Developing persuasive eloquence, cross-examination skills, and critical rebuttals in British Parliamentary style.'
-    },
-    {
-      title: 'Aryabhata Mathematics & Coding Guild',
-      icon: 'fa-code',
-      desc: 'Algorithmic thinking, competitive programming in Python & Java, and preparation for national mathematical Olympiads.'
-    },
-    {
-      title: 'Gaia Eco & Sustainability Collective',
-      icon: 'fa-seedling',
-      desc: 'Campus organic gardening, biodiversity surveys, solar energy monitoring, and tree plantation drives.'
-    },
-    {
-      title: 'Aperture Lens & Cinematography Society',
-      icon: 'fa-camera',
-      desc: 'Visual composition, DSLR cinematography, documentary production, and digital darkroom photo editing.'
-    }
-  ];
-
-  const sports = [
-    {
-      title: 'Championship Aquatic Sports',
-      icon: 'fa-person-swimming',
-      desc: 'State-certified coaches conducting competitive swimming, stroke mechanics, life-saving drills, and water polo.'
-    },
-    {
-      title: 'Lumen River Crew & Rowing',
-      icon: 'fa-ship',
-      desc: 'Historic sculling and rowing tradition with professional boat sheds, coxswain tactics, and regattas.'
-    },
-    {
-      title: 'Varsity Football & Futsal',
+      id: 3,
+      title: 'Football',
+      tag: 'SPORTS & ATHLETICS',
       icon: 'fa-futbol',
-      desc: 'FIFA-approved astro-turf ground with specialized tactical drills and inter-school championship leagues.'
+      image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=800&auto=format&fit=crop',
+      desc: 'Field tactical training, ball handling skills, speed conditioning, and tournament coaching fostering teamwork, stamina, and competitive sportsmanship.',
+      highlights: ['Campus Football Ground', 'Tactical Drills & Passing Clinics', 'Inter-House League Tournaments', 'Endurance & Fitness Regimen']
     },
     {
-      title: 'Lawn Tennis & Badminton',
-      icon: 'fa-table-tennis-paddle-ball',
-      desc: 'Four regulation hard courts with floodlights for evening training, tournament conditioning, and racket clinics.'
+      id: 4,
+      title: 'Volley Ball',
+      tag: 'SPORTS & ATHLETICS',
+      icon: 'fa-volleyball',
+      image: 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?q=80&w=800&auto=format&fit=crop',
+      desc: 'Regulation volleyball court training emphasizing rapid reflexes, defensive positioning, high-impact serving, and collaborative court communication.',
+      highlights: ['Outdoor Regulation Court', 'Spiking & Serving Drills', 'Reflex & Agility Conditioning', 'House Championship Matches']
     },
     {
-      title: 'Martial Arts & Self-Defense',
-      icon: 'fa-hand-fist',
-      desc: 'Black-belt instruction in Taekwondo and Karate focusing on mental discipline, stamina, and self-defense agility.'
-    },
-    {
-      title: 'Cricket Academy',
+      id: 5,
+      title: 'Cricket',
+      tag: 'SPORTS & ATHLETICS',
       icon: 'fa-baseball-bat-ball',
-      desc: 'Turf and concrete bowling nets with bowling machines, video-assisted biomechanics, and annual fixtures.'
-    }
-  ];
-
-  const houses = [
-    {
-      name: 'Tagore House',
-      color: '#E53E3E',
-      motto: 'Knowledge is Freedom',
-      mascot: 'Red Phoenix',
-      desc: 'Embodying literature, artistic creativity, philosophical insight, and universal humanism.'
-    },
-    {
-      name: 'Raman House',
-      color: '#3182CE',
-      motto: 'Truth in Discovery',
-      mascot: 'Blue Falcon',
-      desc: 'Championing scientific inquiry, relentless empirical observation, and analytical innovation.'
-    },
-    {
-      name: 'Teresa House',
-      color: '#38A169',
-      motto: 'Service above Self',
-      mascot: 'Green Dolphin',
-      desc: 'Fostering profound empathy, selfless community service, and environmental stewardship.'
-    },
-    {
-      name: 'Vivekananda House',
-      color: '#D69E2E',
-      motto: 'Arise, Awake, Achieve',
-      mascot: 'Golden Lion',
-      desc: 'Inspiring moral courage, athletic vigor, leadership tenacity, and character sovereignty.'
+      image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=800&auto=format&fit=crop',
+      desc: 'Net practice, specialized batting mechanics, bowling run-up discipline, and field placement strategy led by qualified cricket instructors.',
+      highlights: ['Dedicated Practice Nets', 'Batting & Bowling Workshops', 'Video Technique Analysis', 'Annual Interschool Fixtures']
     }
   ];
 
   return (
     <div>
       <PageBanner
-        title="Curricular & Co-Curricular Activities"
+        title="Extra Curricular Activities"
         subtitle="Unleashing creativity, athleticism, leadership, and camaraderie beyond the traditional classroom."
-        breadcrumbs={[{ label: 'Curricular Activities' }]}
+        breadcrumbs={[{ label: 'Extra Curricular Activities' }]}
       />
 
       <section className="subpage-content-wrap">
         <div className="container">
-          {/* Tabs */}
-          <div
+          
+          {/* 5 Activities Grid */}
+          <div 
             style={{
-              display: 'flex',
-              gap: '12px',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              marginBottom: '40px'
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gap: '28px'
             }}
           >
-            {[
-              { id: 'clubs', label: 'Clubs & Societies' },
-              { id: 'sports', label: 'Athletics & Sports' },
-              { id: 'houses', label: 'The Four Houses' }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveCategory(tab.id)}
+            {extraCurricularActivities.map((item) => (
+              <div 
+                key={item.id}
                 style={{
-                  padding: '12px 24px',
-                  borderRadius: '30px',
-                  border: '1.5px solid',
-                  borderColor: activeCategory === tab.id ? 'var(--gold-primary)' : 'var(--border-color)',
-                  background: activeCategory === tab.id ? 'var(--navy-primary)' : '#ffffff',
-                  color: activeCategory === tab.id ? 'var(--gold-light)' : 'var(--text-dark)',
-                  fontWeight: 700,
-                  fontSize: '0.9rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.25s ease'
+                  background: '#ffffff',
+                  borderRadius: '16px',
+                  border: '1px solid var(--border-color)',
+                  overflow: 'hidden',
+                  boxShadow: '0 8px 24px rgba(11, 27, 61, 0.06)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease'
                 }}
               >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Clubs Grid */}
-          {activeCategory === 'clubs' && (
-            <div className="feature-cards-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
-              {clubs.map((c, idx) => (
-                <div key={idx} className="feat-card">
-                  <div>
-                    <div className="feat-icon-box">
-                      <i className={`fa-solid ${c.icon}`}></i>
-                    </div>
-                    <h3>{c.title}</h3>
-                    <p>{c.desc}</p>
-                  </div>
-                  <span className="feat-link">
-                    Weekly Sessions <i className="fa-solid fa-arrow-right"></i>
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Sports Grid */}
-          {activeCategory === 'sports' && (
-            <div className="feature-cards-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
-              {sports.map((s, idx) => (
-                <div key={idx} className="feat-card">
-                  <div>
-                    <div className="feat-icon-box">
-                      <i className={`fa-solid ${s.icon}`}></i>
-                    </div>
-                    <h3>{s.title}</h3>
-                    <p>{s.desc}</p>
-                  </div>
-                  <span className="feat-link">
-                    Varsity Coaching <i className="fa-solid fa-arrow-right"></i>
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* House System */}
-          {activeCategory === 'houses' && (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                gap: '24px'
-              }}
-            >
-              {houses.map((h, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    background: '#ffffff',
-                    borderRadius: '12px',
-                    borderTop: `6px solid ${h.color}`,
-                    padding: '30px 24px',
-                    boxShadow: '0 8px 24px rgba(11, 27, 61, 0.06)',
-                    border: '1px solid var(--border-color)',
-                    borderTopWidth: '6px'
-                  }}
-                >
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: h.color, letterSpacing: '1px' }}>
-                    {h.mascot.toUpperCase()}
-                  </span>
-                  <h3 style={{ fontFamily: 'var(--font-serif)', color: 'var(--navy-primary)', margin: '8px 0' }}>
-                    {h.name}
-                  </h3>
-                  <div
+                {/* Image Cover */}
+                <div style={{ position: 'relative', height: '210px', overflow: 'hidden' }}>
+                  <img
+                    src={item.image}
+                    alt={item.title}
                     style={{
-                      fontStyle: 'italic',
-                      fontSize: '0.85rem',
-                      color: 'var(--text-muted)',
-                      marginBottom: '14px'
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                  <div 
+                    style={{
+                      position: 'absolute',
+                      top: '12px',
+                      left: '12px',
+                      background: 'rgba(11, 27, 61, 0.85)',
+                      backdropFilter: 'blur(4px)',
+                      color: 'var(--gold-light)',
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      fontSize: '0.68rem',
+                      fontWeight: 800,
+                      letterSpacing: '0.5px'
                     }}
                   >
-                    "{h.motto}"
+                    {item.tag}
                   </div>
-                  <p style={{ color: 'var(--text-dark)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-                    {h.desc}
-                  </p>
                 </div>
-              ))}
-            </div>
-          )}
 
-          <div
-            className="subpage-card"
-            style={{
-              marginTop: '50px',
-              textAlign: 'center',
-              background: 'var(--cream-bg)',
-              border: '1px solid var(--border-warm)'
-            }}
-          >
-            <h3 style={{ fontFamily: 'var(--font-serif)', color: 'var(--navy-primary)', marginBottom: '10px' }}>
-              Holistic Development Is Our Hallmark
-            </h3>
-            <p style={{ color: 'var(--text-muted)', maxWidth: '650px', margin: '0 auto 20px' }}>
-              Every student participates in at least one sporting discipline and one creative society every semester.
-            </p>
-            <Link to="/contact" className="btn-gold" style={{ display: 'inline-flex' }}>
-              Enquire About Admissions <i className="fa-solid fa-arrow-right"></i>
-            </Link>
+                {/* Content */}
+                <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div 
+                      style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        background: '#FEF3C7',
+                        color: '#92400E',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.95rem'
+                      }}
+                    >
+                      <i className={`fa-solid ${item.icon}`}></i>
+                    </div>
+                    <h3 style={{ margin: 0, fontFamily: 'var(--font-serif)', fontSize: '1.35rem', color: 'var(--navy-primary)' }}>
+                      {item.title}
+                    </h3>
+                  </div>
+
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6', margin: '0 0 16px', flex: 1 }}>
+                    {item.desc}
+                  </p>
+
+                  {/* Highlights list */}
+                  <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 18px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {item.highlights.map((h, i) => (
+                      <li key={i} style={{ fontSize: '0.82rem', color: 'var(--text-dark)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <i className="fa-solid fa-circle-check" style={{ color: '#059669', fontSize: '0.75rem' }}></i>
+                        <span>{h}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+                      <i className="fa-solid fa-calendar-days"></i> Weekly Sessions
+                    </span>
+                    <Link 
+                      to="/contact" 
+                      style={{ 
+                        fontSize: '0.82rem', 
+                        color: 'var(--navy-primary)', 
+                        fontWeight: 700, 
+                        textDecoration: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      Enquire <i className="fa-solid fa-arrow-right"></i>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

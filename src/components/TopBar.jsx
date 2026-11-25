@@ -9,11 +9,11 @@ export default function TopBar({ onOpenBanner }) {
           <a href="tel:+918001271960">
             <i className="fa-solid fa-phone"></i> +91 8001271960
           </a>
-          <a href="mailto:therabindrabharatihds@gmail.com">
-            <i className="fa-solid fa-envelope"></i> therabindrabharatihds@gmail.com
+          <a href="mailto:newrabindrabharattschool@gmail.com">
+            <i className="fa-solid fa-envelope"></i> newrabindrabharattschool@gmail.com
           </a>
           <span>
-            <i className="fa-solid fa-clock"></i> Office: Mon–Fri 10:30 am to 3:00 pm
+            <i className="fa-solid fa-clock"></i> Office: Mon–Fri 10:00 am to 3:30 pm
           </span>
         </div>
         <div className="top-right-links">

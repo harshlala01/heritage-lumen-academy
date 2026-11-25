@@ -6,54 +6,37 @@ export default function ExtraCurricularActivities() {
   const fallbackActivities = [
     {
       id: 1,
-      title: 'COMMUNITY OUTREACH',
-      image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?q=80&w=800&auto=format&fit=crop',
+      title: 'DANCE',
+      image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=800&auto=format&fit=crop',
       link: '/activities'
     },
     {
       id: 2,
-      title: 'ANNUAL FEST',
-      image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800&auto=format&fit=crop',
+      title: 'DRAWING',
+      image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=800&auto=format&fit=crop',
       link: '/activities'
     },
     {
       id: 3,
-      title: 'SPORTS DAY',
-      image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=800&auto=format&fit=crop',
+      title: 'FOOTBALL',
+      image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=800&auto=format&fit=crop',
       link: '/activities'
     },
     {
       id: 4,
-      title: 'SCIENCE EXHIBITION',
-      image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=800&auto=format&fit=crop',
+      title: 'VOLLEY BALL',
+      image: 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?q=80&w=800&auto=format&fit=crop',
       link: '/activities'
     },
     {
       id: 5,
-      title: 'EXHIBITION AND BOOK FAIR',
-      image: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=800&auto=format&fit=crop',
-      link: '/activities'
-    },
-    {
-      id: 6,
-      title: 'CULTURAL FEST',
-      image: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=80&w=800&auto=format&fit=crop',
-      link: '/activities'
-    },
-    {
-      id: 7,
-      title: 'DEBATE COMPETITION',
-      image: 'https://images.unsplash.com/photo-1544531585-9847b68c8c86?q=80&w=800&auto=format&fit=crop',
-      link: '/activities'
-    },
-    {
-      id: 8,
-      title: 'MUSIC & DANCE PERFORMANCE',
-      image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=800&auto=format&fit=crop',
+      title: 'CRICKET',
+      image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=800&auto=format&fit=crop',
       link: '/activities'
     }
   ];
-  const activities = useContent('activities', fallbackActivities);
+  const fetchedActivities = useContent('activities', fallbackActivities);
+  const activities = fetchedActivities && fetchedActivities.length > 0 ? fetchedActivities : fallbackActivities;
 
   // Duplicate the array for a seamless infinite marquee
   const duplicatedActivities = [...activities, ...activities];
@@ -64,9 +47,9 @@ export default function ExtraCurricularActivities() {
         {/* Left Column: Fixed Text Box */}
         <div className="ec-side-text-col">
           <span className="ec-side-tag">ACTIVITIES</span>
-          <h2 className="ec-side-title">Extra Curricular</h2>
+          <h2 className="ec-side-title">Extra Curricular Activities</h2>
           <p className="ec-side-desc">
-            The school has a wide range of co-curricular and extra curricular activities in the entire academic session, enabling students to explore passions outside traditional academics.
+            The school provides structured coaching in Dance, Drawing, Football, Volley Ball, and Cricket, enabling students to explore passions outside traditional academics.
           </p>
           <Link to="/activities" className="btn-ec-view-details">
             VIEW DETAILS

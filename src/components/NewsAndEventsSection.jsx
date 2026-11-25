@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './NewsAndEventsSection.css';
 
@@ -67,10 +67,30 @@ const formatDisplayDate = (dateStr) => {
 };
 
 export default function NewsAndEventsSection() {
+  const sectionRef = useRef(null);
+  const [inView, setInView] = useState(false);
   const [notices, setNotices] = useState([]);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null); // { type: 'notice' | 'event', data }
+
+  useEffect(() => {
+    if (loading) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          setInView(true);
+        } else if (entry.boundingClientRect.top > window.innerHeight * 0.85) {
+          // Reset when scrolled back above so scrolling down replays the animation
+          setInView(false);
+        }
+      },
+      { threshold: 0.25, rootMargin: '0px 0px -80px 0px' }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, [loading]);
 
   useEffect(() => {
     Promise.all([
@@ -111,7 +131,7 @@ export default function NewsAndEventsSection() {
   const displayedEvents = events.slice(0, 4);
 
   return (
-    <section className="hla-news-events-section" id="news-events">
+    <section ref={sectionRef} className={`hla-news-events-section ${inView ? 'hla-revealed' : ''}`} id="news-events">
       <div className="hla-news-events-container">
         <div className="hla-news-events-grid">
           {/* ================= LEFT: NEWS & ANNOUNCEMENTS ================= */}
@@ -180,6 +200,7 @@ export default function NewsAndEventsSection() {
                       <div
                         key={item.id || idx}
                         className="hla-notice-card"
+                        style={{ '--stagger-idx': idx }}
                         onClick={() => setSelectedItem({ type: 'notice', data: item })}
                         title="Click to view full notice"
                       >
@@ -208,6 +229,7 @@ export default function NewsAndEventsSection() {
                   {bottomNotice && (
                     <div
                       className="hla-notice-horizontal-card"
+                      style={{ '--stagger-idx': 2 }}
                       onClick={() => setSelectedItem({ type: 'notice', data: bottomNotice })}
                       title="Click to view full notice"
                     >
@@ -253,7 +275,22 @@ export default function NewsAndEventsSection() {
                       <circle cx="12" cy="18" r="1" fill="currentColor" />
                     </svg>
                   </span>
-                  <h2 className="hla-events-title">Events</h2>
+                  <div>
+                    <h2 className="hla-events-title">Events</h2>
+                    <span
+                      style={{
+                        display: 'block',
+                        fontSize: '0.76rem',
+                        fontWeight: 700,
+                        color: '#D4AF37',
+                        letterSpacing: '1.2px',
+                        textTransform: 'uppercase',
+                        marginTop: '2px'
+                      }}
+                    >
+                      Upcoming Events
+                    </span>
+                  </div>
                 </div>
 
                 {/* Vertical Timeline or Clean Empty State */}
@@ -303,6 +340,7 @@ export default function NewsAndEventsSection() {
                         <div
                           key={evt.id || idx}
                           className="hla-event-item"
+                          style={{ '--stagger-idx': idx }}
                           onClick={() => setSelectedItem({ type: 'event', data: evt })}
                           title="Click to view event details"
                         >
@@ -314,7 +352,21 @@ export default function NewsAndEventsSection() {
                               <line x1="3" y1="10" x2="21" y2="10" />
                             </svg>
                           </div>
-                          <h4 className="hla-event-item-name">{evt.title}</h4>
+                          <div>
+                            <h4 className="hla-event-item-name">{evt.title}</h4>
+                            {evt.event_date && (
+                              <div
+                                style={{
+                                  fontSize: '0.75rem',
+                                  color: '#94A3B8',
+                                  marginTop: '3px',
+                                  fontWeight: 500
+                                }}
+                              >
+                                {formatDisplayDate(evt.event_date)}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       );
                     })}
@@ -360,12 +412,31 @@ export default function NewsAndEventsSection() {
                 ) : (
                   <>
                     <span><strong>Date:</strong> {selectedItem.data.event_date}</span>
+                    {selectedItem.data.event_day && (
+                      <span><strong>Day:</strong> {selectedItem.data.event_day}</span>
+                    )}
                     {selectedItem.data.event_time && (
                       <span><strong>Time:</strong> {selectedItem.data.event_time}</span>
                     )}
                     {selectedItem.data.venue && (
                       <span><strong>Venue:</strong> {selectedItem.data.venue}</span>
                     )}
+                    <span>
+                      <strong>Status:</strong>{' '}
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '2px 10px',
+                          borderRadius: '12px',
+                          background: '#0B1B3D',
+                          color: '#E5C56E',
+                          fontSize: '0.82rem',
+                          fontWeight: 700
+                        }}
+                      >
+                        {selectedItem.data.status || (selectedItem.data.is_archived ? 'Completed' : 'Upcoming')}
+                      </span>
+                    </span>
                   </>
                 )}
               </div>
@@ -377,14 +448,44 @@ export default function NewsAndEventsSection() {
               {selectedItem.data.attachment_path && (
                 <div className="hla-modal-attachment">
                   <span>Attachment Document:</span>
-                  <a
-                    href={`${API_BASE}${selectedItem.data.attachment_path}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const fileUrl = `${API_BASE}${selectedItem.data.attachment_path}`;
+                      const fileName = selectedItem.data.attachment_name || 'attachment';
+                      try {
+                        const res = await fetch(fileUrl);
+                        if (!res.ok) throw new Error('Download failed');
+                        const blob = await res.blob();
+                        const blobUrl = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = fileName;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(blobUrl);
+                      } catch {
+                        window.open(fileUrl, '_blank', 'noopener,noreferrer');
+                      }
+                    }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 18px',
+                      background: '#0B1B3D',
+                      color: '#E5C56E',
+                      border: '1px solid #D4AF37',
+                      borderRadius: '8px',
+                      fontWeight: 700,
+                      fontSize: '0.88rem',
+                      cursor: 'pointer'
+                    }}
                   >
-                    <span>Download {selectedItem.data.attachment_name || 'File'}</span>
+                    <span>Download</span>
                     <span>&darr;</span>
-                  </a>
+                  </button>
                 </div>
               )}
             </div>

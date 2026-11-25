@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 export default function AboutSection() {
   const sectionRef = useRef(null);
   const [inView, setInView] = useState(false);
-  const [yearCount, setYearCount] = useState(0);
+  const [yearCount, setYearCount] = useState(2026);
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
 
   // Intersection observer for section entry
@@ -25,30 +25,41 @@ export default function AboutSection() {
     return () => observer.disconnect();
   }, []);
 
-  // 2003 Count up animation (Duration: 2 seconds, ease-out)
+  // Animation from 2026 back to 2019 (Smooth, deliberate pace so each year is visible)
   useEffect(() => {
     if (!inView) return;
 
     let startTime = null;
-    const duration = 2000; // 2 seconds
-    const targetYear = 2026;
+    let timerId = null;
+    let animId = null;
+    const duration = 3600; // 3.6 seconds for gentle, slow counting
+    const startYear = 2026;
+    const targetYear = 2019;
 
-    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+    // Smooth ease-out so early years aren't rushed
+    const easeOutQuad = (t) => t * (2 - t);
 
     const animateCount = (timestamp) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      const easedProgress = easeOutCubic(progress);
+      const easedProgress = easeOutQuad(progress);
 
-      setYearCount(Math.round(easedProgress * targetYear));
+      setYearCount(Math.round(startYear + easedProgress * (targetYear - startYear)));
 
       if (progress < 1) {
-        requestAnimationFrame(animateCount);
+        animId = requestAnimationFrame(animateCount);
       }
     };
 
-    const frameId = requestAnimationFrame(animateCount);
-    return () => cancelAnimationFrame(frameId);
+    // Small 300ms pause so 2026 is clearly visible before counting back starts
+    timerId = setTimeout(() => {
+      animId = requestAnimationFrame(animateCount);
+    }, 300);
+
+    return () => {
+      if (timerId) clearTimeout(timerId);
+      if (animId) cancelAnimationFrame(animId);
+    };
   }, [inView]);
 
   // Subtle parallax effect on mouse hover over right side
@@ -107,7 +118,7 @@ export default function AboutSection() {
             <div className="about-quote-card">
               <div className="quote-icon-gold">“</div>
               <p>
-                We began our journey in <strong>2003</strong> with <strong>14 scholars</strong> in an intimate
+                We began our journey in <strong>2019</strong> with <strong>14 scholars</strong> in an intimate
                 campus facility, anchored by an enduring promise of excellence and enlightenment.
               </p>
             </div>
@@ -175,10 +186,10 @@ export default function AboutSection() {
                 />
               </div>
 
-              {/* "2003" BADGE WITH COUNTING ANIMATION & 360° ROTATION ON HOVER */}
+              {/* BADGE WITH COUNTING ANIMATION & 360° ROTATION ON HOVER */}
               <div
                 className="about-heritage-seal-badge"
-                title="Established 2003"
+                title="Journey from 2026 back to 2019"
               >
                 <div className="seal-rotating-shimmer"></div>
                 <div className="seal-inner-core">

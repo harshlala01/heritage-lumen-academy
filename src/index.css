@@ -649,8 +649,9 @@
             line-height: 1.4;
             color: var(--navy-primary);
             margin: 12px 0 20px;
-            padding-left: 24px;
-            border-left: 3px solid var(--gold-primary);
+            padding-left: 0;
+            border-left: none;
+            text-align: left;
         }
 
         .principal-body {
@@ -2180,6 +2181,70 @@
   transform: scale(1.1) rotate(90deg);
 }
 
+/* Compact Banner Modal (Stratford Day Size, No Bottom Buttons) */
+.banner-modal-compact-wrapper {
+  position: relative;
+  max-width: 530px;
+  width: calc(100vw - 64px);
+  margin: 32px auto 20px;
+  animation: bannerScaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.banner-compact-close-btn {
+  position: absolute;
+  top: -18px;
+  right: -22px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #dc2626;
+  color: #ffffff;
+  border: 2.5px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+  transition: all 0.2s ease;
+}
+
+.banner-compact-close-btn:hover {
+  background: #991b1b;
+  transform: scale(1.1) rotate(90deg);
+}
+
+.banner-modal-compact-card {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+  border: 2.5px solid #b91c1c;
+  display: flex;
+  flex-direction: column;
+}
+
+.banner-compact-image-wrap {
+  width: 100%;
+  background: #FAF7F2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.banner-compact-img {
+  width: 100%;
+  height: auto;
+  max-height: 82vh;
+  object-fit: contain;
+  display: block;
+}
+
 /* Image Banner Specific Modal Styling */
 .image-banner-modal-card {
   max-width: 620px;
@@ -2291,6 +2356,534 @@
 .banner-apply-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(212, 175, 55, 0.5);
+}
+
+/* ==========================================================
+   STRATFORD-STYLE TOPPERS BANNER MODAL
+   ========================================================== */
+.stratford-banner-modal {
+  max-width: 1060px;
+  width: 96vw;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 3px solid #b91c1c;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(212, 175, 55, 0.4);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 94vh;
+  position: relative;
+}
+
+.stratford-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #c5221f;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s ease;
+}
+
+.stratford-close-btn:hover {
+  background: #991b1b;
+  transform: scale(1.1) rotate(90deg);
+}
+
+.stratford-banner-scroll-wrap {
+  overflow-y: auto;
+  overflow-x: auto;
+  width: 100%;
+  flex: 1;
+  background: #fbfbfc;
+}
+
+.stratford-banner-canvas {
+  min-width: 890px;
+  padding: 16px 20px 20px 20px;
+  background-color: #faf9f6;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(15, 34, 74, 0.03) 0, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(185, 28, 28, 0.035) 0, transparent 40%),
+    repeating-radial-gradient(circle at 15% 50%, transparent 0, transparent 24px, rgba(15, 34, 74, 0.02) 25px, transparent 26px),
+    repeating-radial-gradient(circle at 85% 50%, transparent 0, transparent 28px, rgba(185, 28, 28, 0.02) 29px, transparent 30px);
+  position: relative;
+}
+
+/* Header */
+.stratford-banner-header {
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 12px;
+}
+
+.stratford-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stratford-logo-shield {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2.5px solid #b91c1c;
+  background: #ffffff;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.stratford-logo-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.stratford-header-divider {
+  width: 2.5px;
+  height: 52px;
+  background: linear-gradient(180deg, #0f224a 0%, #1e3a8a 100%);
+  border-radius: 2px;
+}
+
+.stratford-header-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.stratford-school-title {
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  font-size: 1.62rem;
+  font-weight: 900;
+  color: #0f224a;
+  letter-spacing: 0.8px;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.stratford-school-title span {
+  color: #1e40af;
+  font-weight: 800;
+}
+
+.stratford-affiliation-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.stratford-aff-line {
+  height: 2px;
+  width: 45px;
+  background: #0f224a;
+}
+
+.stratford-aff-text {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #0f224a;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Banner Body Grid */
+.stratford-banner-body {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+/* Left Column */
+.stratford-left-column {
+  width: 290px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-right: 1.5px solid #e5e7eb;
+  padding-right: 12px;
+}
+
+.stratford-topper-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.stratford-session-badge {
+  display: inline-block;
+  background: #0f224a;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 12px;
+  clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%);
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.stratford-topper-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stratford-avatar-ring {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  padding: 2px;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.stratford-avatar-ring img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.stratford-avatar-ring.ring-blue {
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 0 2px #bfdbfe;
+}
+
+.stratford-avatar-ring.ring-emerald {
+  border: 2px solid #059669;
+  box-shadow: 0 0 0 2px #a7f3d0;
+}
+
+.stratford-avatar-ring.ring-pink {
+  border: 2px solid #d946ef;
+  box-shadow: 0 0 0 2px #fbcfe8;
+}
+
+.stratford-avatar-ring.ring-red {
+  border: 2px solid #dc2626;
+  box-shadow: 0 0 0 2px #fecaca;
+}
+
+.stratford-avatar-ring.ring-gold {
+  border: 2px solid #d97706;
+  box-shadow: 0 0 0 2px #fde68a;
+}
+
+.stratford-topper-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.stratford-rank-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(90deg, #b91c1c, #dc2626);
+  color: #ffffff;
+  font-size: 0.64rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.3px;
+  width: fit-content;
+}
+
+.stratford-rank-strip.rank-magenta {
+  background: linear-gradient(90deg, #be185d, #ec4899);
+}
+
+.stratford-rank-num {
+  background: #fef08a;
+  color: #991b1b;
+  padding: 0 5px;
+  border-radius: 2px;
+  font-weight: 900;
+}
+
+.stratford-name-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  background: #541113;
+  color: #ffffff;
+  font-size: 0.67rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.stratford-student-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stratford-student-pct {
+  color: #facc15;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* Dual Card in Left Column */
+.dual-card .stratford-dual-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stratford-dual-student {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stratford-avatar-ring.small-ring {
+  width: 44px;
+  height: 44px;
+}
+
+.stratford-dual-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.stratford-rank-strip-mini {
+  background: linear-gradient(90deg, #b91c1c, #dc2626);
+  color: #ffffff;
+  font-size: 0.52rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 2px;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.stratford-rank-strip-mini .stratford-rank-num {
+  background: #fef08a;
+  color: #991b1b;
+  padding: 0 3px;
+  border-radius: 2px;
+}
+
+.stratford-name-pill-mini {
+  background: #541113;
+  color: #ffffff;
+  font-size: 0.52rem;
+  padding: 2px 6px;
+  border-radius: 8px;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stratford-name-pill-mini b {
+  color: #facc15;
+  margin-left: 3px;
+}
+
+/* Center Ribbon Column */
+.stratford-ribbon-col {
+  width: 58px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 4px;
+}
+
+.stratford-pass-ribbon {
+  background: linear-gradient(180deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff;
+  width: 56px;
+  padding: 8px 4px 14px 4px;
+  text-align: center;
+  position: relative;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 86%, 50% 100%, 0% 86%);
+  box-shadow: 0 4px 10px rgba(185, 28, 28, 0.4);
+}
+
+.ribbon-text-top {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.ribbon-text-mid {
+  display: block;
+  font-size: 0.46rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  margin-bottom: 2px;
+}
+
+.ribbon-percent {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Right Column */
+.stratford-right-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stratford-class-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stratford-section-banner-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.stratford-section-banner-title .decor-line {
+  flex: 1;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, #b91c1c, transparent);
+}
+
+.section-title-pill {
+  background: #991b1b;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 18px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.stratford-students-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px 4px;
+  justify-items: center;
+}
+
+.stratford-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 58px;
+  text-align: center;
+}
+
+.grid-avatar-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #b91c1c;
+  overflow: hidden;
+  padding: 1px;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.grid-avatar-box img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.grid-name-tag {
+  background: #3b0764;
+  color: #ffffff;
+  padding: 1px 3px;
+  border-radius: 4px;
+  margin-top: 2px;
+  width: 100%;
+  font-size: 0.46rem;
+  line-height: 1.1;
+}
+
+.grid-name-tag .tag-name {
+  display: block;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grid-name-tag .tag-score {
+  display: block;
+  color: #fde047;
+  font-weight: 800;
+}
+
+.stratford-summary-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.summary-badge-blue {
+  background: #1d4ed8;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 12px 0 0 12px;
+}
+
+.summary-badge-pink {
+  background: linear-gradient(90deg, #db2777, #be185d);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 14px;
+  border-radius: 0 12px 12px 0;
+  letter-spacing: 0.2px;
+}
+
+@media (max-width: 900px) {
+  .stratford-banner-canvas {
+    min-width: 820px;
+  }
 }
 
 .banner-inner-content {
@@ -2971,6 +3564,100 @@
   font-size: 0.96rem;
   color: #57534E;
   line-height: 1.8;
+}
+
+.facilities-official-badge-panel {
+  margin-top: 20px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.official-badge-header {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #0f224a;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.official-badge-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.official-facility-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0f224a;
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(15, 34, 74, 0.15);
+}
+
+.official-facility-pill i {
+  color: #facc15;
+  font-size: 0.72rem;
+}
+
+.facilities-list-header-bar {
+  margin: 36px 0 24px;
+  border-left: 4px solid #b91c1c;
+  padding-left: 14px;
+}
+
+.facilities-bar-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #b91c1c;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.facilities-bar-heading {
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: #0f224a;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.facilities-bar-desc {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 4px 0 0;
+}
+
+.facility-acc-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.facility-acc-icon-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #0f224a;
+  color: #facc15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  flex-shrink: 0;
 }
 
 .facilities-accordions-grid {
@@ -7142,7 +7829,7 @@ html.lenis, html.lenis body {
   z-index: 1;
 }
 
-/* 2003 BADGE SEAL WITH COUNTING ANIMATION & 360° ROTATION */
+/* 2019 BADGE SEAL WITH COUNTING ANIMATION & 360° ROTATION */
 .about-heritage-seal-badge {
   position: absolute;
   bottom: 50px;
@@ -9117,4 +9804,185 @@ img, video, canvas, svg {
   height: auto;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================
+   GLOBAL TABLET & MOBILE RESPONSIVE POLISH (<= 1024px / 768px / 480px)
+   ========================================================== */
+html,
+body,
+.heritage-app {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .about-heritage-grid,
+  .about-split-grid,
+  .principal-grid,
+  .enquiry-grid,
+  .cdm-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .cdm-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .cdm-header-right {
+    text-align: left;
+  }
+
+  .gallery-albums-grid,
+  .gallery-photos-grid,
+  .cm-vibrancy-2x2-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+}
+
+@media (max-width: 900px) {
+  .ec-side-text-col {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .ec-side-carousel-col {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .subpage-banner {
+    padding: 110px 0 42px;
+  }
+
+  .subpage-title {
+    font-size: 1.95rem;
+  }
+
+  .subpage-content-wrap {
+    padding: 42px 0 60px;
+  }
+
+  .subpage-card {
+    padding: 22px 18px;
+  }
+
+  .about-heritage-section,
+  .campus-moments-vibrancy-section,
+  .achievers-section,
+  .enquiry-wrap {
+    padding: 52px 0 60px;
+  }
+
+  .achievers-title {
+    font-size: 2rem;
+  }
+
+  .gallery-albums-grid,
+  .gallery-photos-grid,
+  .cm-vibrancy-2x2-grid,
+  .feature-cards-grid,
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .notice-table-card,
+  .audit-table-wrap,
+  .admin-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-tabs-nav {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .admin-tab-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .gallery-back-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .lightbox-arrow-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .brand-main-title {
+    font-size: 0.86rem;
+    letter-spacing: 0.5px;
+  }
+
+  .brand-sub-title {
+    font-size: 0.56rem;
+    letter-spacing: 1.5px;
+  }
+
+  .brand-logo-img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .banner-modal-compact-wrapper {
+    width: calc(100vw - 32px);
+    margin: 24px auto;
+  }
+
+  .banner-compact-close-btn {
+    top: -12px;
+    right: -8px;
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+  }
+
+  .about-composition-canvas {
+    width: min(310px, calc(100vw - 32px));
+    height: min(310px, calc(100vw - 32px));
+    margin: 0 auto;
+  }
+
+  .about-heritage-seal-badge {
+    width: 108px;
+    height: 108px;
+  }
+
+  .seal-number-display {
+    font-size: 1.75rem;
+  }
+
+  .seal-caption {
+    font-size: 0.48rem;
+  }
+
+  .btn-achievers-see-more,
+  .btn-achievers-banner-view {
+    width: 100%;
+    justify-content: center;
+  }
 }
